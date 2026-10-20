@@ -5,6 +5,7 @@ import { Panel } from './Panel';
 import { StatusBadge } from './StatusBadge';
 import { StarRating } from './StarRating';
 import { TrustBadge } from './TrustBadge';
+import { QrCode } from './QrCode';
 import { skillLevels } from '../data/skills';
 import { formatDate } from '../utils/credentials';
 import { usePassport } from '../api/usePublic';
@@ -33,9 +34,12 @@ export function PassportView({ apprenticeId, actions }: {apprenticeId: string;ac
               <MapPinIcon className="h-4 w-4" /> {apprentice.location}{trainer && ` · Trained by ${trainer.name}, ${trainer.workshop}`}
             </p>
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="font-display text-6xl font-bold text-brand-500">{verifiedCount}</span>
-            <span className="text-ink-muted">of {skills.length} skills verified</span>
+          <div className="flex flex-wrap items-end gap-6">
+            <div className="flex items-baseline gap-2">
+              <span className="font-display text-6xl font-bold text-brand-500">{verifiedCount}</span>
+              <span className="text-ink-muted">of {skills.length} skills verified</span>
+            </div>
+            <QrCode value={`${window.location.origin}/passport/${apprentice.id}`} caption="Scan to see this passport" fileName={`skillpass-passport-${apprentice.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} size={104} />
           </div>
         </div>
         {actions && <div className="no-print mt-6 flex flex-wrap items-center gap-2 relative border-t border-white/15 pt-5">{actions}</div>}

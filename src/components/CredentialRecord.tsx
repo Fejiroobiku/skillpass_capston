@@ -2,6 +2,7 @@ import React from 'react';
 import { BadgeCheckIcon, CheckIcon, CircleAlertIcon, ClockIcon, MapPinIcon, ShieldAlertIcon, ShieldXIcon, UserCheckIcon } from 'lucide-react';
 import type { PublicCredential } from '../api/types';
 import { formatDate, formatDateTime } from '../utils/credentials';
+import { QrCode } from './QrCode';
 
 const banner = {
   valid: { cls: 'bg-gradient-to-r from-brand-500/20 to-violet-500/15 text-brand-800', icon: BadgeCheckIcon, title: 'Valid credential', text: 'Signed by an approved trainer, confirmed by the apprentice, with live evidence on file.' },
@@ -90,6 +91,9 @@ export function CredentialRecord({ credential }: {credential: PublicCredential;}
         </div>
 
         <div className="space-y-5">
+          <div className="flex justify-center rounded-2xl border border-line bg-canvas p-4">
+            <QrCode value={`${window.location.origin}/verify/${credential.id}`} caption={`Scan to verify ${credential.id}`} fileName={`skillpass-${credential.id}`} />
+          </div>
           <div>
             <h3 className="mb-2 text-sm font-semibold text-ink">Live evidence</h3>
             <div className="space-y-3">
