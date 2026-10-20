@@ -31,6 +31,7 @@ import { AuditLog } from './pages/AuditLog';
 import { Profile } from './pages/shared/Profile';
 import { Notifications } from './pages/shared/Notifications';
 import { UsabilitySurvey } from './pages/shared/UsabilitySurvey';
+import { ApprenticePassport } from './pages/shared/ApprenticePassport';
 
 function Loading() {
   return <p role="status" className="p-10 text-center text-ink-muted">Loading SkillPass…</p>;
@@ -103,6 +104,7 @@ export function App() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/survey" element={<UsabilitySurvey />} />
+              <Route path="/people/:apprenticeId/passport" element={<ApprenticePassport />} />
             </Route>
 
             <Route path="*" element={<HomeRedirect />} />

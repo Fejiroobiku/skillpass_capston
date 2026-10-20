@@ -77,7 +77,10 @@ CREATE TABLE apprentice_profiles (
   user_id    text PRIMARY KEY REFERENCES users (id) ON DELETE CASCADE,
   trade_id   text NOT NULL REFERENCES trades (id),
   trainer_id text REFERENCES users (id),
-  started_at timestamptz NOT NULL DEFAULT now()
+  started_at timestamptz NOT NULL DEFAULT now(),
+  -- The passport is shared at /passport/<token>; the apprentice can switch it off or replace the token
+  passport_token  text NOT NULL UNIQUE DEFAULT replace(gen_random_uuid()::text, '-', ''),
+  passport_public boolean NOT NULL DEFAULT true
 );
 CREATE INDEX apprentice_profiles_trainer_idx ON apprentice_profiles (trainer_id);
 

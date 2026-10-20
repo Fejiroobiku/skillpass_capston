@@ -27,5 +27,16 @@ function usePublicResource<T>(path: string | null, pick: (r: any) => T, nonce = 
 export const useVerifiedCredential = (id: string | null, nonce = 0) =>
 usePublicResource<PublicCredential>(id ? `/api/verify/${encodeURIComponent(id)}` : null, (r) => r.credential, nonce);
 
-export const usePassport = (id: string | null) =>
-usePublicResource<PublicPassportData>(id ? `/api/passport/${encodeURIComponent(id)}` : null, (r) => r.passport);
+/**
+ * Where a passport comes from: a shared link's token (anyone), an account ID (only the apprentice's own trainer
+ * and administrators, signed in), or "me" (the signed-in apprentice's own, even while the public link is off).
+ */
+export type PassportSource = {token: string;} | {apprenticeId: string;} | {me: true;};
+
+const passportPath = (s: PassportSource) =>
+'token' in s ? `/api/passport/${encodeURIComponent(s.token)}` :
+'apprenticeId' in s ? `/api/passport/people/${encodeURIComponent(s.apprenticeId)}` :
+'/api/passport/me';
+
+export const usePassport = (source: PassportSource | null) =>
+usePublicResource<PublicPassportData>(source ? passportPath(source) : null, (r) => r.passport);

@@ -118,6 +118,13 @@ export const pcm: Record<MessageKey, string> = {
   'passport.copied': 'Link don copy',
   'passport.public': 'See am as public',
   'passport.print': 'Print',
+  'passport.publicLabel': 'Public link',
+  'passport.publicOn': 'E dey on: anybody wey get the link or QR code fit see your passport.',
+  'passport.publicOff': 'E dey off: your link and QR code go show "Passport not found". Your trainer still fit see am.',
+  'passport.newLink': 'Make new link',
+  'passport.newLinkHelp': 'You share am with wrong person? New link go stop the old link and QR code.',
+  'passport.newLinkDone': 'New link don ready. The old one no go work again.',
+  'passport.offBadge': 'Link don off',
 
   'pv.loading': 'E dey load the passport…',
   'pv.notFound': 'We no see this passport.',

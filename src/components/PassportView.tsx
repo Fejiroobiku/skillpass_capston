@@ -8,14 +8,15 @@ import { TrustBadge } from './TrustBadge';
 import { QrCode } from './QrCode';
 import { skillLevels } from '../data/skills';
 import { formatDate } from '../utils/credentials';
-import { usePassport } from '../api/usePublic';
+import { usePassport, type PassportSource } from '../api/usePublic';
 import { useT } from '../i18n';
 
 const levelKey = { Foundation: 'level.Foundation', Intermediate: 'level.Intermediate', Advanced: 'level.Advanced' } as const;
 
 /** An apprentice's skills passport, loaded from the public API so it works for anyone with the link. */
-export function PassportView({ apprenticeId, actions }: {apprenticeId: string;actions?: React.ReactNode;}) {
-  const passport = usePassport(apprenticeId);
+/** `shareUrl` is the public link to show as a QR code; leave it out when the viewer has no link to share. */
+export function PassportView({ source, shareUrl, actions }: {source: PassportSource;shareUrl?: string | null;actions?: React.ReactNode;}) {
+  const passport = usePassport(source);
   const { t } = useT();
 
   if (passport.status === 'idle' || passport.status === 'loading') return <p role="status" className="rounded-2xl bg-surface p-8 text-center text-ink-muted">{t('pv.loading')}</p>;
@@ -43,7 +44,7 @@ export function PassportView({ apprenticeId, actions }: {apprenticeId: string;ac
               <span className="font-display text-6xl font-bold text-brand-500">{verifiedCount}</span>
               <span className="text-ink-muted">{t('pv.verifiedOf', { total: skills.length })}</span>
             </div>
-            <QrCode value={`${window.location.origin}/passport/${apprentice.id}`} caption={t('pv.scan')} fileName={`skillpass-passport-${apprentice.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} size={104} />
+            {shareUrl && <QrCode value={shareUrl} caption={t('pv.scan')} fileName={`skillpass-passport-${apprentice.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} size={104} />}
           </div>
         </div>
         {actions && <div className="no-print mt-6 flex flex-wrap items-center gap-2 relative border-t border-white/15 pt-5">{actions}</div>}

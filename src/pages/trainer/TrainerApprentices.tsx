@@ -45,7 +45,7 @@ export function TrainerApprentices() {
                   <div className="flex items-center gap-2"><PhoneIcon className="h-4 w-4" /><dd>{a.phone}</dd></div>
                 </dl>
                 <div className="mt-auto flex gap-2 pt-5">
-                  <Link to={`/passport/${a.id}`} className="flex-1 rounded-xl border border-line px-3 py-2.5 text-center text-sm font-medium text-ink transition-colors duration-150 hover:bg-canvas">Passport</Link>
+                  <Link to={`/people/${a.id}/passport`} className="flex-1 rounded-xl border border-line px-3 py-2.5 text-center text-sm font-medium text-ink transition-colors duration-150 hover:bg-canvas">Passport</Link>
                   {me.approved &&
                 <Link to={`/trainer/issue?apprentice=${a.id}`} className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-brand-600 px-3 py-2.5 text-sm font-semibold text-night transition-colors duration-150 hover:bg-brand-700">
                       <FilePlus2Icon className="h-4 w-4" /> Issue

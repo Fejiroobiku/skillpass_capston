@@ -89,8 +89,10 @@ describe('bootstrap: what each role is allowed to see', () => {
 });
 
 describe('public passport', () => {
+  const tokenOf = async (id) => (await pool.query('SELECT passport_token FROM apprentice_profiles WHERE user_id = $1', [id])).rows[0].passport_token;
+
   it('shows an apprentice\'s skills, trainer and employer ratings without contact details', async () => {
-    const r = await api('GET', '/api/passport/a1');
+    const r = await api('GET', `/api/passport/${await tokenOf('a1')}`);
     assert.equal(r.status, 200);
     const p = r.body.passport;
     assert.equal(p.apprentice.name, 'Tobi Ogunleye');
@@ -104,9 +106,38 @@ describe('public passport', () => {
     for (const secret of ['0810', 'tobi@skillpass.ng', 'password', '"lat"']) assert.ok(!text.includes(secret), `leaks ${secret}`);
   });
 
-  it('404s for unknown ids and for people who are not apprentices', async () => {
-    assert.equal((await api('GET', '/api/passport/nobody')).status, 404);
+  it('cannot be found by guessing an account ID', async () => {
+    assert.equal((await api('GET', '/api/passport/a1')).status, 404);
     assert.equal((await api('GET', '/api/passport/t1')).status, 404);
+    assert.equal((await api('GET', `/api/passport/${'0'.repeat(32)}`)).status, 404);
+  });
+
+  it('lets the apprentice switch the public link off and replace it', async () => {
+    const a1 = await login('tobi@skillpass.ng');
+    const me = await api('GET', '/api/passport/me', { token: a1 });
+    assert.equal(me.status, 200);
+    assert.equal(me.body.share.public, true);
+    const oldToken = me.body.share.token;
+
+    assert.equal((await api('PATCH', '/api/passport/me', { token: a1, body: { public: false } })).body.share.public, false);
+    assert.equal((await api('GET', `/api/passport/${oldToken}`)).status, 404);
+    assert.equal((await api('GET', '/api/passport/me', { token: a1 })).status, 200); // still visible to its owner
+    await api('PATCH', '/api/passport/me', { token: a1, body: { public: true } });
+
+    const fresh = await api('POST', '/api/passport/me/new-link', { token: a1 });
+    assert.notEqual(fresh.body.share.token, oldToken);
+    assert.equal((await api('GET', `/api/passport/${oldToken}`)).status, 404);
+    assert.equal((await api('GET', `/api/passport/${fresh.body.share.token}`)).status, 200);
+  });
+
+  it('shows a passport by account only to the apprentice\'s own trainer and administrators', async () => {
+    const t1 = await login('babatunde@skillpass.ng');
+    const e1 = await login('folake@skillpass.ng');
+    assert.equal((await api('GET', '/api/passport/people/a1', { token: t1 })).status, 200);
+    assert.equal((await api('GET', '/api/passport/people/a1', { token: await login('admin@skillpass.ng') })).status, 200);
+    assert.equal((await api('GET', '/api/passport/people/a1', { token: e1 })).status, 404);
+    assert.equal((await api('GET', '/api/passport/people/a4', { token: t1 })).status, 404); // not t1's apprentice
+    assert.equal((await api('GET', '/api/passport/people/a1')).status, 401);
   });
 });
 

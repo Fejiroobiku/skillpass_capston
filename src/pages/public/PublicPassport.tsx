@@ -13,7 +13,8 @@ export function PublicPassport() {
       <PublicHeader />
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 md:px-6">
         <PassportView
-          apprenticeId={id}
+          source={{ token: id }}
+          shareUrl={`${window.location.origin}/passport/${id}`}
           actions={
           <button type="button" onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-lg bg-surface px-3.5 py-2 text-sm font-semibold text-brand-800 transition-colors duration-150 hover:bg-brand-50">
               <PrinterIcon className="h-4 w-4" /> {t('pp.print')}

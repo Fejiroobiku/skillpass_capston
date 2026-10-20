@@ -88,8 +88,11 @@ describe('the public pages, with no login', () => {
     expect(screen.queryByText(/had to be redone/)).toBeNull();
   });
 
-  it('shows an apprentice\'s passport', async () => {
-    open('/passport/a1');
+  it('shows an apprentice\'s passport through its shared link, not their account ID', async () => {
+    setToken(await token('tobi@skillpass.ng'));
+    const { share } = await api.get<{share: {token: string;};}>('/api/passport/me');
+    setToken(null);
+    open(`/passport/${share.token}`);
     render(<App />);
     expect(await screen.findByText('Tobi Ogunleye')).toBeTruthy();
     expect(screen.getByText(/skills verified/)).toBeTruthy();

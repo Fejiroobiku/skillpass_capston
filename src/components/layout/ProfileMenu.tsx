@@ -19,7 +19,7 @@ export function ProfileMenu() {
 
   const items = [
   { to: '/profile', label: t('nav.myProfile'), icon: UserRoundIcon },
-  ...(user.role === 'apprentice' ? [{ to: `/passport/${user.id}`, label: t('menu.publicPassport'), icon: IdCardIcon }] : []),
+  ...(user.role === 'apprentice' ? [{ to: '/apprentice', label: t('nav.passport'), icon: IdCardIcon }] : []),
   { to: '/notifications', label: t('nav.notifications'), icon: BellIcon },
   { to: '/survey', label: t('nav.survey'), icon: ClipboardListIcon },
   { to: '/verify', label: t('menu.publicVerify'), icon: SearchCheckIcon }];

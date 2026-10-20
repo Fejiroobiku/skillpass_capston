@@ -23,7 +23,7 @@ export interface PublicCredential {
   history: {at: string;actor: string;action: string;detail: string;}[];
 }
 
-/** What GET /api/passport/:id returns: an apprentice's shareable skills passport. */
+/** What the /api/passport endpoints return: an apprentice's skills passport. */
 export interface PublicPassportData {
   apprentice: {id: string;name: string;location: string;trade: string;tradeName: string;startedAt: string;};
   trainer: {id: string;name: string;workshop: string;trustScore: number;underReview: boolean;} | null;

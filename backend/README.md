@@ -84,6 +84,7 @@ Never commit `.env`. It is already in `.gitignore`.
 | One live credential per apprentice per skill | Partial unique index on `credentials` |
 | Signatures detect tampering | HMAC-SHA256 over id, apprentice, skill, trainer, time and evidence hashes. `GET /api/verify/:id` returns `signatureValid` |
 | Withdrawing consent removes personal data | `POST /api/auth/withdraw-consent` closes the account and anonymises it straight away: name, email, phone, date of birth, location, workshop or company, and for an apprentice every evidence file (deleted from storage), caption and GPS point. Their credentials are withdrawn. Only evidence fingerprints and the append-only audit log remain (`lib/privacy.js`) |
+| Passports cannot be found by guessing | Shared at `/passport/<128-bit random token>`, not the account ID. The apprentice can switch the link off (`PATCH /passport/me`) or replace it (`POST /passport/me/new-link`). Their own trainer and administrators can open it by account (`GET /passport/people/:id`) when signed in |
 | Employers never see GPS points | Evidence sent to employers has no latitude or longitude, the same as the public page |
 | Pilot ratings cannot be stuffed | Each verification gets a one-time token; only that browser can add its trust rating, once |
 | The audit log cannot be edited | Database triggers reject `UPDATE`, `DELETE` and `TRUNCATE` on `audit_log` |
@@ -96,7 +97,7 @@ All routes are under `/api`. Send `Authorization: Bearer <token>` where a role i
 
 | Area | Endpoints |
 |---|---|
-| Public | `GET /health`, `/trades`, `/associations`, `/skills`, `/trainers`, `/verify/:id`, `/passport/:apprenticeId`, `POST /verify/:id/events`, `PATCH /verify/events/:eventId` |
+| Public | `GET /health`, `/trades`, `/associations`, `/skills`, `/trainers`, `/verify/:id`, `/passport/:token`, `POST /verify/:id/events`, `PATCH /verify/events/:eventId` |
 | Auth | `POST /auth/register`, `/auth/login`, `/auth/withdraw-consent`, `GET /auth/me` |
 | Trainer | `GET /trainer/apprentices`, `/trainer/standing`, `/trainer/cosigners`, `POST /evidence/challenges`, `POST /evidence` (multipart, field `file`), `GET /evidence/pending`, `POST /credentials`, `POST /attempts` |
 | Any signed-in user | `GET /bootstrap` (everything your screens need, scoped to your role), `/credentials`, `/notifications`, `/settings`, `POST /notifications/read-all`, `/notifications/:id/read`, `POST /sus` (usability survey) |

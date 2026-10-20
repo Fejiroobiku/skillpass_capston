@@ -127,6 +127,13 @@ export const en = {
   'passport.copied': 'Link copied',
   'passport.public': 'Public view',
   'passport.print': 'Print',
+  'passport.publicLabel': 'Public link',
+  'passport.publicOn': 'On: anyone with the link or QR code can see your passport.',
+  'passport.publicOff': 'Off: your link and QR code show "Passport not found". Your trainer can still see it.',
+  'passport.newLink': 'Make a new link',
+  'passport.newLinkHelp': 'Shared it with the wrong person? A new link stops the old link and QR code working.',
+  'passport.newLinkDone': 'New link ready. The old one no longer works.',
+  'passport.offBadge': 'Link switched off',
 
   // Passport view
   'pv.loading': 'Loading passport…',
