@@ -17,10 +17,10 @@ const roles = [
 
 export function Register() {
   const { register } = useAuth();
-  const { trades, trainers } = useSkillPass();
+  const { trades, trainers, notice, loadPublic } = useSkillPass();
   const navigate = useNavigate();
   const [role, setRole] = useState<RegisterInput['role']>('apprentice');
-  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', dob: '', trade: trades[0]?.id ?? '', place: 'balogun', trainerId: '', workshop: '', company: '', membershipNo: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', dob: '', trade: '', place: 'balogun', trainerId: '', workshop: '', company: '', membershipNo: '' });
   const [adult, setAdult] = useState(false);
   const [consent, setConsent] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -38,6 +38,7 @@ export function Register() {
   form.phone.trim().length >= 10 &&
   form.password.length >= 8 &&
   !!form.dob &&
+  !!form.trade &&
   adult &&
   consent && (
   role !== 'apprentice' || !!form.trainerId) && (
@@ -58,6 +59,12 @@ export function Register() {
     <AuthLayout>
       <h1 className="text-2xl font-semibold tracking-tight text-ink">Join the SkillPass pilot</h1>
       <p className="mt-1 text-sm text-ink-muted">Open to participants aged 18 and above in Lagos State.</p>
+      {!trades.length && notice &&
+      <div role="alert" className="mt-4 flex items-start justify-between gap-3 rounded-xl border border-bad-200 bg-bad-50 px-4 py-3 text-sm text-bad-700">
+          <span><span className="font-semibold">Couldn't load the list of trades.</span> {notice}</span>
+          <button type="button" onClick={() => void loadPublic()} className="shrink-0 rounded-lg px-2 py-1 font-semibold underline hover:bg-bad-100">Try again</button>
+        </div>
+      }
 
       <form onSubmit={submit} className="mt-6 space-y-4" noValidate>
         <fieldset>
@@ -84,7 +91,10 @@ export function Register() {
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label htmlFor="r-trade" className="text-sm font-semibold text-ink">Trade</label>
-            <select id="r-trade" value={form.trade} onChange={set('trade')} className={input}>{trades.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</select>
+            <select id="r-trade" value={form.trade} onChange={set('trade')} className={input}>
+              <option value="" disabled>{trades.length ? 'Choose your trade' : 'Loading trades…'}</option>
+              {trades.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+            </select>
           </div>
           <div>
             <label htmlFor="r-place" className="text-sm font-semibold text-ink">Location</label>
