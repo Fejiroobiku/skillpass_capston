@@ -1,6 +1,18 @@
 import React from 'react';
 import type { CredentialStatus } from '../types/skillpass';
 import { statusMeta } from '../utils/credentials';
+import { useT } from '../i18n';
+import type { MessageKey } from '../i18n/en';
+
+const statusKey: Record<CredentialStatus, MessageKey> = {
+  valid: 'status.valid',
+  flagged: 'status.flagged',
+  under_review: 'status.under_review',
+  revoked: 'status.revoked',
+  pending_apprentice: 'status.pending_apprentice',
+  pending_cosign: 'status.pending_cosign',
+  held_review: 'status.held_review'
+};
 
 const toneClasses = {
   ok: 'bg-ok-50 text-ok-700',
@@ -18,10 +30,11 @@ const dotClasses = {
 
 export function StatusBadge({ status }: {status: CredentialStatus;}) {
   const meta = statusMeta[status];
+  const { t } = useT();
   return (
     <span className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium ${toneClasses[meta.tone]}`}>
       <span className={`h-1.5 w-1.5 rounded-full ${dotClasses[meta.tone]}`} aria-hidden="true" />
-      {meta.label}
+      {t(statusKey[status])}
     </span>);
 
 }

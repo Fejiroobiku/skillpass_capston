@@ -131,3 +131,15 @@ describe('the admin dashboards read live data', () => {
     expect(within(document.body).getAllByText(/skillpass\.ng/).length).toBeGreaterThan(5);
   });
 });
+
+describe('languages', () => {
+  it('switches the sign-in page to Pidgin and remembers the choice', async () => {
+    open('/login');
+    render(<App />);
+    await userEvent.selectOptions(await screen.findByLabelText('Language'), 'pcm');
+    expect(await screen.findByRole('link', { name: 'Open account' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Sign in' })).toBeTruthy();
+    expect(window.localStorage.getItem('skillpass.lang')).toBe('pcm');
+    expect(document.documentElement.lang).toBe('pcm');
+  });
+});

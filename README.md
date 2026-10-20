@@ -31,6 +31,14 @@ Integrity safeguards:
 - Revoke and flag workflow
 - Audit log of every sensitive action
 
+## Languages
+
+The apprentice screens, sign-in, sign-up and public verify pages are available in English and Nigerian Pidgin.
+The language picker is in the top bar (and in the "More" menu on phones), and the choice is remembered on the device.
+Text lives in `src/i18n/en.ts` (English, the source) and `src/i18n/pcm.ts` (Pidgin, a draft to be checked by a
+Pidgin speaker from the pilot). To add Yoruba, Hausa or Igbo, copy `pcm.ts`, translate it with a native speaker and
+register it in `src/i18n/index.tsx`. Messages that come from the server are still in English.
+
 ## Tech stack
 
 - **Frontend:** React 18, TypeScript, Vite, Tailwind CSS, React Router

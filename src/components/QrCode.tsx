@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { DownloadIcon } from 'lucide-react';
+import { useT } from '../i18n';
 
 interface QrCodeProps {
   /** The full link the code opens, e.g. https://skillpass.ng/verify/SP-2BNC-8QPE */
@@ -19,6 +20,7 @@ interface QrCodeProps {
 export function QrCode({ value, caption, fileName, size = 132 }: QrCodeProps) {
   const tileRef = useRef<HTMLDivElement>(null);
   const [failed, setFailed] = useState(false);
+  const { t } = useT();
 
   const download = async () => {
     setFailed(false);
@@ -72,9 +74,9 @@ export function QrCode({ value, caption, fileName, size = 132 }: QrCodeProps) {
       </div>
       <figcaption className="text-center text-xs font-medium text-ink-muted">{caption}</figcaption>
       <button type="button" onClick={download} className="no-print inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-brand-700 ring-1 ring-inset ring-line transition-colors duration-150 hover:bg-canvas">
-        <DownloadIcon className="h-3.5 w-3.5" aria-hidden="true" /> Save QR image
+        <DownloadIcon className="h-3.5 w-3.5" aria-hidden="true" /> {t('qr.save')}
       </button>
-      {failed && <p role="alert" className="no-print text-xs text-bad-700">Couldn't save the image on this browser. Take a screenshot instead.</p>}
+      {failed && <p role="alert" className="no-print text-xs text-bad-700">{t('qr.failed')}</p>}
     </figure>);
 
 }

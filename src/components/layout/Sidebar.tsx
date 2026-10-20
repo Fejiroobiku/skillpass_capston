@@ -3,7 +3,8 @@ import { Link, NavLink } from 'react-router-dom';
 import { BellIcon, ClipboardListIcon, UserRoundIcon } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSkillPass } from '../../contexts/SkillPassContext';
-import { homeByRole, navByRole } from '../../data/navigation';
+import { homeByRole, navByRole, navLabel } from '../../data/navigation';
+import { useT } from '../../i18n';
 import { Logo } from '../Logo';
 import { SidebarMeter } from './SidebarMeter';
 
@@ -15,13 +16,14 @@ isActive ? 'bg-brand-50 text-brand-700 ring-1 ring-inset ring-brand-300' : 'text
 export function Sidebar() {
   const { user } = useAuth();
   const { notifications } = useSkillPass();
+  const { t } = useT();
   if (!user) return null;
   const nav = navByRole[user.role];
   const unread = notifications.filter((n) => n.userId === user.id && !n.read).length;
   const account = [
-  { to: '/notifications', label: 'Notifications', icon: BellIcon, badge: unread },
-  { to: '/profile', label: 'My profile', icon: UserRoundIcon, badge: 0 },
-  { to: '/survey', label: 'Usability survey', icon: ClipboardListIcon, badge: 0 }].
+  { to: '/notifications', label: t('nav.notifications'), icon: BellIcon, badge: unread },
+  { to: '/profile', label: t('nav.myProfile'), icon: UserRoundIcon, badge: 0 },
+  { to: '/survey', label: t('nav.survey'), icon: ClipboardListIcon, badge: 0 }].
   filter((a) => !nav.some((n) => n.to === a.to));
 
   return (
@@ -30,16 +32,16 @@ export function Sidebar() {
         <Logo />
       </Link>
       <div className="flex flex-1 flex-col overflow-y-auto px-3 py-5">
-        <p className="px-3 text-xs font-medium text-ink-subtle">Workspace</p>
+        <p className="px-3 text-xs font-medium text-ink-subtle">{t('nav.workspace')}</p>
         <nav aria-label="Main" className="mt-2 flex flex-col gap-0.5">
           {nav.map((item) =>
           <NavLink key={item.to} to={item.to} end className={navLinkClass}>
               <item.icon className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
-              {item.label}
+              {navLabel(item, t)}
             </NavLink>
           )}
         </nav>
-        <p className="mt-7 px-3 text-xs font-medium text-ink-subtle">Account</p>
+        <p className="mt-7 px-3 text-xs font-medium text-ink-subtle">{t('nav.account')}</p>
         <nav aria-label="Account" className="mt-2 flex flex-col gap-0.5">
           {account.map((item) =>
           <NavLink key={item.to} to={item.to} end className={navLinkClass}>

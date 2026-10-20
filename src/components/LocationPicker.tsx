@@ -2,6 +2,7 @@ import React, { useEffect, useId, useState } from 'react';
 import { LocateFixedIcon, MapPinIcon } from 'lucide-react';
 import type { Place } from '../types/skillpass';
 import { LAGOS_CENTRE, findArea, insideLagos, lagosAreas, nearestArea } from '../data/lagosAreas';
+import { useT } from '../i18n';
 
 interface LocationPickerProps {
   id: string;
@@ -21,6 +22,7 @@ type Status = 'idle' | 'locating' | 'denied' | 'unsupported';
  */
 export function LocationPicker({ id, label, onChange, initial = null, inputClassName = '' }: LocationPickerProps) {
   const listId = useId();
+  const { t } = useT();
   const [name, setName] = useState(initial?.name ?? '');
   const [gps, setGps] = useState<Gps>(null);
   const [status, setStatus] = useState<Status>('idle');
@@ -47,7 +49,7 @@ export function LocationPicker({ id, label, onChange, initial = null, inputClass
         const here = { lat: p.coords.latitude, lng: p.coords.longitude };
         setGps(here);
         setStatus('idle');
-        if (!typed) setName(insideLagos(here) ? `Near ${nearestArea(here).name}` : 'My location');
+        if (!typed) setName(insideLagos(here) ? t('loc.near', { area: nearestArea(here).name }) : t('loc.mine'));
       },
       () => setStatus('denied'),
       { timeout: 10000, maximumAge: 60000 }
@@ -66,7 +68,7 @@ export function LocationPicker({ id, label, onChange, initial = null, inputClass
             setName(e.target.value);
             if (findArea(e.target.value)) setGps(null); // picking a listed area replaces the phone location
           }}
-          placeholder="Area, e.g. Yaba"
+          placeholder={t('loc.placeholder')}
           autoComplete="off"
           className={`min-w-0 flex-1 ${inputClassName}`} />
 
@@ -74,8 +76,8 @@ export function LocationPicker({ id, label, onChange, initial = null, inputClass
           type="button"
           onClick={locate}
           disabled={status === 'locating'}
-          aria-label="Use my current location"
-          title="Use my current location"
+          aria-label={t('loc.useMine')}
+          title={t('loc.useMine')}
           className={`flex shrink-0 items-center justify-center rounded-xl border px-3 transition-colors duration-150 disabled:opacity-50 ${gps ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-line text-ink-muted hover:bg-canvas hover:text-ink'}`}>
           <LocateFixedIcon className="h-4 w-4" aria-hidden="true" />
         </button>
@@ -86,13 +88,13 @@ export function LocationPicker({ id, label, onChange, initial = null, inputClass
 
       <p className="mt-1.5 flex items-start gap-1 text-xs text-ink-muted" aria-live="polite">
         <MapPinIcon className="mt-0.5 h-3 w-3 shrink-0" aria-hidden="true" />
-        {status === 'locating' ? 'Finding your location…' :
-        status === 'denied' ? 'Location access was blocked. Type your area instead.' :
-        status === 'unsupported' ? "This browser can't share location. Type your area instead." :
-        gps ? insideLagos(gps) ? 'Using your phone\'s location.' : 'Using your phone\'s location. You seem to be outside Lagos State, where the pilot runs.' :
-        approximate ? "We don't know that area yet, so distances use central Lagos. Tap the location button for better matches." :
-        known ? 'Area found.' :
-        'Type your area or tap the button to use your location.'}
+        {status === 'locating' ? t('loc.locating') :
+        status === 'denied' ? t('loc.denied') :
+        status === 'unsupported' ? t('loc.unsupported') :
+        gps ? insideLagos(gps) ? t('loc.gps') : t('loc.gpsOutside') :
+        approximate ? t('loc.approximate') :
+        known ? t('loc.found') :
+        t('loc.hint')}
       </p>
     </div>);
 

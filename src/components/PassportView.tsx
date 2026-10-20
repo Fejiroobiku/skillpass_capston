@@ -9,14 +9,18 @@ import { QrCode } from './QrCode';
 import { skillLevels } from '../data/skills';
 import { formatDate } from '../utils/credentials';
 import { usePassport } from '../api/usePublic';
+import { useT } from '../i18n';
+
+const levelKey = { Foundation: 'level.Foundation', Intermediate: 'level.Intermediate', Advanced: 'level.Advanced' } as const;
 
 /** An apprentice's skills passport, loaded from the public API so it works for anyone with the link. */
 export function PassportView({ apprenticeId, actions }: {apprenticeId: string;actions?: React.ReactNode;}) {
   const passport = usePassport(apprenticeId);
+  const { t } = useT();
 
-  if (passport.status === 'idle' || passport.status === 'loading') return <p role="status" className="rounded-2xl bg-surface p-8 text-center text-ink-muted">Loading passport…</p>;
+  if (passport.status === 'idle' || passport.status === 'loading') return <p role="status" className="rounded-2xl bg-surface p-8 text-center text-ink-muted">{t('pv.loading')}</p>;
   if (!passport.data) {
-    return <p role="alert" className="rounded-2xl bg-surface p-8 text-center text-ink-muted">{passport.status === 'missing' ? 'Passport not found.' : passport.error}</p>;
+    return <p role="alert" className="rounded-2xl bg-surface p-8 text-center text-ink-muted">{passport.status === 'missing' ? t('pv.notFound') : passport.error}</p>;
   }
 
   const { apprentice, trainer, skills, credentials, trainers, ratings } = passport.data;
@@ -31,26 +35,26 @@ export function PassportView({ apprenticeId, actions }: {apprenticeId: string;ac
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand-700">SkillPass · {apprentice.tradeName}</p>
             <h2 className="mt-2 text-4xl font-semibold tracking-tight">{apprentice.name}</h2>
             <p className="mt-2 flex items-center gap-1.5 text-sm text-ink-muted">
-              <MapPinIcon className="h-4 w-4" /> {apprentice.location}{trainer && ` · Trained by ${trainer.name}, ${trainer.workshop}`}
+              <MapPinIcon className="h-4 w-4" /> {apprentice.location}{trainer && ` · ${t('pv.trainedBy', { name: trainer.name, workshop: trainer.workshop })}`}
             </p>
           </div>
           <div className="flex flex-wrap items-end gap-6">
             <div className="flex items-baseline gap-2">
               <span className="font-display text-6xl font-bold text-brand-500">{verifiedCount}</span>
-              <span className="text-ink-muted">of {skills.length} skills verified</span>
+              <span className="text-ink-muted">{t('pv.verifiedOf', { total: skills.length })}</span>
             </div>
-            <QrCode value={`${window.location.origin}/passport/${apprentice.id}`} caption="Scan to see this passport" fileName={`skillpass-passport-${apprentice.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} size={104} />
+            <QrCode value={`${window.location.origin}/passport/${apprentice.id}`} caption={t('pv.scan')} fileName={`skillpass-passport-${apprentice.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} size={104} />
           </div>
         </div>
         {actions && <div className="no-print mt-6 flex flex-wrap items-center gap-2 relative border-t border-white/15 pt-5">{actions}</div>}
       </section>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <Panel className="lg:col-span-2" title="Skills checklist" description="Every verified skill was watched and signed by a trainer.">
+        <Panel className="lg:col-span-2" title={t('pv.checklist')} description={t('pv.checklistDesc')}>
           <div className="space-y-6">
             {skillLevels.map((level) =>
             <div key={level}>
-                <h3 className="mb-2 text-sm font-semibold text-ink-muted">{level}</h3>
+                <h3 className="mb-2 text-sm font-semibold text-ink-muted">{t(levelKey[level])}</h3>
                 <ul className="divide-y divide-line rounded-xl border border-line">
                   {skills.filter((s) => s.level === level).map((s) => {
                   const cred = credentials.find((c) => c.skillId === s.id);
@@ -66,7 +70,7 @@ export function PassportView({ apprenticeId, actions }: {apprenticeId: string;ac
                             </p>
                         }
                         </div>
-                        {cred ? <StatusBadge status={cred.status} /> : <span className="text-xs text-ink-subtle">Not yet verified</span>}
+                        {cred ? <StatusBadge status={cred.status} /> : <span className="text-xs text-ink-subtle">{t('pv.notYet')}</span>}
                       </li>);
 
                 })}
@@ -76,9 +80,9 @@ export function PassportView({ apprenticeId, actions }: {apprenticeId: string;ac
           </div>
         </Panel>
 
-        <Panel title="Employer feedback" description="Ratings from completed jobs.">
+        <Panel title={t('pv.feedback')} description={t('pv.feedbackDesc')}>
           {ratings.length === 0 ?
-          <p className="text-sm text-ink-muted">No ratings yet.</p> :
+          <p className="text-sm text-ink-muted">{t('pv.noRatings')}</p> :
 
           <ul className="space-y-4">
               {ratings.map((f) =>

@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom
 import type { Role } from './types/skillpass';
 import { SkillPassProvider } from './contexts/SkillPassContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { LanguageProvider } from './i18n';
 import { homeByRole } from './data/navigation';
 import { DashboardLayout } from './components/layout/DashboardLayout';
 import { Login } from './pages/auth/Login';
@@ -60,6 +61,7 @@ function GuestOnly({ children }: {children: React.ReactNode;}) {
 
 export function App() {
   return (
+    <LanguageProvider>
     <SkillPassProvider>
       <AuthProvider>
         <BrowserRouter>
@@ -105,6 +107,7 @@ export function App() {
           </Routes>
         </BrowserRouter>
       </AuthProvider>
-    </SkillPassProvider>);
+    </SkillPassProvider>
+    </LanguageProvider>);
 
 }

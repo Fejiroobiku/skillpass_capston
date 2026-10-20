@@ -3,9 +3,11 @@ import { useParams } from 'react-router-dom';
 import { LockIcon, PrinterIcon } from 'lucide-react';
 import { PublicHeader } from '../../components/PublicHeader';
 import { PassportView } from '../../components/PassportView';
+import { useT } from '../../i18n';
 
 export function PublicPassport() {
   const { id = '' } = useParams();
+  const { t } = useT();
   return (
     <div className="flex min-h-full w-full flex-col bg-canvas">
       <PublicHeader />
@@ -14,13 +16,13 @@ export function PublicPassport() {
           apprenticeId={id}
           actions={
           <button type="button" onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-lg bg-surface px-3.5 py-2 text-sm font-semibold text-brand-800 transition-colors duration-150 hover:bg-brand-50">
-              <PrinterIcon className="h-4 w-4" /> Print record
+              <PrinterIcon className="h-4 w-4" /> {t('pp.print')}
             </button>
           } />
         
       </main>
       <footer className="border-t border-line bg-surface px-6 py-4 text-center text-sm text-ink-muted">
-        <p className="inline-flex items-center gap-2"><LockIcon className="h-4 w-4" /> Public view. Contact details are never shown.</p>
+        <p className="inline-flex items-center gap-2"><LockIcon className="h-4 w-4" /> {t('pp.footer')}</p>
       </footer>
     </div>);
 

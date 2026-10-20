@@ -1,10 +1,12 @@
 import React from 'react';
 import { ShieldCheckIcon, ShieldAlertIcon } from 'lucide-react';
 import { useSkillPass } from '../contexts/SkillPassContext';
+import { useT } from '../i18n';
 
 /** Trainer name + live trust score, shown wherever a credential appears. */
 export function TrustBadge({ trainerId, withName = true, data }: {trainerId: string;withName?: boolean;data?: {name: string;score: number;underReview: boolean;};}) {
   const { trustOf, nameOf, trainers } = useSkillPass();
+  const { t: tr } = useT();
   const t = trainers.find((x) => x.id === trainerId);
   const score = data ? data.score : trustOf(trainerId).score;
   const underReview = data ? data.underReview : !!t?.misconductAt;
@@ -13,7 +15,7 @@ export function TrustBadge({ trainerId, withName = true, data }: {trainerId: str
   return (
     <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
       {withName && <span className="text-ink">{data ? data.name : nameOf(trainerId)}</span>}
-      <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${tone}`} title="Trainer trust score">
+      <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${tone}`} title={tr('trust.title')}>
         <Icon className="h-3 w-3" aria-hidden="true" /> {score}
       </span>
     </span>);

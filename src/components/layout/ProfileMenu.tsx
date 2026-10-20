@@ -6,20 +6,23 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useDismiss } from '../../hooks/useDismiss';
 import { initials } from '../../utils/credentials';
 import { roleLabel } from '../../data/navigation';
+import { useT } from '../../i18n';
 
 export function ProfileMenu() {
   const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
   const ref = useDismiss<HTMLDivElement>(open, () => setOpen(false));
   const navigate = useNavigate();
+  const { t } = useT();
   if (!user) return null;
+  const role = user.role === 'admin' ? roleLabel.admin : t(user.role === 'trainer' ? 'role.trainer' : user.role === 'employer' ? 'role.employer' : 'role.apprentice');
 
   const items = [
-  { to: '/profile', label: 'My profile', icon: UserRoundIcon },
-  ...(user.role === 'apprentice' ? [{ to: `/passport/${user.id}`, label: 'Public passport', icon: IdCardIcon }] : []),
-  { to: '/notifications', label: 'Notifications', icon: BellIcon },
-  { to: '/survey', label: 'Usability survey', icon: ClipboardListIcon },
-  { to: '/verify', label: 'Public verification', icon: SearchCheckIcon }];
+  { to: '/profile', label: t('nav.myProfile'), icon: UserRoundIcon },
+  ...(user.role === 'apprentice' ? [{ to: `/passport/${user.id}`, label: t('menu.publicPassport'), icon: IdCardIcon }] : []),
+  { to: '/notifications', label: t('nav.notifications'), icon: BellIcon },
+  { to: '/survey', label: t('nav.survey'), icon: ClipboardListIcon },
+  { to: '/verify', label: t('menu.publicVerify'), icon: SearchCheckIcon }];
 
 
   return (
@@ -34,7 +37,7 @@ export function ProfileMenu() {
         <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-600 text-sm font-semibold text-night">{initials(user.name)}</span>
         <span className="hidden text-left md:block">
           <span className="block max-w-[160px] truncate text-sm font-semibold leading-tight text-ink">{user.name}</span>
-          <span className="block text-xs leading-tight text-ink-muted">{roleLabel[user.role]}</span>
+          <span className="block text-xs leading-tight text-ink-muted">{role}</span>
         </span>
         <ChevronDownIcon className={`hidden h-4 w-4 text-ink-muted transition-transform duration-150 md:block ${open ? 'rotate-180' : ''}`} />
       </button>
@@ -70,7 +73,7 @@ export function ProfileMenu() {
               }}
               className="flex w-full items-center gap-3 px-4 py-2 text-sm font-medium text-bad-700 transition-colors duration-150 hover:bg-bad-50">
               
-                <LogOutIcon className="h-4 w-4" /> Sign out
+                <LogOutIcon className="h-4 w-4" /> {t('common.signOut')}
               </button>
             </div>
           </motion.div>

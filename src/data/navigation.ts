@@ -18,12 +18,16 @@ import {
   UsersRoundIcon } from
 'lucide-react';
 import type { Role } from '../types/skillpass';
+import type { MessageKey } from '../i18n/en';
 
 export interface NavItem {
   to: string;
   label: string;
   short?: string;
   icon: LucideIcon;
+  /** Translation keys; items without one stay in English for now. */
+  i18n?: MessageKey;
+  i18nShort?: MessageKey;
 }
 
 export const homeByRole: Record<Role, string> = {
@@ -42,11 +46,11 @@ export const navByRole: Record<Role, NavItem[]> = {
   { to: '/trainer/skills', label: 'Skill Framework', short: 'Skills', icon: BookOpenCheckIcon }],
 
   apprentice: [
-  { to: '/apprentice', label: 'Skills Passport', short: 'Passport', icon: IdCardIcon },
-  { to: '/apprentice/confirm', label: 'Confirm & Report', short: 'Confirm', icon: UserCheckIcon },
-  { to: '/apprentice/jobs', label: 'Job Referrals', short: 'Jobs', icon: BriefcaseIcon },
-  { to: '/notifications', label: 'Alerts', icon: BellIcon },
-  { to: '/profile', label: 'Profile', icon: UserRoundIcon }],
+  { to: '/apprentice', label: 'Skills Passport', short: 'Passport', icon: IdCardIcon, i18n: 'nav.passport', i18nShort: 'nav.passport.short' },
+  { to: '/apprentice/confirm', label: 'Confirm & Report', short: 'Confirm', icon: UserCheckIcon, i18n: 'nav.confirm', i18nShort: 'nav.confirm.short' },
+  { to: '/apprentice/jobs', label: 'Job Referrals', short: 'Jobs', icon: BriefcaseIcon, i18n: 'nav.jobs', i18nShort: 'nav.jobs.short' },
+  { to: '/notifications', label: 'Alerts', icon: BellIcon, i18n: 'nav.alerts' },
+  { to: '/profile', label: 'Profile', icon: UserRoundIcon, i18n: 'nav.profile' }],
 
   employer: [
   { to: '/employer', label: 'Verify & Co-sign', short: 'Verify', icon: ShieldCheckIcon },
@@ -70,3 +74,6 @@ export const roleLabel: Record<Role, string> = {
   employer: 'Employer',
   admin: 'Administrator'
 };
+/** The label to show for a nav item in the chosen language (falls back to English). */
+export const navLabel = (item: NavItem, t: (key: MessageKey) => string, short = false) =>
+short ? item.i18nShort ? t(item.i18nShort) : item.i18n ? t(item.i18n) : item.short ?? item.label : item.i18n ? t(item.i18n) : item.label;
