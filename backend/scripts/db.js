@@ -13,6 +13,7 @@ import path from 'node:path';
 import { config } from '../src/config.js';
 import { pool } from '../src/db.js';
 import { resignAll } from '../src/lib/integrity.js';
+import { sealPending } from '../src/lib/auditChain.js';
 
 const dir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'database');
 const sql = (name) => readFile(path.join(dir, name), 'utf8');
@@ -25,12 +26,15 @@ export async function applySchema() {
 export async function applyMigrations() {
   const files = (await readdir(path.join(dir, 'migrations'))).filter((f) => f.endsWith('.sql')).sort();
   for (const f of files) await pool.query(await sql(path.join('migrations', f)));
+  await sealPending(pool); // seal audit entries written before the hash chain existed
   return files;
 }
 
 export async function applySeed() {
   await pool.query(await sql('seed.sql'));
-  return resignAll(pool);
+  const signed = await resignAll(pool);
+  await sealPending(pool);
+  return signed;
 }
 
 export async function dropEverything() {

@@ -1,4 +1,6 @@
 import { uid } from './ids.js';
+import { pool } from '../db.js';
+import { scheduleSeal } from './auditChain.js';
 
 export const SYSTEM = { id: null, name: 'System' };
 
@@ -18,13 +20,15 @@ export async function getSettings(db) {
 
 /**
  * Append one row to the audit log. `actor` is a user ({ id, name }) or SYSTEM.
- * The table is append-only at the database level, so this is the only write there is.
+ * The table is append-only at the database level, so this is the only write there is. The row is sealed into the
+ * hash chain moments later, once the caller's transaction has committed (see lib/auditChain.js).
  */
 export async function logAudit(db, { actor = SYSTEM, action, target, detail = '' }) {
   await db.query(
     'INSERT INTO audit_log (id, actor_id, actor_name, action, target, detail) VALUES ($1, $2, $3, $4, $5, $6)',
     [uid('al'), actor.id ?? null, actor.name, action, target, detail],
   );
+  scheduleSeal(pool);
 }
 
 /**

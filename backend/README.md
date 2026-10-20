@@ -87,7 +87,7 @@ Never commit `.env`. It is already in `.gitignore`.
 | Passports cannot be found by guessing | Shared at `/passport/<128-bit random token>`, not the account ID. The apprentice can switch the link off (`PATCH /passport/me`) or replace it (`POST /passport/me/new-link`). Their own trainer and administrators can open it by account (`GET /passport/people/:id`) when signed in |
 | Employers never see GPS points | Evidence sent to employers has no latitude or longitude, the same as the public page |
 | Pilot ratings cannot be stuffed | Each verification gets a one-time token; only that browser can add its trust rating, once |
-| The audit log cannot be edited | Database triggers reject `UPDATE`, `DELETE` and `TRUNCATE` on `audit_log` |
+| The audit log cannot be edited | Database triggers reject `UPDATE`, `DELETE` and `TRUNCATE` on `audit_log`. Every entry is also sealed into an HMAC-SHA256 hash chain keyed by `SIGNING_KEY` (`lib/auditChain.js`), so even someone who switches the triggers off cannot change, delete or reorder history without `GET /api/admin/audit-log/verify` showing where. Write down the latest seal shown on the admin Audit Log page to also catch removal of the newest entries |
 | Suspending an account takes effect immediately | The account is re-read on every request, not only at login |
 | Trust score and risk signals match the frontend | Ported from `utils/credentials.ts` and `utils/risk.ts`, and checked against them on the seed data |
 

@@ -610,6 +610,36 @@ describe('confidential reports and the audit log', () => {
     await assert.rejects(pool.query('TRUNCATE audit_log'), /append-only/);
   });
 
+  it('the audit log is hash-chained, so a change made by switching the triggers off is caught', async () => {
+    assert.equal((await api('GET', '/api/admin/audit-log/verify', { token: tokens.t1 })).status, 403);
+    const before = await api('GET', '/api/admin/audit-log/verify', { token: tokens.admin });
+    assert.equal(before.status, 200);
+    assert.equal(before.body.ok, true, JSON.stringify(before.body));
+    assert.equal(before.body.checked, before.body.total);
+    assert.match(before.body.head, /^[0-9a-f]{64}$/);
+
+    // Someone with full database access disables the protection and quietly edits history.
+    const original = (await pool.query(`SELECT detail FROM audit_log WHERE id = 'al1'`)).rows[0].detail;
+    const forge = async (detail) => {
+      await pool.query('ALTER TABLE audit_log DISABLE TRIGGER audit_log_no_update_delete');
+      try {
+        await pool.query(`UPDATE audit_log SET detail = $1 WHERE id = 'al1'`, [detail]);
+      } finally {
+        await pool.query('ALTER TABLE audit_log ENABLE TRIGGER audit_log_no_update_delete');
+      }
+    };
+    await forge('forged entry');
+    try {
+      const after = (await api('GET', '/api/admin/audit-log/verify', { token: tokens.admin })).body;
+      assert.equal(after.ok, false);
+      assert.equal(after.problem.id, 'al1');
+      assert.match(after.problem.reason, /changed/);
+    } finally {
+      await forge(original);
+    }
+    assert.equal((await api('GET', '/api/admin/audit-log/verify', { token: tokens.admin })).body.ok, true);
+  });
+
   it('administrators can page through the log', async () => {
     const r = await api('GET', '/api/admin/audit-log?limit=5', { token: tokens.admin });
     assert.equal(r.body.entries.length, 5);

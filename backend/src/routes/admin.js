@@ -7,6 +7,7 @@ import { getSettings, logAudit, notify } from '../lib/audit.js';
 import { flowStatus, loadCredential, loadCredentialsFull, revokeCredential, transition } from '../lib/credentials.js';
 import { uid } from '../lib/ids.js';
 import { addAuditSamples, markMisconduct } from '../lib/integrity.js';
+import { verifyChain } from '../lib/auditChain.js';
 import { authenticate, requireRole } from '../middleware/auth.js';
 
 const router = Router();
@@ -321,6 +322,11 @@ router.patch('/reports/:id', async (req, res) => {
 // ---------------------------------------------------------------------------
 // Audit log and settings
 // ---------------------------------------------------------------------------
+
+/** Recompute the audit log's hash chain and report whether any entry was changed, removed or reordered. */
+router.get('/audit-log/verify', async (req, res) => {
+  res.json(await verifyChain(pool));
+});
 
 router.get('/audit-log', async (req, res) => {
   const { limit, offset } = z.object({

@@ -6,7 +6,7 @@
 -- Integrity rules that live in the database itself (so no bug in the API can break them):
 --   * evidence.sha256 is UNIQUE: the same file can never back two credentials
 --   * one live credential per apprentice per skill (partial unique index)
---   * audit_log is append-only (triggers block UPDATE, DELETE and TRUNCATE)
+--   * audit_log is append-only (triggers block UPDATE, DELETE and TRUNCATE) and hash-chained
 --   * status columns are CHECK-constrained to the values the app understands
 
 -- ---------------------------------------------------------------------------
@@ -338,14 +338,27 @@ CREATE TABLE audit_log (
   actor_name text NOT NULL,       -- name as it was when the action happened
   action     text NOT NULL,
   target     text NOT NULL,
-  detail     text NOT NULL DEFAULT ''
+  detail     text NOT NULL DEFAULT '',
+  -- Hash chain (src/lib/auditChain.js): position, the previous entry's hash, and this entry's HMAC
+  chain_pos  bigint UNIQUE,
+  prev_hash  text,
+  hash       text
 );
 CREATE INDEX audit_log_target_idx ON audit_log (target, at);
 CREATE INDEX audit_log_at_idx ON audit_log (at DESC);
 
+-- The one change allowed is sealing an entry into the hash chain once, with every recorded field unchanged.
 CREATE FUNCTION audit_log_block_changes() RETURNS trigger
 LANGUAGE plpgsql AS $$
 BEGIN
+  IF TG_OP = 'UPDATE' THEN
+    IF OLD.hash IS NULL AND NEW.hash IS NOT NULL
+       AND NEW.id = OLD.id AND NEW.at = OLD.at AND NEW.actor_id IS NOT DISTINCT FROM OLD.actor_id
+       AND NEW.actor_name = OLD.actor_name AND NEW.action = OLD.action
+       AND NEW.target = OLD.target AND NEW.detail = OLD.detail THEN
+      RETURN NEW;
+    END IF;
+  END IF;
   RAISE EXCEPTION 'audit_log is append-only';
 END;
 $$;
