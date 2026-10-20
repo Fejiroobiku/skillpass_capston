@@ -64,7 +64,7 @@ export function EmployerDashboard() {
 
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         <div className="min-w-0 space-y-4">
-          <form onSubmit={submit} role="search" className="flex flex-col gap-2 rounded-2xl border border-line bg-white p-2 sm:flex-row">
+          <form onSubmit={submit} role="search" className="flex flex-col gap-2 rounded-2xl border border-line bg-surface p-2 sm:flex-row">
             <label htmlFor="verify-id" className="sr-only">Credential ID</label>
             <input
               id="verify-id"
@@ -74,15 +74,15 @@ export function EmployerDashboard() {
                 setQuery(e.target.value);
               }}
               placeholder="Enter credential ID, e.g. SP-2BNC-8QPE"
-              className="min-w-0 flex-1 rounded-xl px-4 py-3 font-mono text-base uppercase text-ink placeholder:font-sans placeholder:normal-case placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-brand-100" />
+              className="min-w-0 flex-1 rounded-xl px-4 py-3 font-mono text-base uppercase text-ink placeholder:font-sans placeholder:normal-case placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-brand-500/30" />
             
-            <button type="submit" className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-6 py-3 font-semibold text-white transition-colors duration-150 hover:bg-brand-700">
+            <button type="submit" className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-6 py-3 font-semibold text-night transition-colors duration-150 hover:bg-brand-700">
               <SearchIcon className="h-4 w-4" /> Verify
             </button>
           </form>
 
           {!searched &&
-          <div className="rounded-2xl border border-dashed border-line bg-white p-10 text-center">
+          <div className="rounded-2xl border border-dashed border-line bg-surface p-10 text-center">
               <p className="font-semibold text-ink">No credential checked yet</p>
               <p className="mt-1 text-sm text-ink-muted">Ask the worker for their SkillPass link or the ID on their printed passport.</p>
               <div className="mt-4 flex flex-wrap justify-center gap-2 text-sm">
@@ -108,7 +108,7 @@ export function EmployerDashboard() {
           <>
               {notice && <p role="status" className="rounded-xl bg-ok-50 p-4 text-sm font-medium text-ok-700">{notice}</p>}
               <CredentialRecord credential={credential} />
-              <div className="flex flex-col gap-4 rounded-2xl border border-line bg-white p-5 md:flex-row md:items-center">
+              <div className="flex flex-col gap-4 rounded-2xl border border-line bg-surface p-5 md:flex-row md:items-center">
                 <div className="flex-1">
                   <p className="text-sm font-semibold text-ink">How much do you trust this credential?</p>
                   <p className="mt-0.5 flex items-center gap-1.5 text-xs text-ink-muted"><ClockIcon className="h-3.5 w-3.5" /> Verified in {elapsed}s · your answer helps evaluate the pilot</p>
@@ -120,9 +120,9 @@ export function EmployerDashboard() {
               }
               </div>
               <div className="flex flex-wrap gap-3">
-                <Link to="/employer/feedback" className="rounded-xl bg-brand-600 px-5 py-3 text-sm font-semibold text-white transition-colors duration-150 hover:bg-brand-700">Rate work after a job</Link>
+                <Link to="/employer/feedback" className="rounded-xl bg-brand-600 px-5 py-3 text-sm font-semibold text-night transition-colors duration-150 hover:bg-brand-700">Rate work after a job</Link>
                 {credential.status === 'valid' &&
-              <button type="button" onClick={() => setFlagging(credential.id)} className="inline-flex items-center gap-2 rounded-xl border border-line bg-white px-5 py-3 text-sm font-semibold text-bad-700 transition-colors duration-150 hover:bg-bad-50">
+              <button type="button" onClick={() => setFlagging(credential.id)} className="inline-flex items-center gap-2 rounded-xl border border-line bg-surface px-5 py-3 text-sm font-semibold text-bad-700 transition-colors duration-150 hover:bg-bad-50">
                     <FlagIcon className="h-4 w-4" /> Flag as suspicious
                   </button>
               }
@@ -144,7 +144,7 @@ export function EmployerDashboard() {
                   <p className="mt-0.5 text-xs text-ink-muted">{nameOf(c.apprenticeId)} · by {nameOf(c.trainerId)}</p>
                   <div className="mt-3 flex gap-2">
                     <Link to={`/verify/${c.id}`} className="flex-1 rounded-lg border border-line px-3 py-2 text-center text-sm font-medium text-ink hover:bg-canvas">Evidence</Link>
-                    <button type="button" onClick={() => user && cosign(c.id, user.id)} className="flex-1 rounded-lg bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">Co-sign</button>
+                    <button type="button" onClick={() => user && cosign(c.id, user.id)} className="flex-1 rounded-lg bg-brand-600 px-3 py-2 text-sm font-semibold text-night hover:bg-brand-700">Co-sign</button>
                   </div>
                 </li>
             )}

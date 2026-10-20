@@ -40,11 +40,11 @@ export function ReviewQueue() {
   };
 
   const btn = 'whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors duration-150';
-  const primary = `${btn} bg-brand-600 text-white hover:bg-brand-700`;
+  const primary = `${btn} bg-brand-600 text-night hover:bg-brand-700`;
   const secondary = `${btn} border border-line text-ink hover:bg-canvas`;
   const danger = `${btn} border border-bad-200 text-bad-700 hover:bg-bad-50`;
-  const card = 'flex flex-col gap-4 rounded-2xl border border-line bg-white p-5 lg:flex-row lg:items-center';
-  const empty = <p className="rounded-2xl border border-dashed border-line bg-white p-10 text-center text-sm text-ink-muted">Nothing waiting here.</p>;
+  const card = 'flex flex-col gap-4 rounded-2xl border border-line bg-surface p-5 lg:flex-row lg:items-center';
+  const empty = <p className="rounded-2xl border border-dashed border-line bg-surface p-10 text-center text-sm text-ink-muted">Nothing waiting here.</p>;
   const credLine = (id: string, trainerId?: string) =>
   <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-sm text-ink-muted">
       {describe(id).apprentice} · signed by {trainerId && <TrustBadge trainerId={trainerId} />} · <Link to={`/verify/${id}`} className="font-mono text-brand-700 hover:underline">{id}</Link>
@@ -57,16 +57,16 @@ export function ReviewQueue() {
         title="Review Queue"
         subtitle="Flags, risk-based and random audits, confidential reports and held credentials."
         actions={
-        <button type="button" onClick={async () => {const n = await runAuditSampling(actor);setNotice(`${n} credential${n === 1 ? '' : 's'} drawn at random for re-check.`);setTab('audits');}} className={`${secondary} inline-flex items-center gap-2 bg-white`}>
+        <button type="button" onClick={async () => {const n = await runAuditSampling(actor);setNotice(`${n} credential${n === 1 ? '' : 's'} drawn at random for re-check.`);setTab('audits');}} className={`${secondary} inline-flex items-center gap-2 bg-surface`}>
             <ShuffleIcon className="h-4 w-4" /> Draw {settings.auditRatePct}% random sample
           </button>
         } />
       
       {notice && <p role="status" className="mb-4 rounded-xl bg-ok-50 p-3.5 text-sm font-medium text-ok-700">{notice}</p>}
 
-      <div role="tablist" aria-label="Review type" className="mb-4 flex gap-1 overflow-x-auto rounded-2xl border border-line bg-white p-1.5">
+      <div role="tablist" aria-label="Review type" className="mb-4 flex gap-1 overflow-x-auto rounded-2xl border border-line bg-surface p-1.5">
         {tabs.map((t) =>
-        <button key={t.id} role="tab" aria-selected={tab === t.id} type="button" onClick={() => setTab(t.id)} className={`flex flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition-colors duration-150 ${tab === t.id ? 'bg-brand-600 text-white' : 'text-ink hover:bg-canvas'}`}>
+        <button key={t.id} role="tab" aria-selected={tab === t.id} type="button" onClick={() => setTab(t.id)} className={`flex flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition-colors duration-150 ${tab === t.id ? 'bg-brand-600 text-night' : 'text-ink hover:bg-canvas'}`}>
             {t.label}
             <span className={`rounded-full px-2 text-xs ${tab === t.id ? 'bg-white/20' : 'bg-canvas text-ink-muted'}`}>{t.count}</span>
           </button>
@@ -108,7 +108,7 @@ export function ReviewQueue() {
                 {credLine(s.credentialId, d.c?.trainerId)}
                 <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
                   <label htmlFor={`as-${s.id}`} className="text-ink-muted">Assessor</label>
-                  <select id={`as-${s.id}`} value={s.assessorId ?? ''} onChange={(e) => assignAssessor(s.id, e.target.value, actor)} className="rounded-lg border border-line bg-white px-2.5 py-1.5 text-sm text-ink focus:border-brand-500 focus:outline-none">
+                  <select id={`as-${s.id}`} value={s.assessorId ?? ''} onChange={(e) => assignAssessor(s.id, e.target.value, actor)} className="rounded-lg border border-line bg-surface px-2.5 py-1.5 text-sm text-ink focus:border-brand-500 focus:outline-none">
                     <option value="">Unassigned</option>
                     {eligible.map((a) => <option key={a.id} value={a.id}>{a.name} · {a.nsqId ?? a.organisation}</option>)}
                   </select>

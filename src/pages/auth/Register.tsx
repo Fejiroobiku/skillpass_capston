@@ -8,7 +8,7 @@ import { places } from '../../data/people';
 import { associations } from '../../data/integrity';
 import { homeByRole } from '../../data/navigation';
 
-const input = 'mt-1.5 w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-subtle focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100';
+const input = 'mt-1.5 w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-subtle focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30';
 const roles = [
 { id: 'apprentice' as const, label: 'Apprentice', icon: GraduationCapIcon },
 { id: 'trainer' as const, label: 'Trainer', icon: HardHatIcon },
@@ -118,7 +118,7 @@ export function Register() {
         </div>
 
         {error && <p role="alert" className="rounded-xl bg-bad-50 px-3.5 py-2.5 text-sm font-medium text-bad-700">{error}</p>}
-        <button type="submit" disabled={!valid || busy} className="w-full rounded-xl bg-brand-600 px-4 py-3 text-sm font-semibold text-white transition-colors duration-150 hover:bg-brand-700 disabled:opacity-50">{busy ? 'Creating account…' : 'Create account'}</button>
+        <button type="submit" disabled={!valid || busy} className="w-full rounded-xl bg-brand-600 px-4 py-3 text-sm font-semibold text-night transition-colors duration-150 hover:bg-brand-700 disabled:opacity-50">{busy ? 'Creating account…' : 'Create account'}</button>
       </form>
       <p className="mt-5 text-center text-sm text-ink-muted">Already registered? <Link to="/login" className="font-semibold text-brand-700 hover:underline">Sign in</Link></p>
     </AuthLayout>);

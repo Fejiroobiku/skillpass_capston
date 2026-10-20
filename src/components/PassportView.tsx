@@ -13,9 +13,9 @@ import { usePassport } from '../api/usePublic';
 export function PassportView({ apprenticeId, actions }: {apprenticeId: string;actions?: React.ReactNode;}) {
   const passport = usePassport(apprenticeId);
 
-  if (passport.status === 'idle' || passport.status === 'loading') return <p role="status" className="rounded-2xl bg-white p-8 text-center text-ink-muted">Loading passport…</p>;
+  if (passport.status === 'idle' || passport.status === 'loading') return <p role="status" className="rounded-2xl bg-surface p-8 text-center text-ink-muted">Loading passport…</p>;
   if (!passport.data) {
-    return <p role="alert" className="rounded-2xl bg-white p-8 text-center text-ink-muted">{passport.status === 'missing' ? 'Passport not found.' : passport.error}</p>;
+    return <p role="alert" className="rounded-2xl bg-surface p-8 text-center text-ink-muted">{passport.status === 'missing' ? 'Passport not found.' : passport.error}</p>;
   }
 
   const { apprentice, trainer, skills, credentials, trainers, ratings } = passport.data;
@@ -23,21 +23,22 @@ export function PassportView({ apprenticeId, actions }: {apprenticeId: string;ac
 
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl bg-brand-700 p-6 text-white md:p-8">
-        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+      <section className="relative overflow-hidden rounded-3xl border border-white/15 bg-gradient-to-br from-brand-500/20 via-night/40 to-violet-500/25 p-6 text-ink md:p-8">
+        <div aria-hidden="true" className="no-print pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-brand-500/20 blur-3xl" />
+        <div className="relative flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm text-brand-100">SkillPass · {apprentice.tradeName}</p>
-            <h2 className="mt-1 text-3xl font-semibold tracking-tight">{apprentice.name}</h2>
-            <p className="mt-2 flex items-center gap-1.5 text-sm text-brand-100">
+            <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand-700">SkillPass · {apprentice.tradeName}</p>
+            <h2 className="mt-2 text-4xl font-semibold tracking-tight">{apprentice.name}</h2>
+            <p className="mt-2 flex items-center gap-1.5 text-sm text-ink-muted">
               <MapPinIcon className="h-4 w-4" /> {apprentice.location}{trainer && ` · Trained by ${trainer.name}, ${trainer.workshop}`}
             </p>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-5xl font-semibold">{verifiedCount}</span>
-            <span className="text-brand-100">of {skills.length} skills verified</span>
+            <span className="font-display text-6xl font-bold text-brand-500">{verifiedCount}</span>
+            <span className="text-ink-muted">of {skills.length} skills verified</span>
           </div>
         </div>
-        {actions && <div className="no-print mt-6 flex flex-wrap items-center gap-2 border-t border-white/20 pt-5">{actions}</div>}
+        {actions && <div className="no-print mt-6 flex flex-wrap items-center gap-2 relative border-t border-white/15 pt-5">{actions}</div>}
       </section>
 
       <div className="grid gap-6 lg:grid-cols-3">

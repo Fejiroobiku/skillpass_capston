@@ -22,7 +22,7 @@ export function IssueCredential() {
     return (
       <>
         {header}
-        <div className="mx-auto max-w-lg rounded-2xl border border-line bg-white p-8 text-center">
+        <div className="mx-auto max-w-lg rounded-2xl border border-line bg-surface p-8 text-center">
           <div className={`mx-auto flex h-14 w-14 items-center justify-center rounded-full ${suspended ? 'bg-bad-50 text-bad-700' : 'bg-warn-50 text-warn-700'}`}>
             {suspended ? <ShieldAlertIcon className="h-6 w-6" /> : <LockIcon className="h-6 w-6" />}
           </div>
@@ -41,7 +41,7 @@ export function IssueCredential() {
     return (
       <>
         {header}
-        <div className="mx-auto max-w-lg rounded-2xl border border-dashed border-line bg-white p-8 text-center">
+        <div className="mx-auto max-w-lg rounded-2xl border border-dashed border-line bg-surface p-8 text-center">
           <UserPlusIcon className="mx-auto h-8 w-8 text-ink-subtle" />
           <h2 className="mt-3 font-semibold text-ink">No apprentices linked yet</h2>
           <p className="mt-1 text-sm text-ink-muted">Apprentices link to you when they register and choose your workshop.</p>
@@ -53,11 +53,11 @@ export function IssueCredential() {
   return (
     <>
       {header}
-      <div role="tablist" aria-label="Apprentice" className="mb-6 flex gap-1 overflow-x-auto rounded-2xl border border-line bg-white p-1.5">
+      <div role="tablist" aria-label="Apprentice" className="mb-6 flex gap-1 overflow-x-auto rounded-2xl border border-line bg-surface p-1.5">
         {form.myApprentices.map((a) => {
           const active = a.id === form.apprenticeId;
           return (
-            <button key={a.id} role="tab" aria-selected={active} type="button" onClick={() => form.selectApprentice(a.id)} className={`flex min-w-[160px] flex-1 items-center justify-center gap-2.5 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${active ? 'bg-brand-600 text-white' : 'text-ink hover:bg-canvas'}`}>
+            <button key={a.id} role="tab" aria-selected={active} type="button" onClick={() => form.selectApprentice(a.id)} className={`flex min-w-[160px] flex-1 items-center justify-center gap-2.5 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${active ? 'bg-brand-600 text-night' : 'text-ink hover:bg-canvas'}`}>
               <span className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-semibold ${active ? 'bg-white/20' : 'bg-canvas text-ink-muted'}`}>{a.name.split(' ').map((p) => p[0]).join('')}</span>
               {a.name}
             </button>);
@@ -82,7 +82,7 @@ export function IssueCredential() {
                     return (
                       <label key={s.id} className={`flex items-center gap-3 px-4 py-3 text-sm transition-colors duration-150 ${held ? 'cursor-not-allowed bg-canvas' : selected ? 'cursor-pointer bg-brand-50' : 'cursor-pointer hover:bg-canvas'}`}>
                           <input type="radio" name="skill" value={s.id} disabled={!!held} checked={selected} onChange={() => form.setSkillId(s.id)} className="sr-only" />
-                          <span aria-hidden="true" className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${held ? 'border-ok-600 bg-ok-600 text-white' : selected ? 'border-brand-600' : 'border-line'}`}>
+                          <span aria-hidden="true" className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${held ? 'border-ok-600 bg-ok-600 text-night' : selected ? 'border-brand-600' : 'border-line'}`}>
                             {held ? <CheckIcon className="h-3 w-3" strokeWidth={3} /> : selected && <span className="h-2.5 w-2.5 rounded-full bg-brand-600" />}
                           </span>
                           <span className={`flex-1 ${held ? 'text-ink-muted' : 'text-ink'}`}>{s.name}</span>
@@ -107,7 +107,7 @@ export function IssueCredential() {
                   <li key={c}>
                       <label className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 text-sm transition-colors duration-150 ${on ? 'border-brand-300 bg-brand-50' : 'border-line hover:bg-canvas'}`}>
                         <input type="checkbox" checked={on} onChange={() => form.toggleCriterion(c)} className="sr-only" />
-                        <span aria-hidden="true" className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 ${on ? 'border-brand-600 bg-brand-600 text-white' : 'border-line'}`}>{on && <CheckIcon className="h-3.5 w-3.5" strokeWidth={3} />}</span>
+                        <span aria-hidden="true" className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 ${on ? 'border-brand-600 bg-brand-600 text-night' : 'border-line'}`}>{on && <CheckIcon className="h-3.5 w-3.5" strokeWidth={3} />}</span>
                         <span className="text-ink">{c}</span>
                       </label>
                     </li>);
@@ -127,7 +127,7 @@ export function IssueCredential() {
             <EvidenceCapture value={form.evidence} onChange={form.setEvidence} code={form.code} workshop={form.me.location} sampleUrl={sample} knownHashes={form.evidenceHashes} />
             <div className="mt-5">
               <label htmlFor="note" className="mb-1.5 block text-sm font-semibold text-ink">Observation note <span className="font-normal text-ink-muted">(optional)</span></label>
-              <textarea id="note" rows={2} value={form.note} onChange={(e) => form.setNote(e.target.value)} placeholder="Where and how the task was done" className="w-full resize-none rounded-xl border border-line px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-subtle focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+              <textarea id="note" rows={2} value={form.note} onChange={(e) => form.setNote(e.target.value)} placeholder="Where and how the task was done" className="w-full resize-none rounded-xl border border-line px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-subtle focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30" />
             </div>
           </Panel>
         </div>

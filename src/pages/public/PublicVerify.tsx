@@ -43,8 +43,8 @@ export function PublicVerify() {
 
         <form onSubmit={submit} role="search" className="no-print mt-6 flex gap-2">
           <label htmlFor="cred-id" className="sr-only">Credential ID</label>
-          <input id="cred-id" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="SP-XXXX-XXXX" className="min-w-0 flex-1 rounded-xl border border-line bg-white px-4 py-3 font-mono text-base uppercase text-ink placeholder:text-ink-subtle focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
-          <button type="submit" className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-3 font-semibold text-white transition-colors duration-150 hover:bg-brand-700">
+          <input id="cred-id" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="SP-XXXX-XXXX" className="min-w-0 flex-1 rounded-xl border border-line bg-surface px-4 py-3 font-mono text-base uppercase text-ink placeholder:text-ink-subtle focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30" />
+          <button type="submit" className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-3 font-semibold text-night transition-colors duration-150 hover:bg-brand-700">
             <SearchIcon className="h-4 w-4" /> Verify
           </button>
         </form>
@@ -67,10 +67,10 @@ export function PublicVerify() {
           {credential && (canFlag || canCosign) &&
           <div className="no-print flex flex-wrap gap-3">
               {canCosign && user &&
-            <button type="button" onClick={async () => {if (await cosign(credential.id, user.id)) void verified.reload();}} className="rounded-xl bg-brand-600 px-5 py-3 text-sm font-semibold text-white transition-colors duration-150 hover:bg-brand-700">Co-sign this credential</button>
+            <button type="button" onClick={async () => {if (await cosign(credential.id, user.id)) void verified.reload();}} className="rounded-xl bg-brand-600 px-5 py-3 text-sm font-semibold text-night transition-colors duration-150 hover:bg-brand-700">Co-sign this credential</button>
             }
               {canFlag &&
-            <button type="button" onClick={() => setFlagging(credential.id)} className="inline-flex items-center gap-2 rounded-xl border border-line bg-white px-5 py-3 text-sm font-semibold text-bad-700 transition-colors duration-150 hover:bg-bad-50">
+            <button type="button" onClick={() => setFlagging(credential.id)} className="inline-flex items-center gap-2 rounded-xl border border-line bg-surface px-5 py-3 text-sm font-semibold text-bad-700 transition-colors duration-150 hover:bg-bad-50">
                   <FlagIcon className="h-4 w-4" /> Flag as suspicious
                 </button>
             }
@@ -79,7 +79,7 @@ export function PublicVerify() {
         </div>
       </main>
 
-      <footer className="border-t border-line bg-white px-6 py-4 text-center text-sm text-ink-muted">
+      <footer className="border-t border-line bg-surface px-6 py-4 text-center text-sm text-ink-muted">
         <p className="inline-flex items-center gap-2"><LockIcon className="h-4 w-4" /> Only the fields above are public. Apprentice contact details are never shown.</p>
       </footer>
 

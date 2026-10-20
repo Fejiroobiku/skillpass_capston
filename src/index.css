@@ -1,5 +1,5 @@
 /* @import url() FONT IMPORTS MUST ALWAYS BE AT THE VERY TOP OF THIS FILE, ABOVE THE TAILWIND IMPORTS — DO NOT DELETE THIS COMMENT */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap');
 
 /* CRITICAL: THE FOLLOWING TAILWIND IMPORTS MUST NEVER BE DELETED OR REORDERED — DO NOT DELETE THIS COMMENT */
 @import 'tailwindcss/base';
@@ -8,6 +8,40 @@
 
 /* END TAILWIND IMPORTS — ALL OTHER CSS MUST GO BELOW THIS LINE */
 
+/* ---------------------------------------------------------------------------
+   Aurora Glass palette (space-separated RGB so Tailwind opacity modifiers work)
+   --------------------------------------------------------------------------- */
+:root {
+  color-scheme: dark;
+
+  --night: 7 11 20;          /* #070B14 page background */
+  --raised: 17 25 43;        /* #11192B menus, dialogs, sheets */
+  --surface: 148 163 210;    --surface-a: 0.07;  /* glass cards */
+  --canvas: 148 163 210;     --canvas-a: 0.05;   /* subtle fills */
+  --line: 168 182 214;       --line-a: 0.16;     /* hairlines */
+
+  --ink: 232 238 248;        /* #E8EEF8 */
+  --ink-muted: 169 180 200;  /* #A9B4C8 */
+  --ink-subtle: 138 150 173; /* #8A96AD */
+
+  --brand-50: 13 38 43;
+  --brand-100: 19 64 64;
+  --brand-200: 28 96 92;
+  --brand-300: 38 140 130;
+  --brand-500: 46 230 197;   /* #2EE6C5 */
+  --brand-600: 46 230 197;   /* primary buttons, dark text on top */
+  --brand-700: 127 245 221;  /* hover, links */
+  --brand-800: 184 255 240;
+  --brand-900: 220 255 248;
+
+  --violet-300: 185 175 255;
+  --violet-500: 139 124 255; /* #8B7CFF */
+
+  --ok-50: 14 42 30;    --ok-200: 34 102 66;   --ok-600: 61 220 132;  --ok-700: 125 235 170;
+  --warn-50: 46 34 14;  --warn-200: 122 84 24; --warn-600: 255 184 107; --warn-700: 255 205 150;
+  --bad-50: 48 18 22;   --bad-100: 70 24 28;   --bad-200: 128 44 48;  --bad-600: 217 61 66; --bad-700: 255 142 142;
+}
+
 html,
 body,
 #root {
@@ -15,12 +49,67 @@ body,
 }
 body {
   font-family: 'Inter', system-ui, sans-serif;
-  color: #16242b;
-  background: #f5f8f8;
+  color: rgb(var(--ink));
+  background-color: rgb(var(--night));
+  background-image:
+    radial-gradient(600px circle at 85% -5%, rgb(var(--brand-500) / 0.16), transparent 70%),
+    radial-gradient(560px circle at 20% 105%, rgb(var(--violet-500) / 0.14), transparent 70%);
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
 }
+
+@layer base {
+  h1, h2, h3 {
+    font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+    letter-spacing: -0.02em;
+  }
+  /* Browsers paint form fields white by default; keep them on the glass. */
+  input, select, textarea {
+    background-color: transparent;
+  }
+  option {
+    background-color: rgb(var(--raised));
+    color: rgb(var(--ink));
+  }
+  ::selection {
+    background: rgb(var(--brand-500) / 0.35);
+  }
+}
+
+/* Frosted glass behind cards. Kept light so cheaper phones stay smooth. */
+.bg-surface {
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+/* Solid teal fills glow softly. */
+.bg-brand-600 {
+  box-shadow: 0 0 24px rgb(var(--brand-500) / 0.22);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .bg-surface { -webkit-backdrop-filter: none; backdrop-filter: none; background-color: rgb(var(--raised)); }
+}
+
 @media print {
   .no-print {
     display: none !important;
   }
+  /* Printed passports use the original light palette: dark ink on white paper. */
+  :root {
+    color-scheme: light;
+    --night: 22 36 43;
+    --raised: 255 255 255;
+    --surface: 255 255 255; --surface-a: 1;
+    --canvas: 245 248 248;  --canvas-a: 1;
+    --line: 227 233 234;    --line-a: 1;
+    --ink: 22 36 43; --ink-muted: 86 102 109; --ink-subtle: 133 147 152;
+    --brand-50: 238 248 247; --brand-100: 213 239 236; --brand-200: 174 223 218; --brand-300: 127 203 196;
+    --brand-500: 26 154 146; --brand-600: 19 128 122; --brand-700: 15 107 102; --brand-800: 14 86 82; --brand-900: 11 68 65;
+    --ok-50: 236 248 240; --ok-200: 191 230 204; --ok-600: 31 138 76; --ok-700: 23 105 58;
+    --warn-50: 255 246 229; --warn-200: 247 217 163; --warn-600: 184 110 0; --warn-700: 143 85 0;
+    --bad-50: 253 238 238; --bad-100: 250 220 218; --bad-200: 243 196 193; --bad-600: 194 54 47; --bad-700: 154 42 36;
+  }
+  body { background: #ffffff; }
+  .bg-surface { -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .bg-brand-600 { box-shadow: none; }
 }

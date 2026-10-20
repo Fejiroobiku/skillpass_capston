@@ -28,7 +28,7 @@ export function Topbar() {
   };
 
   return (
-    <header className="no-print sticky top-0 z-30 border-b border-line bg-white/95 backdrop-blur">
+    <header className="no-print sticky top-0 z-30 border-b border-line bg-night/70 backdrop-blur-xl">
       <div className="flex h-16 items-center gap-3 px-4 md:px-6 lg:px-8">
         <Link to={homeByRole[user.role]} className="lg:hidden" aria-label="SkillPass home">
           <Logo compact />
@@ -54,7 +54,7 @@ export function Topbar() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Verify credential ID, e.g. SP-2BNC-8QPE"
-              className="h-10 w-full rounded-xl border border-line bg-canvas pl-9 pr-3 text-sm text-ink placeholder:text-ink-subtle focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-100" />
+              className="h-10 w-full rounded-full border border-line bg-canvas pl-9 font-mono pr-3 text-sm text-ink placeholder:text-ink-subtle focus:border-brand-500 focus:bg-surface focus:outline-none focus:ring-2 focus:ring-brand-500/30" />
             
           </div>
         </form>

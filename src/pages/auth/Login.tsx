@@ -6,7 +6,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { demoMode } from '../../api/client';
 import { DEMO_PASSWORD, demoLogins } from '../../data/accounts';
 
-const input = 'mt-1.5 w-full rounded-xl border border-line px-3.5 py-3 text-sm text-ink placeholder:text-ink-subtle focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100';
+const input = 'mt-1.5 w-full rounded-xl border border-line px-3.5 py-3 text-sm text-ink placeholder:text-ink-subtle focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30';
 
 export function Login() {
   const { login } = useAuth();
@@ -45,7 +45,7 @@ export function Login() {
           </div>
         </div>
         {error && <p role="alert" className="rounded-xl bg-bad-50 px-3.5 py-2.5 text-sm font-medium text-bad-700">{error}</p>}
-        <button type="submit" disabled={!email || !password || busy} className="w-full rounded-xl bg-brand-600 px-4 py-3 text-sm font-semibold text-white transition-colors duration-150 hover:bg-brand-700 disabled:opacity-50">{busy ? 'Signing in…' : 'Sign in'}</button>
+        <button type="submit" disabled={!email || !password || busy} className="w-full rounded-xl bg-brand-600 px-4 py-3 text-sm font-semibold text-night transition-colors duration-150 hover:bg-brand-700 disabled:opacity-50">{busy ? 'Signing in…' : 'Sign in'}</button>
       </form>
 
       <p className="mt-5 text-center text-sm text-ink-muted">New to the pilot? <Link to="/register" className="font-semibold text-brand-700 hover:underline">Create an account</Link></p>

@@ -24,7 +24,7 @@ export function EvidenceCapture({ value, onChange, code, workshop, sampleUrl, kn
   return (
     <div>
       <div className="flex items-center gap-4 rounded-2xl border border-brand-200 bg-brand-50 p-4">
-        <div className="rounded-xl bg-white px-3 py-2 text-center">
+        <div className="rounded-xl bg-surface px-3 py-2 text-center">
           <p className="text-[10px] font-medium text-ink-muted">Your code</p>
           <p className="font-mono text-2xl font-semibold tracking-[0.2em] text-brand-800">{code || '····'}</p>
         </div>
@@ -34,7 +34,7 @@ export function EvidenceCapture({ value, onChange, code, workshop, sampleUrl, kn
       </div>
 
       <div className="mt-3 grid grid-cols-2 gap-3">
-        <button type="button" onClick={() => setMode('video')} className={`flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-colors duration-150 ${hasVideo ? 'border border-line text-ink hover:bg-canvas' : 'bg-brand-600 text-white hover:bg-brand-700'}`}>
+        <button type="button" onClick={() => setMode('video')} className={`flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-colors duration-150 ${hasVideo ? 'border border-line text-ink hover:bg-canvas' : 'bg-brand-600 text-night hover:bg-brand-700'}`}>
           <VideoIcon className="h-4 w-4" /> {hasVideo ? 'Record another' : 'Record video'}
         </button>
         <button type="button" onClick={() => setMode('photo')} className="flex items-center justify-center gap-2 rounded-xl border border-line px-4 py-3 text-sm font-semibold text-ink transition-colors duration-150 hover:bg-canvas">
@@ -51,7 +51,7 @@ export function EvidenceCapture({ value, onChange, code, workshop, sampleUrl, kn
             <li key={`${ev.id}-${index}`} className={`flex gap-3 rounded-xl border p-2.5 ${dup ? 'border-bad-200 bg-bad-50' : 'border-line'}`}>
                 <div className="relative h-16 w-20 shrink-0 overflow-hidden rounded-lg bg-canvas">
                   {ev.kind === 'photo' || ev.poster ? <img src={ev.poster ?? ev.url} alt={ev.caption} className="h-full w-full object-cover" /> : <video src={ev.url} className="h-full w-full object-cover" muted />}
-                  {ev.kind === 'video' && <span className="absolute inset-0 flex items-center justify-center bg-ink/30"><PlayIcon className="h-5 w-5 fill-white text-white" /></span>}
+                  {ev.kind === 'video' && <span className="absolute inset-0 flex items-center justify-center bg-night/70"><PlayIcon className="h-5 w-5 fill-white text-white" /></span>}
                 </div>
                 <div className="min-w-0 flex-1 text-xs">
                   <p className="text-sm font-medium text-ink">{ev.kind === 'video' ? `Video · ${ev.durationSec ?? '—'}s · code ${ev.challengeCode}` : 'Photo'}</p>

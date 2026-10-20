@@ -31,7 +31,7 @@ export function ProfileMenu() {
         aria-haspopup="menu"
         className="flex items-center gap-2.5 rounded-full py-1 pl-1 pr-2 transition-colors duration-150 hover:bg-canvas focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
         
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-600 text-sm font-semibold text-white">{initials(user.name)}</span>
+        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-600 text-sm font-semibold text-night">{initials(user.name)}</span>
         <span className="hidden text-left md:block">
           <span className="block max-w-[160px] truncate text-sm font-semibold leading-tight text-ink">{user.name}</span>
           <span className="block text-xs leading-tight text-ink-muted">{roleLabel[user.role]}</span>
@@ -46,7 +46,7 @@ export function ProfileMenu() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -4, scale: 0.98 }}
           transition={{ duration: 0.16, ease: [0.23, 1, 0.32, 1] }}
-          className="absolute right-0 top-12 z-40 w-64 origin-top-right overflow-hidden rounded-2xl border border-line bg-white shadow-lg">
+          className="absolute right-0 top-12 z-40 w-64 origin-top-right overflow-hidden rounded-2xl border border-line bg-raised shadow-lg">
           
             <div className="border-b border-line px-4 py-3">
               <p className="truncate text-sm font-semibold text-ink">{user.name}</p>

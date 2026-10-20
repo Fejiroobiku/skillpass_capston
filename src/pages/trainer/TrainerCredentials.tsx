@@ -34,14 +34,14 @@ export function TrainerCredentials() {
         {filters.map((f) => {
           const count = f.id === 'all' ? mine.length : mine.filter((c) => c.status === f.id).length;
           return (
-            <button key={f.id} role="tab" aria-selected={filter === f.id} type="button" onClick={() => setFilter(f.id)} className={`flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-2 text-sm font-medium transition-colors duration-150 ${filter === f.id ? 'bg-ink text-white' : 'bg-white text-ink-muted ring-1 ring-inset ring-line hover:text-ink'}`}>
-              {f.label} <span className={filter === f.id ? 'text-white/70' : 'text-ink-subtle'}>{count}</span>
+            <button key={f.id} role="tab" aria-selected={filter === f.id} type="button" onClick={() => setFilter(f.id)} className={`flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-2 text-sm font-medium transition-colors duration-150 ${filter === f.id ? 'bg-ink text-night' : 'bg-surface text-ink-muted ring-1 ring-inset ring-line hover:text-ink'}`}>
+              {f.label} <span className={filter === f.id ? 'text-night/60' : 'text-ink-subtle'}>{count}</span>
             </button>);
 
         })}
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-line bg-white">
+      <div className="overflow-hidden rounded-2xl border border-line bg-surface">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[720px] text-left text-sm">
             <thead className="border-b border-line bg-canvas text-xs text-ink-muted">

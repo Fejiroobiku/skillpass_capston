@@ -25,7 +25,7 @@ export function JobReferrals() {
     <>
       <PageHeader title="Job Referrals" subtitle="Jobs matched to your verified skills and location. We also send these by SMS." />
       {mine.length === 0 ?
-      <div className="rounded-2xl border border-dashed border-line bg-white p-10 text-center">
+      <div className="rounded-2xl border border-dashed border-line bg-surface p-10 text-center">
           <p className="font-semibold text-ink">No referrals yet</p>
           <p className="mt-1 text-sm text-ink-muted">Referrals arrive when employers post jobs that match your verified skills.</p>
         </div> :
@@ -38,7 +38,7 @@ export function JobReferrals() {
           const employer = employers.find((e) => e.id === job.employerId);
           const s = statusCopy[r.status];
           return (
-            <li key={r.id} className="rounded-2xl border border-line bg-white p-5 md:p-6">
+            <li key={r.id} className="rounded-2xl border border-line bg-surface p-5 md:p-6">
                 <div className="flex flex-col gap-5 md:flex-row md:items-start">
                   <div className="flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-xl bg-brand-50 text-brand-700">
                     <span className="text-xl font-semibold">{m.score}%</span>
@@ -65,7 +65,7 @@ export function JobReferrals() {
                   </div>
                   {r.status === 'sent' &&
                 <div className="flex gap-2 md:flex-col">
-                      <button type="button" onClick={() => setReferralStatus(r.id, 'accepted')} className="flex-1 whitespace-nowrap rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-150 hover:bg-brand-700">I'm interested</button>
+                      <button type="button" onClick={() => setReferralStatus(r.id, 'accepted')} className="flex-1 whitespace-nowrap rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold text-night transition-colors duration-150 hover:bg-brand-700">I'm interested</button>
                       <button type="button" onClick={() => setReferralStatus(r.id, 'declined')} className="flex-1 rounded-xl border border-line px-5 py-2.5 text-sm font-medium text-ink transition-colors duration-150 hover:bg-canvas">Decline</button>
                     </div>
                 }

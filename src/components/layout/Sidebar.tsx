@@ -9,7 +9,7 @@ import { SidebarMeter } from './SidebarMeter';
 
 export const navLinkClass = ({ isActive }: {isActive: boolean;}) =>
 `flex items-center gap-3 whitespace-nowrap rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
-isActive ? 'bg-brand-600 text-white' : 'text-ink-muted hover:bg-canvas hover:text-ink'}`;
+isActive ? 'bg-brand-50 text-brand-700 ring-1 ring-inset ring-brand-300' : 'text-ink-muted hover:bg-canvas hover:text-ink'}`;
 
 
 export function Sidebar() {
@@ -25,7 +25,7 @@ export function Sidebar() {
   filter((a) => !nav.some((n) => n.to === a.to));
 
   return (
-    <aside className="no-print fixed inset-y-0 left-0 z-20 hidden w-64 flex-col border-r border-line bg-white lg:flex">
+    <aside className="no-print fixed inset-y-3 left-3 z-20 hidden w-60 flex-col overflow-hidden rounded-3xl border border-line bg-surface lg:flex">
       <Link to={homeByRole[user.role]} className="flex h-16 items-center border-b border-line px-5">
         <Logo />
       </Link>
@@ -45,7 +45,7 @@ export function Sidebar() {
           <NavLink key={item.to} to={item.to} end className={navLinkClass}>
               <item.icon className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
               <span className="flex-1">{item.label}</span>
-              {item.badge > 0 && <span className="rounded-full bg-brand-100 px-2 text-xs font-semibold text-brand-800">{item.badge}</span>}
+              {item.badge > 0 && <span className="rounded-full bg-violet-500 px-2 text-xs font-bold text-night">{item.badge}</span>}
             </NavLink>
           )}
         </nav>

@@ -19,7 +19,7 @@ export function UsabilitySurvey() {
     return (
       <>
         <PageHeader title="Usability Survey" subtitle="System Usability Scale (SUS)" />
-        <div className="mx-auto max-w-lg rounded-2xl border border-line bg-white p-8 text-center">
+        <div className="mx-auto max-w-lg rounded-2xl border border-line bg-surface p-8 text-center">
           <CheckCircle2Icon className="mx-auto h-10 w-10 text-ok-600" />
           <h2 className="mt-3 text-lg font-semibold text-ink">Thank you for your feedback</h2>
           <p className="mt-1 text-sm text-ink-muted">Your SUS score was <span className="font-semibold text-ink">{existing.score}</span>. The pilot target is 68 or above.</p>
@@ -39,7 +39,7 @@ export function UsabilitySurvey() {
         className="mx-auto max-w-3xl space-y-3">
         
         {susStatements.map((q, i) =>
-        <fieldset key={q} className="rounded-2xl border border-line bg-white p-5">
+        <fieldset key={q} className="rounded-2xl border border-line bg-surface p-5">
             <legend className="sr-only">Statement {i + 1}</legend>
             <p className="text-sm font-medium text-ink"><span className="mr-2 text-ink-subtle">{i + 1}.</span>{q}</p>
             <div className="mt-3 grid grid-cols-5 gap-1.5">
@@ -59,7 +59,7 @@ export function UsabilitySurvey() {
         )}
         <div className="flex items-center justify-between gap-4 pt-2">
           <p className="text-sm text-ink-muted">{answers.filter((a) => a !== null).length} of 10 answered</p>
-          <button type="submit" disabled={!complete} className="rounded-xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-40">Submit survey</button>
+          <button type="submit" disabled={!complete} className="rounded-xl bg-brand-600 px-6 py-3 text-sm font-semibold text-night hover:bg-brand-700 disabled:opacity-40">Submit survey</button>
         </div>
       </form>
     </>);

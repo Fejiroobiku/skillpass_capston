@@ -28,7 +28,7 @@ export function RevokeModal({ credentialId, mode, onClose, onConfirm }: RevokeMo
         value={reason}
         onChange={(e) => setReason(e.target.value)}
         placeholder={isFlag ? 'What does not match what you saw?' : 'e.g. Issued in error to the wrong apprentice'}
-        className="mt-1.5 w-full resize-none rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+        className="mt-1.5 w-full resize-none rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30" />
       
       <div className="mt-5 flex justify-end gap-2">
         <button type="button" onClick={onClose} className="rounded-xl px-4 py-2.5 text-sm font-medium text-ink hover:bg-canvas">Cancel</button>

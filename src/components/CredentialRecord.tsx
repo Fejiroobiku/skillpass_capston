@@ -4,7 +4,7 @@ import type { PublicCredential } from '../api/types';
 import { formatDate, formatDateTime } from '../utils/credentials';
 
 const banner = {
-  valid: { cls: 'bg-ok-50 text-ok-700', icon: BadgeCheckIcon, title: 'Valid credential', text: 'Signed by an approved trainer, confirmed by the apprentice, with live evidence on file.' },
+  valid: { cls: 'bg-gradient-to-r from-brand-500/20 to-violet-500/15 text-brand-800', icon: BadgeCheckIcon, title: 'Valid credential', text: 'Signed by an approved trainer, confirmed by the apprentice, with live evidence on file.' },
   flagged: { cls: 'bg-warn-50 text-warn-700', icon: CircleAlertIcon, title: 'Flagged — under review', text: 'Someone has challenged this credential. An administrator is reviewing it.' },
   under_review: { cls: 'bg-warn-50 text-warn-700', icon: CircleAlertIcon, title: 'Under review', text: 'The issuing trainer was found to have issued false credentials. Every credential they signed is being re-checked.' },
   revoked: { cls: 'bg-bad-50 text-bad-700', icon: ShieldXIcon, title: 'Revoked', text: 'This credential is no longer valid. Its history is kept for transparency.' },
@@ -21,11 +21,11 @@ export function CredentialRecord({ credential }: {credential: PublicCredential;}
   const trustTone = trainer.underReview || trainer.trustScore < 50 ? 'text-bad-700' : trainer.trustScore < 70 ? 'text-warn-700' : 'text-ok-700';
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-line bg-white">
+    <article className="overflow-hidden rounded-3xl border border-line bg-surface">
       <div className={`flex items-start gap-3 px-5 py-4 md:px-6 ${b.cls}`}>
-        <b.icon className="h-6 w-6 shrink-0" aria-hidden="true" />
+        <b.icon className={`h-6 w-6 shrink-0 ${credential.status === 'valid' ? 'text-brand-500 drop-shadow-[0_0_10px_rgb(46_230_197_/_0.7)]' : ''}`} aria-hidden="true" />
         <div>
-          <p className="font-semibold">{b.title}</p>
+          <p className="font-display text-lg font-semibold">{b.title}</p>
           <p className="text-sm opacity-90">{credential.revokeReason ?? b.text}</p>
         </div>
       </div>
@@ -35,9 +35,9 @@ export function CredentialRecord({ credential }: {credential: PublicCredential;}
           <p className="text-sm text-ink-muted">{credential.skill.level} · {credential.skill.tradeName}</p>
           <h2 className="mt-1 text-2xl font-semibold tracking-tight text-ink">{credential.skill.name}</h2>
 
-          <div className="mt-5 flex items-center gap-4 rounded-xl border border-line p-4">
+          <div className="mt-5 flex items-center gap-4 rounded-2xl border border-line bg-canvas p-4">
             <div className="text-center">
-              <p className={`text-3xl font-semibold ${trustTone}`}>{trainer.trustScore}</p>
+              <p className={`font-display text-3xl font-bold ${trustTone}`}>{trainer.trustScore}</p>
               <p className="text-[11px] text-ink-muted">trust score</p>
             </div>
             <div className="min-w-0 border-l border-line pl-4">
@@ -96,11 +96,11 @@ export function CredentialRecord({ credential }: {credential: PublicCredential;}
               {credential.evidence.map((ev) =>
               <figure key={ev.id}>
                   {ev.kind === 'video' && !isImageUrl(ev.url) ?
-                <video src={ev.url} poster={ev.poster} controls preload="metadata" className="aspect-[4/3] w-full rounded-xl bg-ink object-cover" /> :
+                <video src={ev.url} poster={ev.poster} controls preload="metadata" className="aspect-[4/3] w-full rounded-xl bg-night object-cover" /> :
 
                 <div className="relative">
                       <img src={ev.poster ?? ev.url} alt={ev.caption} className="aspect-[4/3] w-full rounded-xl object-cover" />
-                      {ev.kind === 'video' && <span className="absolute left-2 top-2 rounded-lg bg-white px-2 py-1 font-mono text-xs font-semibold text-ink">code {ev.challengeCode} · {ev.durationSec}s video</span>}
+                      {ev.kind === 'video' && <span className="absolute left-2 top-2 rounded-lg bg-surface px-2 py-1 font-mono text-xs font-semibold text-ink">code {ev.challengeCode} · {ev.durationSec}s video</span>}
                     </div>
                 }
                   <figcaption className="mt-1.5 space-y-0.5 text-xs text-ink-muted">

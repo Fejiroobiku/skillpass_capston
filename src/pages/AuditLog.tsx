@@ -22,15 +22,15 @@ export function AuditLog() {
     <div className="space-y-4">
       <PageHeader title="Audit Log" subtitle={`Append-only · ${auditLog.length} entries. Entries can be added but never edited or deleted.`} />
 
-      <div role="tablist" aria-label="Filter" className="flex gap-1 overflow-x-auto rounded-2xl border border-line bg-white p-1.5">
+      <div role="tablist" aria-label="Filter" className="flex gap-1 overflow-x-auto rounded-2xl border border-line bg-surface p-1.5">
         {filters.map((f) =>
-        <button key={f.id} role="tab" aria-selected={filter === f.id} type="button" onClick={() => setFilter(f.id)} className={`whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition-colors duration-150 ${filter === f.id ? 'bg-brand-600 text-white' : 'text-ink hover:bg-canvas'}`}>
+        <button key={f.id} role="tab" aria-selected={filter === f.id} type="button" onClick={() => setFilter(f.id)} className={`whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition-colors duration-150 ${filter === f.id ? 'bg-brand-600 text-night' : 'text-ink hover:bg-canvas'}`}>
             {f.label}
           </button>
         )}
       </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-line bg-white">
+      <div className="overflow-x-auto rounded-2xl border border-line bg-surface">
         <table className="w-full min-w-[720px] text-left text-sm">
           <thead className="border-b border-line bg-canvas text-xs text-ink-muted">
             <tr>

@@ -89,7 +89,7 @@ They exist after `npm run db:seed`. The login page shows quick-login buttons for
 
 - **Figma:** [paste link]
 - **Wireframes:** `docs/wireframes/` [add images]
-- **Style guide:** colours, fonts and components are defined in `tailwind.config.js` and `src/index.css`. [add a screenshot of your colour palette and buttons]
+- **Style guide:** the Aurora Glass theme: a dark navy background, frosted glass panels and teal-to-violet accents, with Space Grotesk headings, Inter body text and JetBrains Mono for credential IDs. Colours are CSS variables in `src/index.css`, mapped to Tailwind classes in `tailwind.config.js`; printed passports switch back to a light palette automatically. [add a screenshot of your colour palette and buttons]
 - **Database design (ERD):** `docs/erd.png` [add image]
 - **Screenshots:**
   - Login: `docs/screenshots/login.png`

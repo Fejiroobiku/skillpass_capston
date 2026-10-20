@@ -65,7 +65,7 @@ export function EmployerFeedback() {
                     <button type="button" onClick={() => setReferralStatus(r.id, 'contacted')} className="whitespace-nowrap rounded-xl border border-line px-3.5 py-2 text-sm font-medium text-ink hover:bg-canvas">Mark hired</button>
                     }
                       {(r.status === 'accepted' || r.status === 'contacted') && !rated && verified &&
-                    <button type="button" onClick={() => open(r)} className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-xl bg-brand-600 px-3.5 py-2 text-sm font-semibold text-white hover:bg-brand-700"><StarIcon className="h-4 w-4" /> Rate work</button>
+                    <button type="button" onClick={() => open(r)} className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-xl bg-brand-600 px-3.5 py-2 text-sm font-semibold text-night hover:bg-brand-700"><StarIcon className="h-4 w-4" /> Rate work</button>
                     }
                       {rated && <span className="text-sm text-ink-muted">Rated</span>}
                       {r.status === 'sent' && <span className="text-xs text-ink-subtle">Rate once they take the job</span>}
@@ -98,10 +98,10 @@ export function EmployerFeedback() {
         <p className="mb-2 text-sm text-ink-muted">How well did they do the work you hired them for?</p>
         <StarRating value={stars} onChange={setStars} size="lg" />
         <label htmlFor="fb-comment" className="mt-4 block text-sm font-semibold text-ink">Comment</label>
-        <textarea id="fb-comment" rows={3} value={comment} onChange={(e) => setComment(e.target.value)} className="mt-1.5 w-full resize-none rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+        <textarea id="fb-comment" rows={3} value={comment} onChange={(e) => setComment(e.target.value)} className="mt-1.5 w-full resize-none rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30" />
         <div className="mt-5 flex justify-end gap-2">
           <button type="button" onClick={() => setRating(null)} className="rounded-xl px-4 py-2.5 text-sm font-medium text-ink hover:bg-canvas">Cancel</button>
-          <button type="button" disabled={stars === 0} onClick={submit} className="rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-40">Submit rating</button>
+          <button type="button" disabled={stars === 0} onClick={submit} className="rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-night hover:bg-brand-700 disabled:opacity-40">Submit rating</button>
         </div>
       </Modal>
     </>);

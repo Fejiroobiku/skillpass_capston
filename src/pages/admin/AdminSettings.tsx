@@ -9,7 +9,7 @@ import { outOfScope } from '../../data/pilot';
 function Toggle({ checked, onChange, label }: {checked: boolean;onChange: (v: boolean) => void;label: string;}) {
   return (
     <button type="button" role="switch" aria-checked={checked} aria-label={label} onClick={() => onChange(!checked)} className={`relative h-6 w-11 shrink-0 rounded-full transition-colors duration-150 ${checked ? 'bg-brand-600' : 'bg-line'}`}>
-      <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-150 ${checked ? 'translate-x-[22px]' : 'translate-x-0.5'}`} />
+      <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-surface shadow transition-transform duration-150 ${checked ? 'translate-x-[22px]' : 'translate-x-0.5'}`} />
     </button>);
 
 }
@@ -42,7 +42,7 @@ export function AdminSettings() {
             <div>
               <label htmlFor="limit" className="block text-sm font-semibold text-ink">Daily issuing limit per trainer</label>
               <p className="text-xs text-ink-muted">Credentials beyond this are held for administrator review.</p>
-              <input id="limit" type="number" min={1} max={50} value={limit} onChange={(e) => {setLimit(Math.max(1, Number(e.target.value)));setSaved(false);}} className="mt-2 w-28 rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+              <input id="limit" type="number" min={1} max={50} value={limit} onChange={(e) => {setLimit(Math.max(1, Number(e.target.value)));setSaved(false);}} className="mt-2 w-28 rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30" />
             </div>
             <div>
               <label htmlFor="rate" className="block text-sm font-semibold text-ink">Random audit sample rate</label>
@@ -55,11 +55,11 @@ export function AdminSettings() {
             <div>
               <label htmlFor="probation" className="block text-sm font-semibold text-ink">Probation period for new trainers</label>
               <p className="text-xs text-ink-muted">Number of first credentials that must all be co-signed.</p>
-              <input id="probation" type="number" min={0} max={50} value={probation} onChange={(e) => {setProbation(Math.max(0, Number(e.target.value)));setSaved(false);}} className="mt-2 w-28 rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+              <input id="probation" type="number" min={0} max={50} value={probation} onChange={(e) => {setProbation(Math.max(0, Number(e.target.value)));setSaved(false);}} className="mt-2 w-28 rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30" />
             </div>
             <p className="rounded-xl bg-canvas p-3 text-xs text-ink-muted">Risk-based audits trigger when a trainer signs credentials under {settings.fastMinutes} min apart, passes ≥95% of 5+ assessments, issues {settings.clusterThreshold}+ in one day, gets 2+ poor employer ratings, or has an open apprentice report.</p>
             <div className="flex items-center gap-3">
-              <button type="button" disabled={!dirty} onClick={() => {updateSettings({ dailyLimit: limit, auditRatePct: rate, probationCount: probation }, actor);setSaved(true);}} className="rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-40">Save rules</button>
+              <button type="button" disabled={!dirty} onClick={() => {updateSettings({ dailyLimit: limit, auditRatePct: rate, probationCount: probation }, actor);setSaved(true);}} className="rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-night hover:bg-brand-700 disabled:opacity-40">Save rules</button>
               {saved && <span role="status" className="flex items-center gap-1 text-sm font-medium text-ok-700"><CheckIcon className="h-4 w-4" /> Saved</span>}
             </div>
             <ul className="space-y-3 border-t border-line pt-5">

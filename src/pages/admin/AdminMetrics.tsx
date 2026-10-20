@@ -56,7 +56,7 @@ export function AdminMetrics() {
       <PageHeader title="Pilot Metrics" subtitle={`Table 1 targets · ${metCount} of ${metrics.length} currently met · Lagos pilot, week 9 of 16`} />
 
       <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
-        <section className="overflow-hidden rounded-2xl border border-line bg-white">
+        <section className="overflow-hidden rounded-2xl border border-line bg-surface">
           <div className="border-b border-line px-5 py-4 md:px-6">
             <h2 className="text-lg font-semibold text-ink">Success metrics</h2>
             <p className="text-sm text-ink-muted">Calculated live from system logs, spot-checks, employer ratings and survey responses.</p>

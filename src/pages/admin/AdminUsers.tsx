@@ -45,14 +45,14 @@ export function AdminUsers() {
         {filters.map((f) => {
           const count = f.id === 'all' ? rows.length : f.id === 'pending' ? rows.filter((r) => !r.approved).length : rows.filter((r) => r.account.role === f.id).length;
           return (
-            <button key={f.id} role="tab" aria-selected={filter === f.id} type="button" onClick={() => setFilter(f.id)} className={`flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-2 text-sm font-medium transition-colors duration-150 ${filter === f.id ? 'bg-ink text-white' : 'bg-white text-ink-muted ring-1 ring-inset ring-line hover:text-ink'}`}>
-              {f.label} <span className={filter === f.id ? 'text-white/70' : 'text-ink-subtle'}>{count}</span>
+            <button key={f.id} role="tab" aria-selected={filter === f.id} type="button" onClick={() => setFilter(f.id)} className={`flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-2 text-sm font-medium transition-colors duration-150 ${filter === f.id ? 'bg-ink text-night' : 'bg-surface text-ink-muted ring-1 ring-inset ring-line hover:text-ink'}`}>
+              {f.label} <span className={filter === f.id ? 'text-night/60' : 'text-ink-subtle'}>{count}</span>
             </button>);
 
         })}
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-line bg-white">
+      <div className="overflow-hidden rounded-2xl border border-line bg-surface">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[820px] text-left text-sm">
             <thead className="border-b border-line bg-canvas text-xs text-ink-muted">
@@ -91,7 +91,7 @@ export function AdminUsers() {
                         <button type="button" onClick={() => verifyMembership(r.account.id, actor)} className="rounded-lg border border-line px-3 py-1.5 text-sm font-medium text-ink hover:bg-canvas">Confirm membership</button>
                         }
                         {!r.approved && s === 'active' &&
-                        <button type="button" disabled={r.needsMembership} title={r.needsMembership ? 'Confirm trade association membership first' : undefined} onClick={() => approveProfile(r.account.id, actor)} className="rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-40">Approve</button>
+                        <button type="button" disabled={r.needsMembership} title={r.needsMembership ? 'Confirm trade association membership first' : undefined} onClick={() => approveProfile(r.account.id, actor)} className="rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-semibold text-night hover:bg-brand-700 disabled:opacity-40">Approve</button>
                         }
                         {s === 'active' &&
                         <button type="button" onClick={() => setAccountStatus(r.account.id, 'suspended', actor)} className="rounded-lg border border-line px-3 py-1.5 text-sm font-medium text-bad-700 hover:bg-bad-50">Suspend</button>

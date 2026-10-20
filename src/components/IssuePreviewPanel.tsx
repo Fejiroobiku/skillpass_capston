@@ -40,7 +40,7 @@ export function IssuePreviewPanel({ form }: {form: Form;}) {
         {issued ?
         <motion.div key="done" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }} className="space-y-5">
             <div className="rounded-2xl bg-brand-50 p-6 text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand-600 text-white"><ClockIcon className="h-7 w-7" /></div>
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand-600 text-night"><ClockIcon className="h-7 w-7" /></div>
               <p className="mt-4 text-lg font-semibold text-ink">{copy?.[0] ?? 'Issued'}</p>
               <p className="mt-1 text-sm text-ink-muted">{copy?.[1]}</p>
               <p className="mt-4 font-mono text-xl font-semibold tracking-wider text-brand-800">{issued.id}</p>
@@ -50,15 +50,15 @@ export function IssuePreviewPanel({ form }: {form: Form;}) {
               <Link to={`/verify/${issued.id}`} className="inline-flex items-center justify-center gap-2 rounded-xl border border-line px-4 py-3 text-sm font-semibold text-ink transition-colors duration-150 hover:bg-canvas">
                 <FileSearchIcon className="h-4 w-4" /> Verification page
               </Link>
-              <button type="button" onClick={form.reset} className="rounded-xl bg-brand-600 px-4 py-3 text-sm font-semibold text-white transition-colors duration-150 hover:bg-brand-700">Issue another</button>
+              <button type="button" onClick={form.reset} className="rounded-xl bg-brand-600 px-4 py-3 text-sm font-semibold text-night transition-colors duration-150 hover:bg-brand-700">Issue another</button>
             </div>
           </motion.div> :
 
         <motion.div key="form" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }} className="space-y-5">
             <div className="overflow-hidden rounded-xl border border-line">
-              <div className="flex items-center justify-between bg-brand-600 px-4 py-3 text-sm text-white">
+              <div className="flex items-center justify-between bg-brand-600 px-4 py-3 text-sm text-night">
                 <span className="font-semibold">SkillPass Credential</span>
-                <span className="font-mono text-white/80">SP-••••-••••</span>
+                <span className="font-mono text-night/70">SP-••••-••••</span>
               </div>
               <dl className="divide-y divide-line text-sm">
                 {[
@@ -92,7 +92,7 @@ export function IssuePreviewPanel({ form }: {form: Form;}) {
             {form.needsCosign &&
           <div>
                 <label htmlFor="cosigner" className="mb-1.5 block text-sm font-semibold text-ink">Co-signer</label>
-                <select id="cosigner" value={form.cosignerId} onChange={(e) => form.setCosignerId(e.target.value)} className="w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100">
+                <select id="cosigner" value={form.cosignerId} onChange={(e) => form.setCosignerId(e.target.value)} className="w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30">
                   <option value="">Choose an approved trainer or employer</option>
                   <optgroup label="Approved trainers">
                     {form.cosignTrainers.map((t) => <option key={t.id} value={t.id}>{t.name} · {t.workshop}</option>)}
@@ -122,7 +122,7 @@ export function IssuePreviewPanel({ form }: {form: Form;}) {
 
             <label className="flex cursor-pointer gap-3 rounded-xl border border-line p-4 text-sm">
               <input type="checkbox" checked={form.observed} onChange={(e) => form.setObserved(e.target.checked)} className="sr-only" />
-              <span aria-hidden="true" className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-colors duration-150 ${form.observed ? 'border-brand-600 bg-brand-600 text-white' : 'border-line'}`}>
+              <span aria-hidden="true" className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-colors duration-150 ${form.observed ? 'border-brand-600 bg-brand-600 text-night' : 'border-line'}`}>
                 {form.observed && <CheckIcon className="h-3.5 w-3.5" strokeWidth={3} />}
               </span>
               <span className="text-ink">
@@ -133,7 +133,7 @@ export function IssuePreviewPanel({ form }: {form: Form;}) {
             {form.error && <p role="alert" className="rounded-xl bg-bad-50 p-3.5 text-sm font-medium text-bad-700">{form.error}</p>}
 
             <div>
-              <button type="button" disabled={!ready || form.busy} onClick={form.submit} className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-brand-600 px-5 py-4 text-base font-semibold text-white transition-colors duration-150 hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-brand-200">
+              <button type="button" disabled={!ready || form.busy} onClick={form.submit} className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-brand-600 px-5 py-4 text-base font-semibold text-night transition-colors duration-150 hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-brand-200">
                 <CircleCheckBigIcon className="h-5 w-5" /> Sign & Issue <ArrowRightIcon className="h-5 w-5" />
               </button>
               <p className="mt-2 text-center text-xs text-ink-muted">The apprentice must confirm before it becomes valid. Apprentices cannot create or edit credentials.</p>

@@ -194,12 +194,12 @@ export function CameraModal({ mode, code, workshop, fallbackUrl, onCapture, onCl
   return (
     <AnimatePresence>
       {mode &&
-      <motion.div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/70 sm:items-center sm:p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
+      <motion.div className="fixed inset-0 z-50 flex items-end justify-center bg-night/80 sm:items-center sm:p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}>
           <motion.div
           role="dialog"
           aria-modal="true"
           aria-label={mode === 'video' ? 'Record video evidence' : 'Take photo evidence'}
-          className="w-full max-w-lg overflow-hidden rounded-t-3xl bg-ink text-white sm:rounded-3xl"
+          className="w-full max-w-lg overflow-hidden rounded-t-3xl bg-night text-white sm:rounded-3xl"
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 24 }}
@@ -220,14 +220,14 @@ export function CameraModal({ mode, code, workshop, fallbackUrl, onCapture, onCl
                 </div>
             }
               {mode === 'video' &&
-            <div className="absolute left-3 top-3 rounded-xl bg-white px-3 py-2 text-ink">
+            <div className="absolute left-3 top-3 rounded-xl bg-surface px-3 py-2 text-ink">
                   <p className="text-[10px] font-medium uppercase tracking-wide text-ink-muted">Show this code first</p>
                   <p className="font-mono text-2xl font-semibold tracking-[0.2em]">{code || '····'}</p>
                 </div>
             }
               {recording &&
             <span className="absolute right-3 top-3 flex items-center gap-1.5 rounded-full bg-bad-600 px-2.5 py-1 text-xs font-semibold">
-                  <span className="h-2 w-2 rounded-full bg-white" /> {seconds}s / {MAX_SECONDS}s
+                  <span className="h-2 w-2 rounded-full bg-surface" /> {seconds}s / {MAX_SECONDS}s
                 </span>
             }
               <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 bg-black/50 px-3 py-2 text-xs">
@@ -238,17 +238,17 @@ export function CameraModal({ mode, code, workshop, fallbackUrl, onCapture, onCl
 
             <div className="flex flex-col items-center gap-3 px-4 py-5">
               {ready && mode === 'photo' &&
-            <button type="button" onClick={takePhoto} disabled={busy} aria-label="Capture photo" className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-ink transition-transform duration-100 active:scale-95 disabled:opacity-50">
+            <button type="button" onClick={takePhoto} disabled={busy} aria-label="Capture photo" className="flex h-16 w-16 items-center justify-center rounded-full bg-surface text-ink transition-transform duration-100 active:scale-95 disabled:opacity-50">
                   <CameraIcon className="h-7 w-7" />
                 </button>
             }
               {ready && mode === 'video' && !recording &&
-            <button type="button" onClick={startRecording} disabled={busy || !code} aria-label="Start recording" className="flex h-16 w-16 items-center justify-center rounded-full bg-white transition-transform duration-100 active:scale-95 disabled:opacity-50">
+            <button type="button" onClick={startRecording} disabled={busy || !code} aria-label="Start recording" className="flex h-16 w-16 items-center justify-center rounded-full bg-surface transition-transform duration-100 active:scale-95 disabled:opacity-50">
                   <CircleIcon className="h-8 w-8 fill-bad-600 text-bad-600" />
                 </button>
             }
               {recording &&
-            <button type="button" onClick={() => recorderRef.current?.stop()} disabled={seconds < MIN_SECONDS} aria-label="Stop recording" className="flex h-16 w-16 items-center justify-center rounded-full bg-white transition-transform duration-100 active:scale-95 disabled:opacity-50">
+            <button type="button" onClick={() => recorderRef.current?.stop()} disabled={seconds < MIN_SECONDS} aria-label="Stop recording" className="flex h-16 w-16 items-center justify-center rounded-full bg-surface transition-transform duration-100 active:scale-95 disabled:opacity-50">
                   <SquareIcon className="h-6 w-6 fill-bad-600 text-bad-600" />
                 </button>
             }
@@ -259,7 +259,7 @@ export function CameraModal({ mode, code, workshop, fallbackUrl, onCapture, onCl
               {uploadError && <p role="alert" className="w-full rounded-xl bg-bad-600/90 px-3 py-2 text-center text-xs font-medium text-white">{uploadError}</p>}
               {demoMode &&
               <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 border-t border-white/10 pt-3 text-xs">
-                <button type="button" disabled={busy} onClick={() => demoCapture(false)} className="font-medium text-brand-200 hover:underline disabled:opacity-50">Use demo capture</button>
+                <button type="button" disabled={busy} onClick={() => demoCapture(false)} className="font-medium text-brand-700 hover:underline disabled:opacity-50">Use demo capture</button>
                 <button type="button" disabled={busy} onClick={() => demoCapture(true)} className="font-medium text-white/50 hover:underline disabled:opacity-50">Demo: re-used file</button>
               </div>
               }

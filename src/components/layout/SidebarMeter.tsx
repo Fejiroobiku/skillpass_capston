@@ -56,10 +56,10 @@ export function SidebarMeter() {
     <div className="rounded-xl bg-canvas p-4">
       <div className="flex items-center justify-between text-sm">
         <p className="font-semibold text-ink">{label}</p>
-        <p className="font-medium text-ink-muted">{value}/{max}</p>
+        <p className="font-mono font-medium text-ink">{value}/{max}</p>
       </div>
-      <div className="mt-2.5 h-2 overflow-hidden rounded-full bg-white" role="progressbar" aria-valuenow={value} aria-valuemin={0} aria-valuemax={max} aria-label={label}>
-        <div className={`h-full rounded-full transition-[width] duration-300 ${warn ? 'bg-warn-600' : 'bg-brand-600'}`} style={{ width: `${pct}%` }} />
+      <div className="mt-2.5 h-2 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-valuenow={value} aria-valuemin={0} aria-valuemax={max} aria-label={label}>
+        <div className={`h-full rounded-full transition-[width] duration-300 ${warn ? 'bg-warn-600' : 'bg-gradient-to-r from-brand-500 to-violet-500'}`} style={{ width: `${pct}%` }} />
       </div>
       <p className="mt-2 text-xs text-ink-muted">{caption}</p>
     </div>);

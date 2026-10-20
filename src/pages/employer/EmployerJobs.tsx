@@ -45,7 +45,7 @@ export function EmployerJobs() {
         title="Jobs & Matches"
         subtitle="Post a job and we rank apprentices by verified skills and distance."
         actions={
-        <button type="button" onClick={() => setOpen(true)} className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors duration-150 hover:bg-brand-700">
+        <button type="button" onClick={() => setOpen(true)} className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-night transition-colors duration-150 hover:bg-brand-700">
             <PlusIcon className="h-4 w-4" /> Post a job
           </button>
         } />
@@ -54,12 +54,12 @@ export function EmployerJobs() {
       <div className="grid gap-6 lg:grid-cols-[340px_1fr]">
         <nav aria-label="Your jobs" className="space-y-2">
           {myJobs.length === 0 &&
-          <p className="rounded-2xl border border-dashed border-line bg-white p-6 text-center text-sm text-ink-muted">No jobs yet. Post one to see ranked matches.</p>
+          <p className="rounded-2xl border border-dashed border-line bg-surface p-6 text-center text-sm text-ink-muted">No jobs yet. Post one to see ranked matches.</p>
           }
           {myJobs.map((j) => {
             const active = j.id === selected?.id;
             return (
-              <button key={j.id} type="button" onClick={() => setSelectedId(j.id)} aria-current={active} className={`w-full rounded-2xl border p-4 text-left transition-colors duration-150 ${active ? 'border-brand-500 bg-brand-50' : 'border-line bg-white hover:bg-canvas'}`}>
+              <button key={j.id} type="button" onClick={() => setSelectedId(j.id)} aria-current={active} className={`w-full rounded-2xl border p-4 text-left transition-colors duration-150 ${active ? 'border-brand-500 bg-brand-50' : 'border-line bg-surface hover:bg-canvas'}`}>
                 <p className="font-semibold text-ink">{j.title}</p>
                 <p className="mt-1 text-sm text-ink-muted">{j.location.name} · {j.pay}</p>
                 <p className="mt-1 text-xs text-ink-subtle">Posted {formatDate(j.postedAt)} · {j.skillIds.length} required skills</p>
@@ -111,18 +111,18 @@ export function EmployerJobs() {
         <div className="space-y-4">
           <div>
             <label htmlFor="job-title" className="block text-sm font-semibold text-ink">Job title</label>
-            <input id="job-title" value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1.5 w-full rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" placeholder="e.g. Wire a new shop in Lekki" />
+            <input id="job-title" value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1.5 w-full rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30" placeholder="e.g. Wire a new shop in Lekki" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label htmlFor="job-trade" className="block text-sm font-semibold text-ink">Trade</label>
-              <select id="job-trade" value={trade} onChange={(e) => {setTrade(e.target.value as TradeId);setSkillIds([]);}} className="mt-1.5 w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm">
+              <select id="job-trade" value={trade} onChange={(e) => {setTrade(e.target.value as TradeId);setSkillIds([]);}} className="mt-1.5 w-full rounded-xl border border-line bg-surface px-3 py-2.5 text-sm">
                 {trades.filter((t) => t.id === myTrade).map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
               </select>
             </div>
             <div>
               <label htmlFor="job-place" className="block text-sm font-semibold text-ink">Location</label>
-              <select id="job-place" value={placeKey} onChange={(e) => setPlaceKey(e.target.value)} className="mt-1.5 w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm">
+              <select id="job-place" value={placeKey} onChange={(e) => setPlaceKey(e.target.value)} className="mt-1.5 w-full rounded-xl border border-line bg-surface px-3 py-2.5 text-sm">
                 {Object.entries(places).map(([k, p]) => <option key={k} value={k}>{p.name}</option>)}
               </select>
             </div>
@@ -140,11 +140,11 @@ export function EmployerJobs() {
           </fieldset>
           <div>
             <label htmlFor="job-pay" className="block text-sm font-semibold text-ink">Pay</label>
-            <input id="job-pay" value={pay} onChange={(e) => setPay(e.target.value)} className="mt-1.5 w-full rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" placeholder="e.g. ₦150,000 fixed" />
+            <input id="job-pay" value={pay} onChange={(e) => setPay(e.target.value)} className="mt-1.5 w-full rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30" placeholder="e.g. ₦150,000 fixed" />
           </div>
           <div className="flex justify-end gap-2 pt-1">
             <button type="button" onClick={() => setOpen(false)} className="rounded-xl px-4 py-2.5 text-sm font-medium text-ink hover:bg-canvas">Cancel</button>
-            <button type="button" disabled={!title.trim() || skillIds.length === 0} onClick={create} className="rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors duration-150 hover:bg-brand-700 disabled:opacity-40">Post & find matches</button>
+            <button type="button" disabled={!title.trim() || skillIds.length === 0} onClick={create} className="rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-night transition-colors duration-150 hover:bg-brand-700 disabled:opacity-40">Post & find matches</button>
           </div>
         </div>
       </Modal>

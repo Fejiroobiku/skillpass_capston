@@ -35,7 +35,7 @@ export function AdminSkills() {
         title="Trades & Skills"
         subtitle="Manage the pre-loaded checklists and review skills proposed by trainers."
         actions={
-        <button type="button" onClick={() => setTradeOpen(true)} className="inline-flex items-center gap-2 rounded-xl border border-line bg-white px-4 py-2.5 text-sm font-semibold text-ink hover:bg-canvas">
+        <button type="button" onClick={() => setTradeOpen(true)} className="inline-flex items-center gap-2 rounded-xl border border-line bg-surface px-4 py-2.5 text-sm font-semibold text-ink hover:bg-canvas">
             <PlusIcon className="h-4 w-4" /> Add trade
           </button>
         } />
@@ -52,7 +52,7 @@ export function AdminSkills() {
                 </div>
                 <div className="flex gap-2">
                   <button type="button" onClick={() => reviewSkill(s.id, false, actor)} className="rounded-lg border border-line px-3 py-1.5 text-sm font-medium text-ink hover:bg-canvas">Decline</button>
-                  <button type="button" onClick={() => reviewSkill(s.id, true, actor)} className="rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-brand-700">Add to checklist</button>
+                  <button type="button" onClick={() => reviewSkill(s.id, true, actor)} className="rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-semibold text-night hover:bg-brand-700">Add to checklist</button>
                 </div>
               </li>
           )}
@@ -60,9 +60,9 @@ export function AdminSkills() {
         </Panel>
       }
 
-      <div role="tablist" aria-label="Trade" className="mb-4 flex gap-1 overflow-x-auto rounded-2xl border border-line bg-white p-1.5">
+      <div role="tablist" aria-label="Trade" className="mb-4 flex gap-1 overflow-x-auto rounded-2xl border border-line bg-surface p-1.5">
         {trades.map((t) =>
-        <button key={t.id} role="tab" aria-selected={tradeId === t.id} type="button" onClick={() => setTradeId(t.id)} className={`flex-1 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition-colors duration-150 ${tradeId === t.id ? 'bg-brand-600 text-white' : 'text-ink hover:bg-canvas'}`}>
+        <button key={t.id} role="tab" aria-selected={tradeId === t.id} type="button" onClick={() => setTradeId(t.id)} className={`flex-1 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition-colors duration-150 ${tradeId === t.id ? 'bg-brand-600 text-night' : 'text-ink hover:bg-canvas'}`}>
             {t.name}
           </button>
         )}
@@ -96,27 +96,27 @@ export function AdminSkills() {
           <form onSubmit={submit} className="space-y-4">
             <div>
               <label htmlFor="admin-skill" className="block text-sm font-semibold text-ink">Skill name</label>
-              <input id="admin-skill" value={name} onChange={(e) => setName(e.target.value)} className="mt-1.5 w-full rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+              <input id="admin-skill" value={name} onChange={(e) => setName(e.target.value)} className="mt-1.5 w-full rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30" />
             </div>
             <fieldset>
               <legend className="text-sm font-semibold text-ink">Level</legend>
               <div className="mt-1.5 grid grid-cols-3 gap-1 rounded-xl bg-canvas p-1">
                 {skillLevels.map((l) =>
-                <button key={l} type="button" aria-pressed={level === l} onClick={() => setLevel(l)} className={`rounded-lg px-2 py-2 text-sm font-medium transition-colors duration-150 ${level === l ? 'bg-white text-ink shadow-sm' : 'text-ink-muted hover:text-ink'}`}>{l}</button>
+                <button key={l} type="button" aria-pressed={level === l} onClick={() => setLevel(l)} className={`rounded-lg px-2 py-2 text-sm font-medium transition-colors duration-150 ${level === l ? 'bg-surface text-ink shadow-sm' : 'text-ink-muted hover:text-ink'}`}>{l}</button>
                 )}
               </div>
             </fieldset>
-            <button type="submit" disabled={name.trim().length < 5} className="w-full rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-40">Add to {trades.find((t) => t.id === tradeId)?.name}</button>
+            <button type="submit" disabled={name.trim().length < 5} className="w-full rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-night hover:bg-brand-700 disabled:opacity-40">Add to {trades.find((t) => t.id === tradeId)?.name}</button>
           </form>
         </Panel>
       </div>
 
       <Modal open={tradeOpen} title="Add a trade" onClose={() => setTradeOpen(false)}>
         <label htmlFor="new-trade" className="block text-sm font-semibold text-ink">Trade name</label>
-        <input id="new-trade" value={newTrade} onChange={(e) => setNewTrade(e.target.value)} placeholder="e.g. Plumbing" className="mt-1.5 w-full rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+        <input id="new-trade" value={newTrade} onChange={(e) => setNewTrade(e.target.value)} placeholder="e.g. Plumbing" className="mt-1.5 w-full rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30" />
         <div className="mt-5 flex justify-end gap-2">
           <button type="button" onClick={() => setTradeOpen(false)} className="rounded-xl px-4 py-2.5 text-sm font-medium text-ink hover:bg-canvas">Cancel</button>
-          <button type="button" disabled={newTrade.trim().length < 3} onClick={async () => {const id = await addTrade(newTrade.trim(), actor);if (id) setTradeId(id);setNewTrade('');setTradeOpen(false);}} className="rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-40">Create trade</button>
+          <button type="button" disabled={newTrade.trim().length < 3} onClick={async () => {const id = await addTrade(newTrade.trim(), actor);if (id) setTradeId(id);setNewTrade('');setTradeOpen(false);}} className="rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-night hover:bg-brand-700 disabled:opacity-40">Create trade</button>
         </div>
       </Modal>
     </>);

@@ -11,7 +11,7 @@ interface PanelProps {
 
 export function Panel({ title, description, aside, accent, className = '', children }: PanelProps) {
   return (
-    <section className={`rounded-2xl border border-line bg-white p-5 md:p-6 ${className}`}>
+    <section className={`rounded-3xl border border-line bg-surface p-5 md:p-6 ${className}`}>
       {(title || aside) &&
       <div className="mb-5 flex items-start justify-between gap-3">
           <div>

@@ -25,7 +25,7 @@ export function NotificationsMenu({ userId }: {userId: string;}) {
         
         <BellIcon className="h-5 w-5" />
         {unread > 0 &&
-        <span className="absolute right-1 top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-brand-600 px-1 text-[10px] font-semibold text-white ring-2 ring-white">{unread}</span>
+        <span className="absolute right-1 top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-brand-600 px-1 text-[10px] font-semibold text-night ring-2 ring-night">{unread}</span>
         }
       </button>
       <AnimatePresence>
@@ -35,7 +35,7 @@ export function NotificationsMenu({ userId }: {userId: string;}) {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -4, scale: 0.98 }}
           transition={{ duration: 0.16, ease: [0.23, 1, 0.32, 1] }}
-          className="absolute right-0 top-12 z-40 w-[min(92vw,380px)] origin-top-right overflow-hidden rounded-2xl border border-line bg-white shadow-lg">
+          className="absolute right-0 top-12 z-40 w-[min(92vw,380px)] origin-top-right overflow-hidden rounded-2xl border border-line bg-raised shadow-lg">
           
             <div className="flex items-center justify-between border-b border-line px-4 py-3">
               <p className="font-semibold text-ink">Notifications</p>

@@ -28,7 +28,7 @@ export function BottomNav() {
 
   return (
     <>
-      <nav aria-label="Main" className="no-print fixed inset-x-0 bottom-0 z-30 border-t border-line bg-white pb-[env(safe-area-inset-bottom)] lg:hidden">
+      <nav aria-label="Main" className="no-print fixed inset-x-0 bottom-0 z-30 border-t border-line bg-night/85 backdrop-blur-xl pb-[env(safe-area-inset-bottom)] lg:hidden">
         <ul className="mx-auto grid max-w-2xl" style={{ gridTemplateColumns: `repeat(${tabs.length + 1}, minmax(0, 1fr))` }}>
           {tabs.map((t) =>
           <li key={t.to}>
@@ -57,11 +57,11 @@ export function BottomNav() {
 
       <AnimatePresence>
         {moreOpen &&
-        <motion.div className="fixed inset-0 z-40 bg-ink/40 lg:hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }} onClick={() => setMoreOpen(false)}>
+        <motion.div className="fixed inset-0 z-40 bg-night/70 lg:hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }} onClick={() => setMoreOpen(false)}>
             <motion.div
             role="dialog"
             aria-label="More"
-            className="absolute inset-x-0 bottom-0 rounded-t-3xl bg-white p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]"
+            className="absolute inset-x-0 bottom-0 rounded-t-3xl bg-raised p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]"
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}

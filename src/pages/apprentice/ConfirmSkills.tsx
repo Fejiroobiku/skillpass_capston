@@ -62,7 +62,7 @@ export function ConfirmSkills() {
                       <button type="button" onClick={() => {setDisputing(c.id);setDisputeReason('');}} className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-bad-700 transition-colors duration-150 hover:bg-bad-50">
                         <XIcon className="h-4 w-4" /> I didn't do this
                       </button>
-                      <button type="button" onClick={() => {confirmCredential(c.id);setDone(`Confirmed “${skill?.name}”.`);}} className="flex items-center justify-center gap-2 border-l border-line bg-brand-600 px-4 py-3 text-sm font-semibold text-white transition-colors duration-150 hover:bg-brand-700">
+                      <button type="button" onClick={() => {confirmCredential(c.id);setDone(`Confirmed “${skill?.name}”.`);}} className="flex items-center justify-center gap-2 border-l border-line bg-brand-600 px-4 py-3 text-sm font-semibold text-night transition-colors duration-150 hover:bg-brand-700">
                         <CheckIcon className="h-4 w-4" /> Yes, I did this
                       </button>
                     </div>
@@ -92,9 +92,9 @@ export function ConfirmSkills() {
               </fieldset>
               <div>
                 <label htmlFor="concern" className="text-sm font-semibold text-ink">Details</label>
-                <textarea id="concern" rows={4} value={details} onChange={(e) => setDetails(e.target.value)} placeholder="What was said or asked, and when" className="mt-1.5 w-full resize-none rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+                <textarea id="concern" rows={4} value={details} onChange={(e) => setDetails(e.target.value)} placeholder="What was said or asked, and when" className="mt-1.5 w-full resize-none rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30" />
               </div>
-              <button type="submit" disabled={details.trim().length < 10} className="w-full rounded-xl bg-ink px-4 py-3 text-sm font-semibold text-white transition-colors duration-150 hover:bg-ink/90 disabled:opacity-40">Send confidentially</button>
+              <button type="submit" disabled={details.trim().length < 10} className="w-full rounded-xl bg-ink px-4 py-3 text-sm font-semibold text-night transition-colors duration-150 hover:bg-ink/90 disabled:opacity-40">Send confidentially</button>
               {myReports.length > 0 && <p className="text-xs text-ink-muted">You've sent {myReports.length} report{myReports.length > 1 ? 's' : ''}. Latest status: {myReports[0].status}.</p>}
             </form>
           }
@@ -103,7 +103,7 @@ export function ConfirmSkills() {
 
       <Modal open={!!disputing} title="Tell us what's wrong" onClose={() => setDisputing(null)}>
         <p className="text-sm text-ink-muted">This credential will be flagged for an administrator. It won't appear as valid on your passport.</p>
-        <textarea rows={3} aria-label="Reason" value={disputeReason} onChange={(e) => setDisputeReason(e.target.value)} placeholder="e.g. I have not done this task yet" className="mt-3 w-full resize-none rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+        <textarea rows={3} aria-label="Reason" value={disputeReason} onChange={(e) => setDisputeReason(e.target.value)} placeholder="e.g. I have not done this task yet" className="mt-3 w-full resize-none rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30" />
         <div className="mt-5 flex justify-end gap-2">
           <button type="button" onClick={() => setDisputing(null)} className="rounded-xl px-4 py-2.5 text-sm font-medium text-ink hover:bg-canvas">Cancel</button>
           <button type="button" disabled={disputeReason.trim().length < 5} onClick={() => {if (disputing) disputeCredential(disputing, disputeReason.trim());setDisputing(null);setDone('Flagged for review. Thank you for being honest.');}} className="rounded-xl bg-bad-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-bad-700 disabled:opacity-40">Flag it</button>

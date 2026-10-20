@@ -4,6 +4,7 @@ import { ArrowRightIcon, ClockIcon, FilePlus2Icon, TriangleAlertIcon } from 'luc
 import { PageHeader } from '../../components/PageHeader';
 import { Panel } from '../../components/Panel';
 import { StatusBadge } from '../../components/StatusBadge';
+import { ScoreRing } from '../../components/ScoreRing';
 import { useSkillPass } from '../../contexts/SkillPassContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { formatDate } from '../../utils/credentials';
@@ -36,7 +37,7 @@ export function TrainerDashboard() {
         subtitle={`${me.workshop} · ${me.location.name}`}
         actions={
         me.approved && !me.misconductAt &&
-        <Link to="/trainer/issue" className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors duration-150 hover:bg-brand-700">
+        <Link to="/trainer/issue" className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-night transition-colors duration-150 hover:bg-brand-700">
               <FilePlus2Icon className="h-4 w-4" /> Issue credential
             </Link>
 
@@ -59,7 +60,7 @@ export function TrainerDashboard() {
         </div>
       }
       {me.approved && !me.misconductAt && risk?.onProbation &&
-      <div role="status" className="mb-6 flex gap-3 rounded-2xl border border-line bg-white p-4 text-sm text-ink">
+      <div role="status" className="mb-6 flex gap-3 rounded-2xl border border-line bg-surface p-4 text-sm text-ink">
           <ClockIcon className="h-5 w-5 shrink-0 text-brand-600" />
           <p><span className="font-semibold">Probation: {risk.probationUsed} of {settings.probationCount} credentials.</span> Until you reach {settings.probationCount}, every credential you sign needs a second trainer or verified employer to co-sign.</p>
         </div>
@@ -68,15 +69,12 @@ export function TrainerDashboard() {
       <div className="grid gap-6 lg:grid-cols-3">
         <Panel className="lg:col-span-2" title="Your trust score" description="Employers see this next to every credential you sign.">
           <div className="flex flex-col gap-6 md:flex-row md:items-center">
-            <div className="flex items-baseline gap-2">
-              <span className="text-6xl font-semibold tracking-tight text-brand-700">{trust.score}</span>
-              <span className="text-lg text-ink-muted">/ 100</span>
-            </div>
-            <dl className="grid flex-1 grid-cols-2 gap-x-6 gap-y-4 border-line md:border-l md:pl-6">
+            <ScoreRing score={trust.score} />
+            <dl className="grid flex-1 grid-cols-2 gap-3">
               {metrics.map((m) =>
-              <div key={m.label}>
+              <div key={m.label} className="rounded-2xl bg-canvas p-3.5">
                   <dt className="text-xs text-ink-muted">{m.label}</dt>
-                  <dd className="mt-0.5 text-xl font-semibold text-ink">{m.value}</dd>
+                  <dd className="mt-0.5 font-display text-2xl font-semibold text-ink">{m.value}</dd>
                   <dd className="text-xs text-ink-subtle">{m.hint}</dd>
                 </div>
               )}
@@ -104,7 +102,7 @@ export function TrainerDashboard() {
                 <p className="mt-0.5 text-xs text-ink-muted">{nameOf(c.apprenticeId)} · issued by {nameOf(c.trainerId)}</p>
                 <div className="mt-3 flex gap-2">
                   <Link to={`/verify/${c.id}`} className="flex-1 rounded-lg border border-line px-3 py-2 text-center text-sm font-medium text-ink transition-colors duration-150 hover:bg-canvas">Evidence</Link>
-                  <button type="button" onClick={() => cosign(c.id, me.id)} className="flex-1 rounded-lg bg-brand-600 px-3 py-2 text-sm font-semibold text-white transition-colors duration-150 hover:bg-brand-700">Co-sign</button>
+                  <button type="button" onClick={() => cosign(c.id, me.id)} className="flex-1 rounded-lg bg-brand-600 px-3 py-2 text-sm font-semibold text-night transition-colors duration-150 hover:bg-brand-700">Co-sign</button>
                 </div>
               </li>
             )}

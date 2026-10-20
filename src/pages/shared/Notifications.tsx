@@ -25,16 +25,16 @@ export function Notifications() {
       <PageHeader
         title="Notifications"
         subtitle="In-app alerts and the SMS messages sent to your phone."
-        actions={unread > 0 && <button type="button" onClick={() => markAllRead(user.id)} className="rounded-xl border border-line bg-white px-4 py-2.5 text-sm font-semibold text-ink hover:bg-canvas">Mark all read</button>} />
+        actions={unread > 0 && <button type="button" onClick={() => markAllRead(user.id)} className="rounded-xl border border-line bg-surface px-4 py-2.5 text-sm font-semibold text-ink hover:bg-canvas">Mark all read</button>} />
       
       <div role="tablist" aria-label="Channel" className="mb-4 flex gap-1 overflow-x-auto">
         {(['all', 'in_app', 'sms', 'email'] as const).map((f) =>
-        <button key={f} role="tab" aria-selected={filter === f} type="button" onClick={() => setFilter(f)} className={`whitespace-nowrap rounded-full px-3.5 py-2 text-sm font-medium transition-colors duration-150 ${filter === f ? 'bg-ink text-white' : 'bg-white text-ink-muted ring-1 ring-inset ring-line hover:text-ink'}`}>
+        <button key={f} role="tab" aria-selected={filter === f} type="button" onClick={() => setFilter(f)} className={`whitespace-nowrap rounded-full px-3.5 py-2 text-sm font-medium transition-colors duration-150 ${filter === f ? 'bg-ink text-night' : 'bg-surface text-ink-muted ring-1 ring-inset ring-line hover:text-ink'}`}>
             {f === 'all' ? 'All' : channelLabel[f]}
           </button>
         )}
       </div>
-      <ul className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-white">
+      <ul className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-surface">
         {rows.length === 0 && <li className="p-10 text-center text-sm text-ink-muted">No notifications here.</li>}
         {rows.map((n) => {
           const Icon = icons[n.channel];
