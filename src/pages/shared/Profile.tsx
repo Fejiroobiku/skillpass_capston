@@ -63,7 +63,7 @@ export function Profile() {
           </div>
           <ul className="mt-4 space-y-2 text-sm text-ink-muted">
             <li>We collect only what SkillPass needs: name, phone, trade, location and evidence photos.</li>
-            <li>Employers see only the fields on the public verification page.</li>
+            <li>Employers see only the fields on the public verification page, never your phone number or exact GPS position.</li>
             <li>Evidence is stored privately and shown only on your credential pages.</li>
           </ul>
           {user.role !== 'admin' &&
@@ -73,7 +73,8 @@ export function Profile() {
       </div>
 
       <Modal open={confirming} title="Withdraw consent?" onClose={() => setConfirming(false)}>
-        <p className="text-sm text-ink-muted">Your account will be closed and your personal data scheduled for deletion. Credentials already verified stay on the audit log in anonymised form, as required for integrity.</p>
+        <p className="text-sm text-ink-muted">Your account will be closed straight away and your personal data removed: your name, email, phone, date of birth and location{user.role === 'apprentice' ? ', and every photo and video of your work. Your credentials will be withdrawn' : ''}.</p>
+        <p className="mt-2 text-sm text-ink-muted">We keep only what protects the integrity of the pilot, without your details: file fingerprints so evidence can't be reused, and the audit log of past actions. This can't be undone.</p>
         <div className="mt-5 flex justify-end gap-2">
           <button type="button" onClick={() => setConfirming(false)} className="rounded-xl px-4 py-2.5 text-sm font-medium text-ink hover:bg-canvas">Keep my account</button>
           <button type="button" onClick={() => {withdrawConsent();navigate('/login');}} className="rounded-xl bg-bad-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-bad-700">Withdraw consent</button>

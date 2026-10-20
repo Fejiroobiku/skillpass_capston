@@ -617,3 +617,69 @@ describe('confidential reports and the audit log', () => {
     assert.ok(new Date(r.body.entries[0].at) >= new Date(r.body.entries[4].at));
   });
 });
+
+// ---------------------------------------------------------------------------
+// privacy
+// ---------------------------------------------------------------------------
+
+describe('privacy', () => {
+  it('withdrawing consent removes an apprentice\'s personal data and evidence, and withdraws their credentials', async () => {
+    const reg = await api('POST', '/api/auth/register', { body: {
+      role: 'apprentice', name: 'Wale Adisa', email: 'wale.adisa@example.com', phone: '08077770000', password: 'a-good-password',
+      dob: '1999-04-11', trade: 'electrical', consent: true, trainerId: 't1', location: { name: 'Yaba', lat: 6.5095, lng: 3.3711 },
+    } });
+    assert.equal(reg.status, 201, JSON.stringify(reg.body));
+    const waleId = reg.body.user.id;
+
+    const video = await freshVideo(tokens.t1);
+    const cred = await issue(tokens.t1, { apprenticeId: waleId, skillId: 'el-01', evidenceIds: [video.id], cosignRequestedFrom: 't4' });
+    assert.equal(cred.status, 201, JSON.stringify(cred.body));
+    const credId = cred.body.credential.id;
+    const fileKey = video.url.split('/uploads/')[1];
+
+    const out = await api('POST', '/api/auth/withdraw-consent', { token: reg.body.token });
+    assert.equal(out.status, 200, JSON.stringify(out.body));
+    assert.equal(out.body.filesDeleted, 1);
+
+    const user = (await pool.query('SELECT name, email, phone, location_name, lat, status FROM users WHERE id = $1', [waleId])).rows[0];
+    assert.equal(user.status, 'withdrawn');
+    assert.equal(user.name, 'Withdrawn participant');
+    assert.ok(!user.email.includes('wale'));
+    assert.equal(user.phone, null);
+    assert.equal(user.location_name, null);
+    assert.equal(user.lat, null);
+
+    const ev = (await pool.query('SELECT url, caption, lat, sha256 FROM evidence WHERE credential_id = $1', [credId])).rows[0];
+    assert.equal(ev.url, '');
+    assert.equal(ev.lat, null);
+    assert.equal(ev.sha256.length, 64); // the fingerprint stays, so the file can never back another credential
+    await assert.rejects(import('node:fs/promises').then((fs) => fs.access(path.join(process.env.UPLOAD_DIR ?? 'uploads', fileKey))));
+
+    const pub = await api('GET', `/api/verify/${credId}`);
+    assert.equal(pub.body.credential.status, 'revoked');
+    assert.equal(pub.body.credential.apprentice.name, 'Withdrawn participant');
+    assert.equal(pub.body.credential.evidence.length, 0);
+    assert.equal(pub.body.credential.signatureValid, true);
+
+    // The old email no longer signs in, and can be used to join again.
+    assert.equal((await api('POST', '/api/auth/login', { body: { email: 'wale.adisa@example.com', password: 'a-good-password' } })).status, 401);
+  });
+
+  it('never sends GPS points to employers', async () => {
+    const r = await api('GET', '/api/credentials', { token: tokens.e1 });
+    assert.equal(r.status, 200);
+    const evidence = r.body.credentials.flatMap((c) => c.evidence);
+    assert.ok(evidence.length > 0);
+    assert.ok(evidence.every((e) => e.lat === undefined && e.lng === undefined));
+  });
+
+  it('only the browser that recorded a verification can rate it, and only once', async () => {
+    const ev = await api('POST', '/api/verify/SP-2BNC-8QPE/events', { body: { seconds: 25 } });
+    assert.equal(ev.status, 201);
+    assert.match(ev.body.token, /^[0-9a-f]{32}$/);
+    assert.equal((await api('PATCH', `/api/verify/events/${ev.body.id}`, { body: { trustRating: 5 } })).status, 400);
+    assert.equal((await api('PATCH', `/api/verify/events/${ev.body.id}`, { body: { trustRating: 5, token: '0'.repeat(32) } })).status, 404);
+    assert.equal((await api('PATCH', `/api/verify/events/${ev.body.id}`, { body: { trustRating: 4, token: ev.body.token } })).status, 200);
+    assert.equal((await api('PATCH', `/api/verify/events/${ev.body.id}`, { body: { trustRating: 1, token: ev.body.token } })).status, 404);
+  });
+});

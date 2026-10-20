@@ -79,6 +79,19 @@ export async function loadCredentialsFull(db, where = 'TRUE', params = []) {
   return rows.map((r) => mapCredential(r, byCredential.get(r.id) ?? []));
 }
 
+/**
+ * Shape credentials for the person asking. Employers see evidence without its GPS point, the same as the public
+ * verification page; trainers, apprentices and administrators need it to check where the work was done.
+ */
+export function forViewer(user, credentials) {
+  if (user.role !== 'employer') return credentials;
+  return credentials.map((c) => ({
+    ...c,
+    // eslint-disable-next-line no-unused-vars
+    evidence: c.evidence.map(({ lat, lng, ...rest }) => rest),
+  }));
+}
+
 /** Which credentials a user may see, as a SQL fragment (uses $1 = user id) for loadCredentialsFull. */
 export function scopeFor(user) {
   const params = [user.id];

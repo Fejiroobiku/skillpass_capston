@@ -243,15 +243,18 @@ function useSkillPassStore() {
   /** Send the ten answers. The server works out the score, so it cannot be changed from the browser. */
   const submitSus = async (answers: number[]): Promise<number | undefined> => (await act(() => api.post<{score: number;}>('/api/sus', { answers })))?.score;
 
+  /** Records how long a check took. Returns a handle ("id.token") that is needed to rate this check once. */
   const recordVerification = async (credentialId: string, seconds: number): Promise<string> => {
     try {
-      return (await api.post<{id: string;}>(`/api/verify/${credentialId}/events`, { seconds })).id;
+      const r = await api.post<{id: string;token: string;}>(`/api/verify/${credentialId}/events`, { seconds });
+      return `${r.id}.${r.token}`;
     } catch {
       return '';
     }
   };
-  const rateVerification = async (id: string, trustRating: number) => {
-    if (id) await api.patch(`/api/verify/events/${id}`, { trustRating }).catch(() => undefined);
+  const rateVerification = async (handle: string, trustRating: number) => {
+    const [id, token] = handle.split('.');
+    if (id && token) await api.patch(`/api/verify/events/${id}`, { trustRating, token }).catch(() => undefined);
   };
 
   return {

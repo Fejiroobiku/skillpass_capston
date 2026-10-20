@@ -6,7 +6,7 @@ import { getSettings, logAudit, notify, notifyAdmins, SYSTEM } from '../lib/audi
 import { credentialId, uid } from '../lib/ids.js';
 import { signCredential } from '../lib/signing.js';
 import { getRubric } from '../lib/rubric.js';
-import { flowStatus, loadCredential, loadCredentialFull, loadCredentialsFull, revokeCredential, scopeFor, transition } from '../lib/credentials.js';
+import { flowStatus, forViewer, loadCredential, loadCredentialFull, loadCredentialsFull, revokeCredential, scopeFor, transition } from '../lib/credentials.js';
 import { addAuditSamples, assertEligibleCosigner, issuedToday, loadRisk, loadTrainerForIssuing } from '../lib/integrity.js';
 import { authenticate, requireRole } from '../middleware/auth.js';
 
@@ -29,7 +29,7 @@ const reasonSchema = z.object({
 });
 
 const skillNameOf = async (db, skillId) => (await db.query('SELECT name FROM skills WHERE id = $1', [skillId])).rows[0]?.name ?? skillId;
-const respond = async (res, id, status = 200) => res.status(status).json({ credential: await loadCredentialFull(pool, id) });
+const respond = async (res, id, status = 200) => res.status(status).json({ credential: forViewer(res.req.user, [await loadCredentialFull(pool, id)])[0] });
 
 /** Credentials this person is allowed to see, newest first. Optional ?status=valid filter. */
 router.get('/', async (req, res) => {
@@ -40,7 +40,7 @@ router.get('/', async (req, res) => {
     params.push(status);
     where += ` AND c.status = $${params.length}`;
   }
-  res.json({ credentials: await loadCredentialsFull(pool, where, params) });
+  res.json({ credentials: forViewer(req.user, await loadCredentialsFull(pool, where, params)) });
 });
 
 /**

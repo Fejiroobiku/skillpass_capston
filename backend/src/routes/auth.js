@@ -7,6 +7,8 @@ import { HttpError } from '../lib/errors.js';
 import { logAudit, notify, notifyAdmins } from '../lib/audit.js';
 import { userId } from '../lib/ids.js';
 import { authenticate, signToken } from '../middleware/auth.js';
+import { anonymiseParticipant } from '../lib/privacy.js';
+import { removeStored } from '../lib/storage.js';
 
 const router = Router();
 
@@ -155,13 +157,23 @@ router.get('/me', authenticate, async (req, res) => {
   res.json({ user: await currentUser({ query }, req.user.id) });
 });
 
-/** NDPA 2023: a participant can withdraw consent at any time. The account is closed immediately. */
+/**
+ * NDPA 2023: a participant can withdraw consent at any time. The account is closed and their personal data
+ * is removed or anonymised straight away (see lib/privacy.js for exactly what is kept and why).
+ */
 router.post('/withdraw-consent', authenticate, async (req, res) => {
-  await tx(async (db) => {
-    await db.query(`UPDATE users SET status = 'withdrawn' WHERE id = $1`, [req.user.id]);
-    await logAudit(db, { actor: req.user, action: 'consent.withdrawn', target: req.user.email, detail: 'Participant withdrew consent; personal data scheduled for deletion' });
+  if (req.user.role === 'admin') throw new HttpError(400, 'Administrator accounts are closed by another administrator.');
+  const result = await tx(async (db) => {
+    const r = await anonymiseParticipant(db, req.user.id);
+    await logAudit(db, {
+      actor: { id: req.user.id, name: 'Withdrawn participant' }, action: 'consent.withdrawn', target: req.user.id,
+      detail: `Participant withdrew consent · personal data removed · ${r.files.length} evidence file(s) deleted · ${r.credentialsRevoked} credential(s) withdrawn`,
+    });
+    return r;
   });
-  res.json({ ok: true });
+  // Delete the files only after the database change has committed.
+  await Promise.all(result.files.map((key) => removeStored(key)));
+  res.json({ ok: true, filesDeleted: result.files.length, credentialsWithdrawn: result.credentialsRevoked });
 });
 
 export default router;

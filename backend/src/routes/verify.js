@@ -1,3 +1,4 @@
+import { createHash, randomBytes } from 'node:crypto';
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
 import { z } from 'zod';
@@ -17,6 +18,7 @@ const router = Router();
 router.use(rateLimit({ windowMs: 60_000, limit: 120, standardHeaders: 'draft-7', legacyHeaders: false, skip: () => config.env === 'test' }));
 
 const ID_PATTERN = /^SP-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
+const sha256 = (s) => createHash('sha256').update(s).digest('hex');
 /** Look up a credential by ID. No login needed. Contact details are never included. */
 router.get('/:id', async (req, res) => {
   const id = req.params.id.trim().toUpperCase();
@@ -72,7 +74,8 @@ router.get('/:id', async (req, res) => {
       revokeReason: c.revoke_reason ?? undefined,
       signature: c.signature,
       signatureValid,
-      evidence: evidence.map((e) => {
+      // Evidence removed when an apprentice withdrew consent keeps only its fingerprint (still counted in the signature above).
+      evidence: evidence.filter((e) => e.url).map((e) => {
         // eslint-disable-next-line no-unused-vars
         const { hash, lat, lng, ...publicFields } = mapEvidence(e); // no file hash or GPS point on the public page
         return publicFields;
@@ -88,14 +91,22 @@ router.post('/:id/events', async (req, res) => {
   const id = req.params.id.trim().toUpperCase();
   if (!(await query('SELECT 1 FROM credentials WHERE id = $1', [id])).rowCount) throw new HttpError(404, 'Credential not found.');
   const eventId = uid('v');
-  await query('INSERT INTO verification_events (id, credential_id, seconds) VALUES ($1, $2, $3)', [eventId, id, seconds]);
-  res.status(201).json({ id: eventId });
+  // Only the browser holding this token can add the trust rating, so nobody can stuff the pilot metrics.
+  const token = randomBytes(16).toString('hex');
+  await query('INSERT INTO verification_events (id, credential_id, seconds, rating_token_hash) VALUES ($1, $2, $3, $4)', [eventId, id, seconds, sha256(token)]);
+  res.status(201).json({ id: eventId, token });
 });
 
 router.patch('/events/:eventId', async (req, res) => {
-  const { trustRating } = z.object({ trustRating: z.number().int().min(1).max(5) }).parse(req.body);
-  const r = await query('UPDATE verification_events SET trust_rating = $2 WHERE id = $1', [req.params.eventId, trustRating]);
-  if (!r.rowCount) throw new HttpError(404, 'Verification event not found.');
+  const { trustRating, token } = z.object({
+    trustRating: z.number().int().min(1).max(5),
+    token: z.string().regex(/^[0-9a-f]{32}$/, 'Missing rating token.'),
+  }).parse(req.body);
+  const r = await query(
+    'UPDATE verification_events SET trust_rating = $2, rating_token_hash = NULL WHERE id = $1 AND rating_token_hash = $3',
+    [req.params.eventId, trustRating, sha256(token)],
+  );
+  if (!r.rowCount) throw new HttpError(404, 'This check was not found, or it has already been rated.');
   res.json({ ok: true });
 });
 

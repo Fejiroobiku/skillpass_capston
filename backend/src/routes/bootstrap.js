@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { pool } from '../db.js';
 import { getSettings } from '../lib/audit.js';
-import { loadCredentialsFull, scopeFor } from '../lib/credentials.js';
+import { forViewer, loadCredentialsFull, scopeFor } from '../lib/credentials.js';
 import { redactHistory } from '../lib/history.js';
 import { loadRisk, loadTrust } from '../lib/integrity.js';
 import { authenticate } from '../middleware/auth.js';
@@ -170,7 +170,7 @@ router.get('/', async (req, res) => {
     skills: skills.map((s) => ({ id: s.id, trade: s.trade_id, name: s.name, level: s.level, requiresCosign: s.requires_cosign, status: s.status, proposedBy: s.proposed_by ?? undefined })),
     settings,
     trainers, apprentices, employers, admins,
-    credentials,
+    credentials: forViewer(me, credentials),
     flags: flagRows.map((f) => ({ id: f.id, credentialId: f.credential_id, raisedBy: f.raised_by, reason: f.reason, raisedAt: iso(f.raised_at), status: f.status })),
     samples: sampleRows.map((s) => ({ id: s.id, credentialId: s.credential_id, assessor: s.reviewer_id ?? '', assessorId: s.assessor_id ?? undefined, reason: s.reason ?? undefined, selectedAt: iso(s.selected_at), result: s.result })),
     reports: reportRows.map((r) => ({ id: r.id, apprenticeId: r.apprentice_id, trainerId: r.trainer_id, category: r.category, details: r.details, at: iso(r.at), status: r.status })),

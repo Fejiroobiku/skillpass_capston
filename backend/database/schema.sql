@@ -307,6 +307,8 @@ CREATE TABLE verification_events (
   credential_id text NOT NULL REFERENCES credentials (id),
   seconds       integer NOT NULL CHECK (seconds >= 0),
   trust_rating  smallint CHECK (trust_rating BETWEEN 1 AND 5),
+  -- SHA-256 of a random token held by the browser that recorded the check; only it can add the rating
+  rating_token_hash text,
   at            timestamptz NOT NULL DEFAULT now()
 );
 

@@ -142,7 +142,8 @@ Steps:
 
 - Done: frontend for all roles, backend API and database, frontend connected to the API, server-side integrity rules (issuing limit, probation, co-signing, duplicate-evidence blocking, signing, scoring, audit log)
 - Done: automated tests for the API and for the app running against it
-- Next: deploy, send SMS (notifications are stored but not yet sent), move evidence to cloud storage, delete personal data when consent is withdrawn
+- Next: deploy, send SMS (notifications are stored but not yet sent), move evidence to cloud storage
+- Done: withdrawing consent removes the participant's personal data and evidence files (see `backend/src/lib/privacy.js`)
 
 ## Author
 

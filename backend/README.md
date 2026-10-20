@@ -83,6 +83,9 @@ Never commit `.env`. It is already in `.gitignore`.
 | Evidence says where its location came from | `evidence.location_source` is `gps` only when the phone sent GPS coordinates, otherwise `declared` |
 | One live credential per apprentice per skill | Partial unique index on `credentials` |
 | Signatures detect tampering | HMAC-SHA256 over id, apprentice, skill, trainer, time and evidence hashes. `GET /api/verify/:id` returns `signatureValid` |
+| Withdrawing consent removes personal data | `POST /api/auth/withdraw-consent` closes the account and anonymises it straight away: name, email, phone, date of birth, location, workshop or company, and for an apprentice every evidence file (deleted from storage), caption and GPS point. Their credentials are withdrawn. Only evidence fingerprints and the append-only audit log remain (`lib/privacy.js`) |
+| Employers never see GPS points | Evidence sent to employers has no latitude or longitude, the same as the public page |
+| Pilot ratings cannot be stuffed | Each verification gets a one-time token; only that browser can add its trust rating, once |
 | The audit log cannot be edited | Database triggers reject `UPDATE`, `DELETE` and `TRUNCATE` on `audit_log` |
 | Suspending an account takes effect immediately | The account is re-read on every request, not only at login |
 | Trust score and risk signals match the frontend | Ported from `utils/credentials.ts` and `utils/risk.ts`, and checked against them on the seed data |
@@ -140,7 +143,6 @@ The demo seed contains accounts with a published password. Never load it into a 
 
 - SMS and email delivery. Notifications are saved with their channel, but nothing sends them yet.
 - Evidence is stored on local disk, which is wiped on Render's free tier. Replace `storeFile()` in `src/lib/storage.js` with an upload to Supabase Storage or Cloudinary.
-- Withdrawing consent closes the account but does not yet delete or anonymise personal data.
 - Password reset and email verification.
 - A script to create the first real administrator for a production database. The seeded admin has a published demo password.
 - The random audit sample runs when an administrator presses the button, not on a schedule.
