@@ -22,6 +22,7 @@ export function mapEvidence(r) {
     locationLabel: r.location_label,
     lat: r.lat ?? undefined,
     lng: r.lng ?? undefined,
+    locationSource: r.location_source ?? 'declared',
     hash: r.sha256,
     challengeCode: r.challenge_code ?? undefined,
     durationSec: r.duration_sec ?? undefined,

@@ -4,9 +4,10 @@
  *   npm run db:schema   create all tables (empty database only)
  *   npm run db:seed     load the demo data and sign every credential with your SIGNING_KEY
  *   npm run db:resign   recompute signatures (after changing SIGNING_KEY)
+ *   npm run db:migrate  apply database/migrations/*.sql to an existing database (each file is safe to re-run)
  *   npm run db:reset    DROP everything, then schema + seed. Development only.
  */
-import { readFile } from 'node:fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { config } from '../src/config.js';
@@ -18,6 +19,13 @@ const sql = (name) => readFile(path.join(dir, name), 'utf8');
 
 export async function applySchema() {
   await pool.query(await sql('schema.sql'));
+}
+
+/** Bring an existing database up to date. New databases get everything from schema.sql already. */
+export async function applyMigrations() {
+  const files = (await readdir(path.join(dir, 'migrations'))).filter((f) => f.endsWith('.sql')).sort();
+  for (const f of files) await pool.query(await sql(path.join('migrations', f)));
+  return files;
 }
 
 export async function applySeed() {
@@ -45,13 +53,16 @@ async function main() {
       console.log('Schema created.');
     } else if (command === 'seed') {
       console.log(`Seeded demo data and signed ${await applySeed()} credentials.`);
+    } else if (command === 'migrate') {
+      const files = await applyMigrations();
+      console.log(files.length ? `Applied ${files.length} migration file(s): ${files.join(', ')}` : 'No migrations to apply.');
     } else if (command === 'resign') {
       console.log(`Re-signed ${await resignAll(pool)} credentials.`);
     } else if (command === 'reset') {
       if (config.env === 'production') throw new Error('Refusing to reset a production database.');
       console.log(`Database reset. Seeded demo data and signed ${await reset()} credentials.`);
     } else {
-      console.log('Usage: node scripts/db.js <schema|seed|resign|reset>');
+      console.log('Usage: node scripts/db.js <schema|migrate|seed|resign|reset>');
       process.exitCode = 1;
     }
   } finally {

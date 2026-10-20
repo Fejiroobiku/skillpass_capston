@@ -7,6 +7,8 @@ export interface EvidenceMeta {
   locationLabel: string;
   lat?: number;
   lng?: number;
+  /** Whether lat/lng came from the phone's GPS or is the declared workshop address. */
+  locationSource?: 'gps' | 'declared';
   /** Required for video: the code the server issued for this recording. */
   challengeCode?: string;
   durationSec?: number;
@@ -26,6 +28,7 @@ export async function uploadEvidence(blob: Blob, meta: EvidenceMeta): Promise<Ev
   form.append('locationLabel', meta.locationLabel);
   if (meta.lat !== undefined) form.append('lat', String(meta.lat));
   if (meta.lng !== undefined) form.append('lng', String(meta.lng));
+  if (meta.locationSource) form.append('locationSource', meta.locationSource);
   if (meta.challengeCode) form.append('challengeCode', meta.challengeCode);
   if (meta.durationSec !== undefined) form.append('durationSec', String(meta.durationSec));
   if (meta.source) form.append('source', meta.source);

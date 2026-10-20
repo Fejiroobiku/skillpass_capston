@@ -82,8 +82,10 @@ router.post('/', requireRole('trainer'), async (req, res) => {
     const rubric = await getRubric(db, skill.id);
     if (!rubric.every((r) => input.criteriaMet.includes(r))) throw new HttpError(400, 'Every rubric criterion must be observed to issue.');
 
-    const issuedSoFar = (await db.query('SELECT count(*)::int AS n FROM credentials WHERE trainer_id = $1', [trainer.id])).rows[0].n;
-    const onProbation = issuedSoFar < settings.probationCount;
+    // Probation ends after enough credentials have actually become valid (confirmed and co-signed).
+    // Pending, held, flagged or revoked ones do not count, so a new trainer cannot issue their way out of it.
+    const completed = (await db.query(`SELECT count(*)::int AS n FROM credentials WHERE trainer_id = $1 AND status = 'valid'`, [trainer.id])).rows[0].n;
+    const onProbation = completed < settings.probationCount;
     const needsCosign = skill.requires_cosign || onProbation;
     let cosignerName = '';
     if (needsCosign) {

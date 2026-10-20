@@ -145,6 +145,7 @@ describe('authentication', () => {
     assert.equal((await api('POST', '/api/auth/register', { body: person({ consent: false }) })).status, 400);
     assert.equal((await api('POST', '/api/auth/register', { body: person({ password: 'short' }) })).status, 400);
     assert.equal((await api('POST', '/api/auth/register', { body: person({ trainerId: undefined, email: 'no-trainer@example.com' }) })).status, 400); // every apprentice is linked to a trainer
+    assert.equal((await api('POST', '/api/auth/register', { body: person({ trade: 'tailoring', trainerId: 't5', email: 'unapproved@example.com' }) })).status, 400); // t5 is not approved yet
     const ok = await api('POST', '/api/auth/register', { body: person() });
     assert.equal(ok.status, 201, JSON.stringify(ok.body));
     assert.equal(ok.body.user.profile.trainerId, 't1');
@@ -229,6 +230,16 @@ describe('evidence', () => {
   it('rejects files that are not photos or videos, whatever the browser claims', async () => {
     const r = await upload(tokens.t1, Buffer.from('<?php echo "hi"; ?>'));
     assert.equal(r.status, 415);
+  });
+
+  it('only marks a location as GPS when the phone says so and sends coordinates', async () => {
+    const gps = await upload(tokens.t1, jpeg(), { caption: 'Photo', locationLabel: '6.4389, 3.5105', lat: 6.4389, lng: 3.5105, locationSource: 'gps' });
+    assert.equal(gps.status, 201, JSON.stringify(gps.body));
+    assert.equal(gps.body.evidence.locationSource, 'gps');
+    const declared = await upload(tokens.t1, jpeg(), { caption: 'Photo', locationLabel: 'Workshop', lat: 6.4389, lng: 3.5105 });
+    assert.equal(declared.body.evidence.locationSource, 'declared');
+    const noCoords = await upload(tokens.t1, jpeg(), { caption: 'Photo', locationLabel: 'Somewhere', locationSource: 'gps' });
+    assert.equal(noCoords.body.evidence.locationSource, 'declared');
   });
 
   it('requires a server-issued, unused, unexpired code for video', async () => {
@@ -461,6 +472,18 @@ describe('a new trainer on probation', () => {
     const withCosigner = await issue(tokens.newTrainer, { apprenticeId: app.body.user.id, skillId: 'el-01', evidenceIds: [video.id], cosignRequestedFrom: 't1' });
     assert.equal(withCosigner.status, 201, JSON.stringify(withCosigner.body));
     assert.equal(withCosigner.body.credential.cosignReason, 'probation');
+
+    // Issuing alone does not end probation: the first credential is still waiting for the apprentice,
+    // so even with a probation length of 1 the next one still needs a co-signer.
+    await api('PATCH', '/api/admin/settings', { token: tokens.admin, body: { probationCount: 1 } });
+    try {
+      const second = await freshVideo(tokens.newTrainer);
+      const stillOnProbation = await issue(tokens.newTrainer, { apprenticeId: app.body.user.id, skillId: 'el-02', evidenceIds: [second.id] });
+      assert.equal(stillOnProbation.status, 400, JSON.stringify(stillOnProbation.body));
+      assert.match(stillOnProbation.body.error, /co-signer/);
+    } finally {
+      await api('PATCH', '/api/admin/settings', { token: tokens.admin, body: { probationCount: 5 } });
+    }
   });
 });
 
@@ -552,6 +575,13 @@ describe('risk and misconduct', () => {
     assert.ok(run.body.selected >= 1);
     const sample = (await api('GET', '/api/admin/review', { token: tokens.admin })).body.samples.find((s) => s.credential?.status === 'valid');
     assert.ok(sample, 'expected a pending sample on a valid credential');
+    // The trainer is not tipped off: no notification, and the pending sample is not in their data.
+    const trainerId = sample.credential.trainerId;
+    assert.equal((await pool.query(`SELECT count(*)::int AS n FROM notifications WHERE user_id = $1 AND title = 'Audit sample selected'`, [trainerId])).rows[0].n, 0);
+    if (trainerId === 't1') {
+      const t1Boot = await api('GET', '/api/bootstrap', { token: tokens.t1 });
+      assert.ok(!t1Boot.body.samples.some((s) => s.result === 'pending'));
+    }
     assert.equal((await api('POST', `/api/admin/audit-samples/${sample.id}/complete`, { token: tokens.admin, body: { outcome: 'disagree' } })).status, 200);
     assert.equal((await api('GET', `/api/verify/${sample.credentialId}`)).body.credential.status, 'revoked');
     assert.equal((await api('POST', `/api/admin/audit-samples/${sample.id}/complete`, { token: tokens.admin, body: { outcome: 'agree' } })).status, 409);

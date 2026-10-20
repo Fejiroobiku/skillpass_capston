@@ -52,5 +52,7 @@ settings: Settings)
   if (open > 0) signals.push({ id: 'reports', label: 'Apprentice report', detail: `${open} confidential report${open > 1 ? 's' : ''} open` });
 
   const level = signals.length >= 2 ? 'high' : signals.length === 1 ? 'medium' : 'low';
-  return { onProbation: mine.length < settings.probationCount, probationUsed: mine.length, passRate, assessed, signals, level };
+  // Only valid credentials count toward finishing probation (same rule as the server).
+  const completed = mine.filter((c) => c.status === 'valid').length;
+  return { onProbation: completed < settings.probationCount, probationUsed: completed, passRate, assessed, signals, level };
 }

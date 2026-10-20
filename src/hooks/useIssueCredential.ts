@@ -41,7 +41,8 @@ export function useIssueCredential(initialApprenticeId?: string | null) {
     return map;
   }, [credentials, apprenticeId]);
 
-  const mineCount = credentials.filter((c) => c.trainerId === me.id).length;
+  // Probation ends after enough credentials have become valid; pending or revoked ones don't count.
+  const mineCount = credentials.filter((c) => c.trainerId === me.id && c.status === 'valid').length;
   const onProbation = mineCount < settings.probationCount;
   const needsCosign = !!skill && (skill.requiresCosign || onProbation);
   const cosignTrainers = trainers.filter((t) => t.approved && t.trade === me.trade && t.id !== me.id && !t.misconductAt);

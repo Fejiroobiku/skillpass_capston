@@ -22,6 +22,7 @@ interface Loc {
   label: string;
   lat?: number;
   lng?: number;
+  source?: 'gps' | 'declared';
 }
 
 export function CameraModal({ mode, code, workshop, fallbackUrl, onCapture, onClose }: CameraModalProps) {
@@ -65,10 +66,10 @@ export function CameraModal({ mode, code, workshop, fallbackUrl, onCapture, onCl
     };
     start();
 
-    const fallback = { label: `${workshop.name} (workshop)`, lat: workshop.lat, lng: workshop.lng };
+    const fallback: Loc = { label: `${workshop.name} (workshop, not GPS)`, lat: workshop.lat, lng: workshop.lng, source: 'declared' };
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (p) => !cancelled && setLoc({ label: `${p.coords.latitude.toFixed(4)}, ${p.coords.longitude.toFixed(4)}`, lat: p.coords.latitude, lng: p.coords.longitude }),
+        (p) => !cancelled && setLoc({ label: `${p.coords.latitude.toFixed(4)}, ${p.coords.longitude.toFixed(4)}`, lat: p.coords.latitude, lng: p.coords.longitude, source: 'gps' }),
         () => !cancelled && setLoc(fallback),
         { timeout: 5000 }
       );
@@ -129,7 +130,7 @@ export function CameraModal({ mode, code, workshop, fallbackUrl, onCapture, onCl
     }
   };
 
-  const where = { locationLabel: location.label, lat: location.lat, lng: location.lng };
+  const where = { locationLabel: location.label, lat: location.lat, lng: location.lng, locationSource: location.source ?? 'declared' };
 
   const takePhoto = async () => {
     setBusy(true);
@@ -178,8 +179,9 @@ export function CameraModal({ mode, code, workshop, fallbackUrl, onCapture, onCl
       lastDemo.kind = kind;
       const ev = await uploadEvidence(blob, {
         kind, caption: reuse ? 'Re-used file (duplicate test)' : kind === 'video' ? 'Live video of apprentice performing the task' : 'Live photo of finished work',
-        locationLabel: location.label === 'Locating…' ? `${workshop.name} (workshop)` : location.label,
+        locationLabel: location.label === 'Locating…' ? `${workshop.name} (workshop, not GPS)` : location.label,
         lat: location.lat ?? workshop.lat, lng: location.lng ?? workshop.lng,
+        locationSource: location.source ?? 'declared',
         challengeCode: kind === 'video' ? code : undefined, durationSec: kind === 'video' ? 5 : undefined, source: 'demo'
       });
       onCapture(ev);

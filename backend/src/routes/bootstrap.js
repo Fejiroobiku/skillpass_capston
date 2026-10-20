@@ -137,7 +137,8 @@ router.get('/', async (req, res) => {
   const sampleRows = admin
     ? (await pool.query('SELECT * FROM audit_samples ORDER BY selected_at DESC')).rows
     : me.role === 'trainer' && ownIssued.length
-      ? (await pool.query('SELECT * FROM audit_samples WHERE credential_id = ANY($1) ORDER BY selected_at DESC', [ownIssued])).rows
+      // Trainers only see finished re-checks, never which of their credentials are waiting to be audited.
+      ? (await pool.query(`SELECT * FROM audit_samples WHERE credential_id = ANY($1) AND result <> 'pending' ORDER BY selected_at DESC`, [ownIssued])).rows
       : [];
   const reportRows = admin
     ? (await pool.query('SELECT * FROM concern_reports ORDER BY at DESC')).rows

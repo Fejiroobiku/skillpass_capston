@@ -12,7 +12,7 @@ import { associations } from '../../data/integrity';
 
 export function TrainerDashboard() {
   const { user } = useAuth();
-  const { credentials, flags, samples, trainers, apprentices, skills, settings, cosign, nameOf, trustOf, riskOf } = useSkillPass();
+  const { credentials, flags, trainers, apprentices, skills, settings, cosign, nameOf, trustOf, riskOf } = useSkillPass();
   const me = trainers.find((t) => t.id === user?.id)!;
   const trust = trustOf(me.id);
   const risk = riskOf(me.id);
@@ -20,7 +20,6 @@ export function TrainerDashboard() {
   const mine = credentials.filter((c) => c.trainerId === me.id);
   const requests = credentials.filter((c) => c.status === 'pending_cosign' && c.cosignRequestedFrom === me.id);
   const openFlags = flags.filter((f) => f.status === 'open' && mine.some((c) => c.id === f.credentialId));
-  const pendingAudits = samples.filter((s) => s.result === 'pending' && mine.some((c) => c.id === s.credentialId));
   const skillName = (id: string) => skills.find((s) => s.id === id)?.name;
 
   const metrics = [
@@ -62,7 +61,7 @@ export function TrainerDashboard() {
       {me.approved && !me.misconductAt && risk?.onProbation &&
       <div role="status" className="mb-6 flex gap-3 rounded-2xl border border-line bg-surface p-4 text-sm text-ink">
           <ClockIcon className="h-5 w-5 shrink-0 text-brand-600" />
-          <p><span className="font-semibold">Probation: {risk.probationUsed} of {settings.probationCount} credentials.</span> Until you reach {settings.probationCount}, every credential you sign needs a second trainer or verified employer to co-sign.</p>
+          <p><span className="font-semibold">Probation: {risk.probationUsed} of {settings.probationCount} credentials valid.</span> Until {settings.probationCount} of your credentials are confirmed and co-signed, every credential you sign needs a second trainer or verified employer to co-sign.</p>
         </div>
       }
 
@@ -112,12 +111,7 @@ export function TrainerDashboard() {
                 <p><Link to={`/verify/${f.credentialId}`} className="font-mono font-semibold hover:underline">{f.credentialId}</Link> was flagged: “{f.reason}”</p>
               </li>
             )}
-            {pendingAudits.length > 0 &&
-            <li className="rounded-xl bg-canvas p-4 text-sm text-ink-muted">
-                {pendingAudits.length} of your credentials {pendingAudits.length > 1 ? 'are' : 'is'} selected for a random spot-check.
-              </li>
-            }
-            {requests.length + openFlags.length + pendingAudits.length === 0 && <li className="rounded-xl bg-canvas p-4 text-sm text-ink-muted">Nothing needs your attention.</li>}
+            {requests.length + openFlags.length === 0 && <li className="rounded-xl bg-canvas p-4 text-sm text-ink-muted">Nothing needs your attention.</li>}
           </ul>
         </Panel>
       </div>

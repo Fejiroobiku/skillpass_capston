@@ -106,7 +106,7 @@ export function CredentialRecord({ credential }: {credential: PublicCredential;}
                   <figcaption className="mt-1.5 space-y-0.5 text-xs text-ink-muted">
                     <p className="text-ink">{ev.caption}</p>
                     <p className="flex items-center gap-1"><ClockIcon className="h-3 w-3" /> {formatDateTime(ev.capturedAt)}</p>
-                    <p className="flex items-center gap-1"><MapPinIcon className="h-3 w-3" /> {ev.locationLabel}</p>
+                    <p className="flex items-center gap-1"><MapPinIcon className="h-3 w-3" /> {ev.locationLabel} {ev.locationSource === 'gps' ? <span className="rounded bg-ok-50 px-1 font-semibold text-ok-700">GPS</span> : <span className="rounded bg-warn-50 px-1 font-semibold text-warn-700">Declared</span>}</p>
                   </figcaption>
                 </figure>
               )}

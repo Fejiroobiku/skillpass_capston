@@ -25,7 +25,7 @@ export function IssuePreviewPanel({ form }: {form: Form;}) {
   { ok: checks.video, label: `Live video showing code ${form.code}` },
   { ok: checks.unique, label: 'Evidence is new (no re-used files)' },
   { ok: checks.observed, label: 'You confirm you observed the task' },
-  ...(form.needsCosign ? [{ ok: checks.cosign, label: form.skill?.requiresCosign ? 'Co-signer chosen (advanced skill)' : `Co-signer chosen (probation ${form.mineCount + 1}/${form.probationCount})` }] : [])];
+  ...(form.needsCosign ? [{ ok: checks.cosign, label: form.skill?.requiresCosign ? 'Co-signer chosen (advanced skill)' : `Co-signer chosen (probation: ${form.mineCount} of ${form.probationCount} valid)` }] : [])];
 
   const copy = issued ? issuedCopy[issued.status as keyof typeof issuedCopy] : null;
 
@@ -103,7 +103,7 @@ export function IssuePreviewPanel({ form }: {form: Form;}) {
                     </optgroup>
               }
                 </select>
-                {form.onProbation && !skill?.requiresCosign && <p className="mt-1.5 text-xs text-ink-muted">You're on probation: your first {form.probationCount} credentials are all co-signed.</p>}
+                {form.onProbation && !skill?.requiresCosign && <p className="mt-1.5 text-xs text-ink-muted">You're on probation: every credential needs a co-signer until {form.probationCount} of yours are valid.</p>}
               </div>
           }
 

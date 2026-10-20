@@ -119,10 +119,10 @@ router.post('/register', async (req, res) => {
       if (!input.trainerId) throw new HttpError(400, 'Choose the trainer you are learning from.');
       const trainer = (await db.query(
         `SELECT u.id FROM users u JOIN trainer_profiles tp ON tp.user_id = u.id
-          WHERE u.id = $1 AND tp.trade_id = $2 AND u.status = 'active'`,
+          WHERE u.id = $1 AND tp.trade_id = $2 AND u.status = 'active' AND tp.approved`,
         [input.trainerId, input.trade],
       )).rows[0];
-      if (!trainer) throw new HttpError(400, 'Choose a trainer in the same trade.');
+      if (!trainer) throw new HttpError(400, 'Choose an approved trainer in the same trade.');
       await db.query('INSERT INTO apprentice_profiles (user_id, trade_id, trainer_id) VALUES ($1, $2, $3)', [id, input.trade, trainer.id]);
       await notify(db, trainer.id, 'New apprentice linked', `${input.name} joined SkillPass as your apprentice.`, { link: '/trainer/apprentices' });
     } else {

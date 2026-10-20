@@ -45,6 +45,7 @@ If you prefer psql, `psql -d skillpass -f database/schema.sql` and `-f database/
 | `npm start` | Start the API |
 | `npm test` | Run the end-to-end tests (see Testing) |
 | `npm run db:schema` | Create all tables in an empty database |
+| `npm run db:migrate` | Update an existing database to the latest schema (safe to run more than once) |
 | `npm run db:seed` | Load demo data, then sign every credential |
 | `npm run db:resign` | Recompute all credential signatures (after changing `SIGNING_KEY`) |
 | `npm run db:reset` | Drop everything, then schema and seed. Refuses to run when `NODE_ENV=production` |
@@ -76,7 +77,10 @@ Never commit `.env`. It is already in `.gitignore`.
 | Evidence type is checked from the file bytes, not the browser's claim | `lib/storage.js` |
 | Every rubric criterion must be observed | `POST /api/credentials`, rubric from `skill_criteria` |
 | Daily issuing limit holds extra credentials for admin review | Counted per Lagos day under a row lock, so simultaneous requests cannot both slip through |
-| New trainers (probation) and advanced skills need a co-signer | Co-signer must be an approved trainer or employer in the same trade, never the issuer |
+| New trainers (probation) and advanced skills need a co-signer | Probation lasts until the trainer has enough **valid** credentials; pending, held or revoked ones do not count. Co-signer must be an approved trainer or employer in the same trade, never the issuer |
+| Apprentices can only link to an approved trainer | `POST /api/auth/register` |
+| Random audits are not announced | Trainers are told the result of a re-check, never that one of their credentials was picked |
+| Evidence says where its location came from | `evidence.location_source` is `gps` only when the phone sent GPS coordinates, otherwise `declared` |
 | One live credential per apprentice per skill | Partial unique index on `credentials` |
 | Signatures detect tampering | HMAC-SHA256 over id, apprentice, skill, trainer, time and evidence hashes. `GET /api/verify/:id` returns `signatureValid` |
 | The audit log cannot be edited | Database triggers reject `UPDATE`, `DELETE` and `TRUNCATE` on `audit_log` |

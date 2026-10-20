@@ -1,3 +1,4 @@
+import { randomInt } from 'node:crypto';
 import { Router } from 'express';
 import { z } from 'zod';
 import { pool, tx } from '../db.js';
@@ -122,9 +123,16 @@ router.post('/audit-samples/run', async (req, res) => {
     const sampled = new Set((await db.query('SELECT credential_id FROM audit_samples')).rows.map((s) => s.credential_id));
     const pool = valid.filter((c) => !sampled.has(c.id));
     const n = settings.auditRatePct === 0 ? 0 : Math.min(pool.length, Math.max(1, Math.round((valid.length * settings.auditRatePct) / 100)));
-    const chosen = [...pool].sort(() => Math.random() - 0.5).slice(0, n);
+    // Fisher-Yates shuffle with a cryptographic random source, so every credential is equally likely to be picked.
+    const shuffled = [...pool];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = randomInt(i + 1);
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    const chosen = shuffled.slice(0, n);
     await addAuditSamples(db, chosen.map((c) => ({ id: c.id, skillId: c.skill_id })), 'random', req.user);
-    for (const c of chosen) await notify(db, c.trainer_id, 'Audit sample selected', `${c.id} was picked for a random spot-check.`);
+    // Trainers are NOT told which credentials were picked, so they cannot coach the apprentice before the
+    // re-check. They hear about it when the result is recorded (see /audit-samples/:id/complete).
     return chosen.length;
   });
   res.json({ selected: picked });
@@ -170,7 +178,7 @@ router.post('/trainers/:id/audit', async (req, res) => {
       [req.params.id],
     )).rows;
     await addAuditSamples(db, picked.map((c) => ({ id: c.id, skillId: c.skill_id })), 'risk', req.user);
-    if (picked.length) await notify(db, req.params.id, 'Risk-based audit', `${picked.length} of your credentials will be re-checked by an independent assessor.`, { link: '/trainer' });
+    // No notification here either: the trainer learns the outcome when each re-check is completed.
     return picked.length;
   });
   res.json({ selected });
@@ -266,8 +274,8 @@ router.post('/users/:id/approve', async (req, res) => {
       if (!t.membership_verified) throw new HttpError(409, 'Verify this trainer\'s association membership first.');
       await db.query('UPDATE trainer_profiles SET approved = true WHERE user_id = $1', [u.id]);
       const { probationCount } = await getSettings(db);
-      await logAudit(db, { actor: req.user, action: 'trainer.approved', target: u.name, detail: `Approved · probation for first ${probationCount} credentials` });
-      await notify(db, u.id, 'You are approved', `You can now issue credentials. Your first ${probationCount} each need a co-signer.`, { link: '/trainer/issue', channels: ['in_app', 'sms'] });
+      await logAudit(db, { actor: req.user, action: 'trainer.approved', target: u.name, detail: `Approved · probation until ${probationCount} credentials are valid` });
+      await notify(db, u.id, 'You are approved', `You can now issue credentials. Each one needs a co-signer until ${probationCount} of them are valid.`, { link: '/trainer/issue', channels: ['in_app', 'sms'] });
     } else if (u.role === 'employer') {
       await db.query('UPDATE employer_profiles SET approved = true WHERE user_id = $1', [u.id]);
       await logAudit(db, { actor: req.user, action: 'employer.approved', target: u.name, detail: 'Verified employer' });

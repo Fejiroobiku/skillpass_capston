@@ -41,11 +41,11 @@ export async function loadTrust(db, trainerId) {
 }
 
 export async function loadRisk(db, trainerId, settings) {
-  const creds = (await db.query('SELECT id, issued_at FROM credentials WHERE trainer_id = $1', [trainerId])).rows;
+  const creds = (await db.query('SELECT id, issued_at, status FROM credentials WHERE trainer_id = $1', [trainerId])).rows;
   const notYet = (await db.query('SELECT count(*)::int AS n FROM attempts WHERE trainer_id = $1', [trainerId])).rows[0].n;
   const reports = (await db.query(`SELECT count(*)::int AS n FROM concern_reports WHERE trainer_id = $1 AND status <> 'closed'`, [trainerId])).rows[0].n;
   return computeRisk({
-    credentials: creds.map((c) => ({ id: c.id, issuedAt: c.issued_at.toISOString() })),
+    credentials: creds.map((c) => ({ id: c.id, issuedAt: c.issued_at.toISOString(), status: c.status })),
     notYetCount: notYet,
     feedback: await feedbackFor(db, creds.map((c) => c.id)),
     openReportCount: reports,

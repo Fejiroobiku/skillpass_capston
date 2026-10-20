@@ -97,6 +97,8 @@ export interface Evidence {
   caption: string;
   capturedAt: string;
   locationLabel: string;
+  /** 'gps' when the phone supplied the position, 'declared' when the workshop address was used. */
+  locationSource?: 'gps' | 'declared';
   lat?: number;
   lng?: number;
   hash: string;

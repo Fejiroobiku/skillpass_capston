@@ -29,6 +29,8 @@ const bodySchema = z.object({
   locationLabel: z.string().trim().max(120).default(''),
   lat: optional(z.coerce.number().min(-90).max(90)),
   lng: optional(z.coerce.number().min(-180).max(180)),
+  // The phone says whether lat/lng came from GPS. Anything else is treated as declared, never as GPS.
+  locationSource: optional(z.enum(['gps', 'declared'])),
   durationSec: optional(z.coerce.number().int().min(0).max(600)),
   challengeCode: optional(z.string().trim().regex(/^\d{4}$/, 'The challenge code is four digits.')),
   source: optional(z.enum(['camera', 'demo'])),
@@ -93,10 +95,10 @@ router.post('/', upload.single('file'), async (req, res) => {
       const stored = await storeFile(file.path, sniffed.ext);
       storedKey = stored.key;
       const { rows } = await db.query(
-        `INSERT INTO evidence (id, uploaded_by, kind, url, caption, location_label, lat, lng, sha256, mime_type, size_bytes, challenge_code, duration_sec, source)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING *`,
+        `INSERT INTO evidence (id, uploaded_by, kind, url, caption, location_label, lat, lng, location_source, sha256, mime_type, size_bytes, challenge_code, duration_sec, source)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *`,
         [uid('ev'), req.user.id, sniffed.kind, stored.url, body.caption, body.locationLabel, body.lat ?? null, body.lng ?? null,
-          hash, sniffed.mime, file.size, sniffed.kind === 'video' ? body.challengeCode : null, body.durationSec ?? null, body.source ?? 'camera'],
+          body.locationSource === 'gps' && body.lat != null && body.lng != null ? 'gps' : 'declared', hash, sniffed.mime, file.size, sniffed.kind === 'video' ? body.challengeCode : null, body.durationSec ?? null, body.source ?? 'camera'],
       );
       return { row: rows[0] };
     });

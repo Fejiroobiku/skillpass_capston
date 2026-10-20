@@ -157,6 +157,8 @@ CREATE TABLE evidence (
   location_label text NOT NULL DEFAULT '',
   lat            double precision,
   lng            double precision,
+  -- 'gps' when the phone supplied the position, 'declared' when the workshop address was used instead
+  location_source text NOT NULL DEFAULT 'declared' CHECK (location_source IN ('gps', 'declared')),
   sha256         text NOT NULL UNIQUE CHECK (length(sha256) = 64),
   mime_type      text,
   size_bytes     bigint,

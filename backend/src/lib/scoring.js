@@ -63,7 +63,7 @@ const lagosDay = (iso) => new Date(iso).toLocaleDateString('en-CA', { timeZone: 
 
 /**
  * @param {object} p
- * @param {{id: string, issuedAt: string}[]} p.credentials  all credentials issued by this trainer
+ * @param {{id: string, issuedAt: string, status?: string}[]} p.credentials  all credentials issued by this trainer
  * @param {number} p.notYetCount          "not yet competent" assessments recorded by this trainer
  * @param {{rating: number, credentialIds: string[]}[]} p.feedback
  * @param {number} p.openReportCount      confidential apprentice reports that are not closed
@@ -106,5 +106,7 @@ export function computeRisk({ credentials, notYetCount, feedback, openReportCoun
   }
 
   const level = signals.length >= 2 ? 'high' : signals.length === 1 ? 'medium' : 'low';
-  return { onProbation: mine.length < settings.probationCount, probationUsed: mine.length, passRate, assessed, signals, level };
+  // Only valid credentials count toward finishing probation (same rule as POST /api/credentials).
+  const completed = mine.filter((c) => c.status === 'valid').length;
+  return { onProbation: completed < settings.probationCount, probationUsed: completed, passRate, assessed, signals, level };
 }

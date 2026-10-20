@@ -56,7 +56,7 @@ export function EvidenceCapture({ value, onChange, code, workshop, sampleUrl, kn
                 <div className="min-w-0 flex-1 text-xs">
                   <p className="text-sm font-medium text-ink">{ev.kind === 'video' ? `Video · ${ev.durationSec ?? '—'}s · code ${ev.challengeCode}` : 'Photo'}</p>
                   <p className="mt-0.5 text-ink-muted">{formatDateTime(ev.capturedAt)}</p>
-                  <p className="flex items-center gap-1 truncate text-ink-muted"><MapPinIcon className="h-3 w-3 shrink-0" />{ev.locationLabel}</p>
+                  <p className="flex items-center gap-1 truncate text-ink-muted"><MapPinIcon className="h-3 w-3 shrink-0" />{ev.locationLabel} {ev.locationSource === 'gps' ? <span className="rounded bg-ok-50 px-1 font-semibold text-ok-700">GPS</span> : <span className="rounded bg-warn-50 px-1 font-semibold text-warn-700">Declared</span>}</p>
                   <p className="flex items-center gap-1 font-mono text-ink-subtle"><FingerprintIcon className="h-3 w-3 shrink-0" />{ev.hash.slice(0, 16)}…</p>
                   {dup && <p className="mt-1 flex items-center gap-1 font-semibold text-bad-700"><ShieldAlertIcon className="h-3.5 w-3.5" /> Matches evidence already used — remove it</p>}
                 </div>
