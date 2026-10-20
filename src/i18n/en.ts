@@ -244,6 +244,9 @@ export const en = {
   'cr.scan': 'Scan to verify {id}',
   'cr.history': 'History',
 
+  // Offline
+  'offline.banner': "You're offline. Saved pages still open, and photos or videos you capture are kept on this phone until you're back online.",
+
   // QR codes and badges
   'qr.save': 'Save QR image',
   'qr.failed': "Couldn't save the image on this browser. Take a screenshot instead.",

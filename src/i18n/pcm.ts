@@ -229,6 +229,8 @@ export const pcm: Record<MessageKey, string> = {
   'cr.scan': 'Scan am to check {id}',
   'cr.history': 'History',
 
+  'offline.banner': 'Network no dey. Pages wey you don open before go still show, and any photo or video wey you capture go stay for this phone until network come back.',
+
   'qr.save': 'Save the QR picture',
   'qr.failed': 'This browser no fit save the picture. Take screenshot instead.',
   'trust.title': 'Trainer trust score',

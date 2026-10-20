@@ -4,6 +4,7 @@ import type { Role } from './types/skillpass';
 import { SkillPassProvider } from './contexts/SkillPassContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LanguageProvider } from './i18n';
+import { OfflineBanner } from './components/OfflineBanner';
 import { homeByRole } from './data/navigation';
 import { DashboardLayout } from './components/layout/DashboardLayout';
 import { Login } from './pages/auth/Login';
@@ -64,6 +65,7 @@ export function App() {
     <LanguageProvider>
     <SkillPassProvider>
       <AuthProvider>
+        <OfflineBanner />
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<GuestOnly><Login /></GuestOnly>} />

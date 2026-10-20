@@ -39,6 +39,16 @@ Text lives in `src/i18n/en.ts` (English, the source) and `src/i18n/pcm.ts` (Pidg
 Pidgin speaker from the pilot). To add Yoruba, Hausa or Igbo, copy `pcm.ts`, translate it with a native speaker and
 register it in `src/i18n/index.tsx`. Messages that come from the server are still in English.
 
+## Weak signal and low data
+
+- Photos and videos that fail to upload because there is no signal are kept on the phone (IndexedDB) and sent
+  automatically when the connection returns. The trainer sees them in the evidence list and can retry or discard.
+  A video still needs its code from the server, so the trainer needs a moment of signal before recording.
+- Capture is tuned for mobile data: 640×480 video at about 0.8 Mbit/s (around 3 MB for 30 seconds) and photos
+  scaled to 1600 px.
+- In the built app (`npm run build`), a service worker keeps SkillPass on the phone so it opens without signal,
+  and the web manifest lets people add it to their home screen. It is switched off during `npm run dev`.
+
 ## Tech stack
 
 - **Frontend:** React 18, TypeScript, Vite, Tailwind CSS, React Router

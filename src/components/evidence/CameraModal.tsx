@@ -4,7 +4,8 @@ import { CameraIcon, CameraOffIcon, CircleIcon, MapPinIcon, SquareIcon, XIcon } 
 import type { Evidence, Place } from '../../types/skillpass';
 import { demoMode, messageOf } from '../../api/client';
 import { demoPhoto, demoVideo, lastDemo } from '../../api/demoEvidence';
-import { uploadEvidence } from '../../api/evidence';
+import { uploadEvidence, type EvidenceMeta } from '../../api/evidence';
+import { isNetworkError } from '../../offline/hooks';
 
 interface CameraModalProps {
   mode: 'photo' | 'video' | null;
@@ -12,11 +13,21 @@ interface CameraModalProps {
   workshop: Place;
   fallbackUrl: string;
   onCapture: (ev: Evidence) => void;
+  /** Called instead of onCapture when there is no signal, so the file can be kept on the phone and sent later. */
+  onQueued?: (blob: Blob, meta: EvidenceMeta) => void;
   onClose: () => void;
 }
 
 const MAX_SECONDS = 30;
 const MIN_SECONDS = 5;
+
+// Low-data capture: 640×480 video at about 0.8 Mbit/s keeps a 30-second clip near 3 MB (instead of 10–20 MB),
+// and photos are scaled to at most 1600 px. That is still clear enough to see the work and read the code.
+const VIDEO_CONSTRAINTS: MediaTrackConstraints = { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 }, frameRate: { ideal: 24, max: 30 } };
+const PHOTO_CONSTRAINTS: MediaTrackConstraints = { facingMode: 'environment', width: { ideal: 1600 }, height: { ideal: 1200 } };
+const RECORDER_OPTIONS: MediaRecorderOptions = { videoBitsPerSecond: 800_000, audioBitsPerSecond: 32_000 };
+const MAX_PHOTO_EDGE = 1600;
+const PHOTO_QUALITY = 0.8;
 
 interface Loc {
   label: string;
@@ -25,7 +36,7 @@ interface Loc {
   source?: 'gps' | 'declared';
 }
 
-export function CameraModal({ mode, code, workshop, fallbackUrl, onCapture, onClose }: CameraModalProps) {
+export function CameraModal({ mode, code, workshop, fallbackUrl, onCapture, onQueued, onClose }: CameraModalProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
@@ -51,7 +62,7 @@ export function CameraModal({ mode, code, workshop, fallbackUrl, onCapture, onCl
       try {
         if (!navigator.mediaDevices?.getUserMedia) throw new Error('unsupported');
         const stream = await navigator.mediaDevices.
-        getUserMedia({ video: { facingMode: 'environment' }, audio: mode === 'video' }).
+        getUserMedia({ video: mode === 'video' ? VIDEO_CONSTRAINTS : PHOTO_CONSTRAINTS, audio: mode === 'video' }).
         catch(() => navigator.mediaDevices.getUserMedia({ video: true }));
         if (cancelled) return stream.getTracks().forEach((t) => t.stop());
         streamRef.current = stream;
@@ -102,17 +113,18 @@ export function CameraModal({ mode, code, workshop, fallbackUrl, onCapture, onCl
     const v = videoRef.current;
     if (!v || !v.videoWidth) return resolve(null);
     const canvas = document.createElement('canvas');
-    canvas.width = v.videoWidth;
-    canvas.height = v.videoHeight;
+    const scale = Math.min(1, MAX_PHOTO_EDGE / Math.max(v.videoWidth, v.videoHeight));
+    canvas.width = Math.round(v.videoWidth * scale);
+    canvas.height = Math.round(v.videoHeight * scale);
     const ctx = canvas.getContext('2d');
     if (!ctx) return resolve(null);
-    ctx.drawImage(v, 0, 0);
+    ctx.drawImage(v, 0, 0, canvas.width, canvas.height);
     ctx.fillStyle = 'rgba(0,0,0,0.55)';
     ctx.fillRect(0, canvas.height - 44, canvas.width, 44);
     ctx.fillStyle = '#fff';
     ctx.font = '20px Inter, sans-serif';
     ctx.fillText(`${new Date().toLocaleString('en-GB')} · ${location.label}`, 14, canvas.height - 16);
-    canvas.toBlob((blob) => resolve(blob ? { blob, url: URL.createObjectURL(blob) } : null), 'image/jpeg', 0.85);
+    canvas.toBlob((blob) => resolve(blob ? { blob, url: URL.createObjectURL(blob) } : null), 'image/jpeg', PHOTO_QUALITY);
   });
 
   /** Send the captured file to the server. On a refusal (duplicate file, expired code) stay open so the trainer can retry. */
@@ -124,7 +136,11 @@ export function CameraModal({ mode, code, workshop, fallbackUrl, onCapture, onCl
       onCapture(ev);
       onClose();
     } catch (e) {
-      setUploadError(messageOf(e));
+      if (isNetworkError(e) && onQueued) {
+        // No signal: keep the recording on the phone instead of losing it.
+        onQueued(blob, meta);
+        onClose();
+      } else setUploadError(messageOf(e));
     } finally {
       setBusy(false);
     }
@@ -146,7 +162,12 @@ export function CameraModal({ mode, code, workshop, fallbackUrl, onCapture, onCl
     setUploadError(null);
     const chunks: Blob[] = [];
     const startedAt = Date.now();
-    const rec = new MediaRecorder(stream);
+    let rec: MediaRecorder;
+    try {
+      rec = new MediaRecorder(stream, RECORDER_OPTIONS);
+    } catch {
+      rec = new MediaRecorder(stream); // some browsers reject bitrate options
+    }
     recorderRef.current = rec;
     rec.ondataavailable = (e) => e.data.size && chunks.push(e.data);
     rec.onstop = async () => {

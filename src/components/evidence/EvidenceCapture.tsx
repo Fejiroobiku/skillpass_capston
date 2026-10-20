@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { CameraIcon, FingerprintIcon, MapPinIcon, PlayIcon, ShieldAlertIcon, VideoIcon, XIcon } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { CameraIcon, CloudOffIcon, FingerprintIcon, MapPinIcon, PlayIcon, RefreshCwIcon, ShieldAlertIcon, VideoIcon, XIcon } from 'lucide-react';
 import type { Evidence, Place } from '../../types/skillpass';
 import { CameraModal } from './CameraModal';
 import { formatDateTime } from '../../utils/credentials';
+import { useAuth } from '../../contexts/AuthContext';
+import { useOnline, useUploadQueue } from '../../offline/hooks';
 
 interface EvidenceCaptureProps {
   value: Evidence[];
@@ -20,6 +22,12 @@ export function isDuplicate(ev: Evidence, list: Evidence[], known: Set<string> =
 export function EvidenceCapture({ value, onChange, code, workshop, sampleUrl, knownHashes = new Set() }: EvidenceCaptureProps) {
   const [mode, setMode] = useState<'photo' | 'video' | null>(null);
   const hasVideo = value.some((e) => e.kind === 'video' && !!e.challengeCode);
+  const { user } = useAuth();
+  const online = useOnline();
+  // The latest list, so evidence that finishes uploading later is added to what is on screen now.
+  const latest = useRef(value);
+  latest.current = value;
+  const queue = useUploadQueue(user?.id, (ev) => onChange([...latest.current, ev]));
 
   return (
     <div>
@@ -42,6 +50,27 @@ export function EvidenceCapture({ value, onChange, code, workshop, sampleUrl, kn
         </button>
       </div>
       <p className="mt-2 text-xs text-ink-muted">Captured live in SkillPass only, with no gallery uploads. Each file is uploaded to the server, which time-stamps and fingerprints it.</p>
+
+      {queue.items.length > 0 &&
+      <ul className="mt-4 space-y-2" aria-label="Evidence waiting to upload">
+          {queue.items.map((item) =>
+        <li key={item.id} className={`flex items-start gap-3 rounded-xl border p-3 text-xs ${item.error ? 'border-bad-200 bg-bad-50' : 'border-warn-200 bg-warn-50'}`}>
+              <CloudOffIcon className={`mt-0.5 h-4 w-4 shrink-0 ${item.error ? 'text-bad-700' : 'text-warn-700'}`} aria-hidden="true" />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-ink">{item.meta.kind === 'video' ? `Video · code ${item.meta.challengeCode ?? '—'}` : 'Photo'} · saved on this phone</p>
+                {item.error ?
+            <p className="mt-0.5 font-medium text-bad-700">Couldn't upload: {item.error}</p> :
+            <p className="mt-0.5 text-warn-700">{queue.sending ? 'Uploading…' : online ? 'Waiting to upload. Retrying shortly.' : "No signal. It will upload by itself when you're back online."}</p>
+            }
+              </div>
+              <div className="flex shrink-0 gap-1">
+                <button type="button" onClick={() => void queue.retry(item.id)} disabled={queue.sending} aria-label="Try uploading now" className="rounded-full p-1.5 text-ink-muted hover:bg-canvas hover:text-ink disabled:opacity-50"><RefreshCwIcon className="h-4 w-4" /></button>
+                <button type="button" onClick={() => void queue.discard(item.id)} aria-label="Discard this file" className="rounded-full p-1.5 text-ink-muted hover:bg-canvas hover:text-ink"><XIcon className="h-4 w-4" /></button>
+              </div>
+            </li>
+        )}
+        </ul>
+      }
 
       {value.length > 0 &&
       <ul className="mt-4 space-y-2">
@@ -69,7 +98,7 @@ export function EvidenceCapture({ value, onChange, code, workshop, sampleUrl, kn
         </ul>
       }
 
-      <CameraModal mode={mode} code={code} workshop={workshop} fallbackUrl={sampleUrl} onCapture={(ev) => onChange([...value, ev])} onClose={() => setMode(null)} />
+      <CameraModal mode={mode} code={code} workshop={workshop} fallbackUrl={sampleUrl} onCapture={(ev) => onChange([...value, ev])} onQueued={(blob, meta) => void queue.enqueue(blob, meta)} onClose={() => setMode(null)} />
     </div>);
 
 }
