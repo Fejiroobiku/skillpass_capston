@@ -7,7 +7,6 @@ import { useSkillPass } from '../../contexts/SkillPassContext';
 import { LocationPicker } from '../../components/LocationPicker';
 import type { Place } from '../../types/skillpass';
 import { associations } from '../../data/integrity';
-import { homeByRole } from '../../data/navigation';
 import { useT } from '../../i18n';
 
 const input = 'mt-1.5 w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-subtle focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30';
@@ -57,7 +56,7 @@ export function Register() {
     const err = await register({ role, name: form.name.trim(), email: form.email, phone: form.phone.trim(), password: form.password, dob: form.dob, trade: form.trade, location, trainerId: form.trainerId, workshop: form.workshop.trim(), company: form.company.trim(), membershipNo: form.membershipNo.trim(), consent });
     setBusy(false);
     if (err) return setError(err);
-    navigate(homeByRole[role]);
+    navigate('/confirm-contact'); // confirm the phone number straight after joining
   };
 
   return (

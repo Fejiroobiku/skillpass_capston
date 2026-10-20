@@ -62,6 +62,9 @@ If you prefer psql, `psql -d skillpass -f database/schema.sql` and `-f database/
 | `PUBLIC_URL` | Public base URL of this API, used to build evidence links |
 | `UPLOAD_DIR`, `MAX_UPLOAD_MB` | Where evidence is stored (local disk) and the largest file accepted |
 | `ALLOW_DEMO_EVIDENCE` | `true` lets the demo build upload generated sample evidence (marked `source=demo`). Never switch it on with real participants |
+| `APP_URL` | Where people open the frontend; used in email links. Defaults to the first `CORS_ORIGINS` entry |
+| `SMS_PROVIDER` | `console` (default: texts are printed here and, outside production, phone codes are shown on screen) or `termii` with `TERMII_BASE_URL`, `TERMII_API_KEY`, `TERMII_SENDER_ID`, `TERMII_CHANNEL` (`dnd` reaches Do-Not-Disturb numbers once the networks approve your sender ID) |
+| `EMAIL_PROVIDER` | `console` (default) or `resend` with `RESEND_API_KEY` and `EMAIL_FROM` |
 | `BCRYPT_ROUNDS`, `JWT_EXPIRES_IN`, `PORT`, `NODE_ENV` | Optional. Defaults are 12, 7d, 4000, development |
 
 Never commit `.env`. It is already in `.gitignore`.
@@ -85,6 +88,8 @@ Never commit `.env`. It is already in `.gitignore`.
 | Signatures detect tampering | HMAC-SHA256 over id, apprentice, skill, trainer, time and evidence hashes. `GET /api/verify/:id` returns `signatureValid` |
 | Withdrawing consent removes personal data | `POST /api/auth/withdraw-consent` closes the account and anonymises it straight away: name, email, phone, date of birth, location, workshop or company, and for an apprentice every evidence file (deleted from storage), caption and GPS point. Their credentials are withdrawn. Only evidence fingerprints and the append-only audit log remain (`lib/privacy.js`) |
 | Passports cannot be found by guessing | Shared at `/passport/<128-bit random token>`, not the account ID. The apprentice can switch the link off (`PATCH /passport/me`) or replace it (`POST /passport/me/new-link`). Their own trainer and administrators can open it by account (`GET /passport/people/:id`) when signed in |
+| One real phone per account | Numbers are stored as `+234…` and unique. Confirming a skill, co-signing and rating need the phone confirmed by a 6-digit SMS code (10 minutes, 5 tries, resend after 60 s, 5 an hour, stored only as a hash). Trainers and employers cannot be approved until their phone is confirmed |
+| Password reset | Only to a confirmed email, by a single-use link valid for an hour. The same answer is given whether or not the email exists, and a reset signs out every earlier session |
 | Employers never see GPS points | Evidence sent to employers has no latitude or longitude, the same as the public page |
 | Pilot ratings cannot be stuffed | Each verification gets a one-time token; only that browser can add its trust rating, once |
 | The audit log cannot be edited | Database triggers reject `UPDATE`, `DELETE` and `TRUNCATE` on `audit_log`. Every entry is also sealed into an HMAC-SHA256 hash chain keyed by `SIGNING_KEY` (`lib/auditChain.js`), so even someone who switches the triggers off cannot change, delete or reorder history without `GET /api/admin/audit-log/verify` showing where. Write down the latest seal shown on the admin Audit Log page to also catch removal of the newest entries |
@@ -142,9 +147,8 @@ The demo seed contains accounts with a published password. Never load it into a 
 
 ## Not built yet
 
-- SMS and email delivery. Notifications are saved with their channel, but nothing sends them yet.
+- Real SMS needs a Termii account and a sender ID the Nigerian networks have approved (weeks, with company documents). Until then `SMS_PROVIDER=console` is used and queued SMS notifications stay in the app.
 - Evidence is stored on local disk, which is wiped on Render's free tier. Replace `storeFile()` in `src/lib/storage.js` with an upload to Supabase Storage or Cloudinary.
-- Password reset and email verification.
 - A script to create the first real administrator for a production database. The seeded admin has a published demo password.
 - The random audit sample runs when an administrator presses the button, not on a schedule.
 - Credentials are signed with a server-side HMAC. Only the server can verify them. Public-key signatures would let anyone verify offline.

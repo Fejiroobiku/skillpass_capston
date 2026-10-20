@@ -20,6 +20,14 @@ function secret(name) {
 }
 
 const flag = (value) => ['1', 'true', 'yes'].includes(String(value ?? '').toLowerCase());
+
+const choice = (name, allowed, fallback) => {
+  const value = (process.env[name] ?? fallback).toLowerCase();
+  if (!allowed.includes(value)) throw new Error(`${name} must be one of: ${allowed.join(', ')}.`);
+  return value;
+};
+const smsProvider = choice('SMS_PROVIDER', ['console', 'termii'], 'console');
+const emailProvider = choice('EMAIL_PROVIDER', ['console', 'resend'], 'console');
 const port = Number(process.env.PORT ?? 4000);
 
 const jwtSecret = secret('JWT_SECRET');
@@ -43,4 +51,16 @@ export const config = {
   publicUrl: (process.env.PUBLIC_URL ?? `http://localhost:${port}`).replace(/\/$/, ''),
   // "Today" for the daily issuing limit means today in Lagos, not UTC.
   timezone: 'Africa/Lagos',
+  // Where people open the app, used in email links. Defaults to the first CORS origin.
+  appUrl: (process.env.APP_URL ?? (process.env.CORS_ORIGINS ?? 'http://localhost:5173').split(',')[0]).trim().replace(/\/$/, ''),
+  smsProvider,
+  termii: smsProvider === 'termii' ? {
+    apiKey: required('TERMII_API_KEY'),
+    senderId: required('TERMII_SENDER_ID'),
+    baseUrl: required('TERMII_BASE_URL').replace(/\/$/, ''),
+    channel: process.env.TERMII_CHANNEL ?? 'dnd',
+  } : null,
+  emailProvider,
+  resendApiKey: emailProvider === 'resend' ? required('RESEND_API_KEY') : null,
+  emailFrom: emailProvider === 'resend' ? required('EMAIL_FROM') : null,
 };

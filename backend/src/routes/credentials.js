@@ -8,7 +8,7 @@ import { signCredential } from '../lib/signing.js';
 import { getRubric } from '../lib/rubric.js';
 import { flowStatus, forViewer, loadCredential, loadCredentialFull, loadCredentialsFull, revokeCredential, scopeFor, transition } from '../lib/credentials.js';
 import { addAuditSamples, assertEligibleCosigner, issuedToday, loadRisk, loadTrainerForIssuing } from '../lib/integrity.js';
-import { authenticate, requireRole } from '../middleware/auth.js';
+import { authenticate, requireRole, requireVerifiedPhone } from '../middleware/auth.js';
 
 const router = Router();
 router.use(authenticate);
@@ -137,7 +137,7 @@ router.post('/', requireRole('trainer'), async (req, res) => {
 });
 
 /** The apprentice confirms they really did the task. */
-router.post('/:id/confirm', requireRole('apprentice'), async (req, res) => {
+router.post('/:id/confirm', requireRole('apprentice'), requireVerifiedPhone, async (req, res) => {
   await tx(async (db) => {
     const c = await loadCredential(db, req.params.id, { lock: true });
     if (!c || c.apprenticeId !== req.user.id) throw new HttpError(404, 'Credential not found.');
@@ -167,7 +167,7 @@ router.post('/:id/dispute', requireRole('apprentice'), async (req, res) => {
 });
 
 /** The requested second trainer or verified employer co-signs. */
-router.post('/:id/cosign', requireRole('trainer', 'employer'), async (req, res) => {
+router.post('/:id/cosign', requireRole('trainer', 'employer'), requireVerifiedPhone, async (req, res) => {
   await tx(async (db) => {
     const c = await loadCredential(db, req.params.id, { lock: true });
     if (!c) throw new HttpError(404, 'Credential not found.');

@@ -316,3 +316,7 @@ INSERT INTO audit_log (id, at, actor_id, actor_name, action, target, detail) VAL
 
 INSERT INTO settings (id, daily_limit, audit_rate_pct, probation_count, cluster_threshold, fast_minutes, sms_enabled, email_enabled)
 VALUES (1, 5, 10, 5, 4, 15, true, true);
+
+-- Phone numbers in standard form, and every demo account already verified so demos are not interrupted.
+UPDATE users SET phone_e164 = '+234' || substr(regexp_replace(phone, '\D', '', 'g'), 2) WHERE phone IS NOT NULL;
+UPDATE users SET phone_verified_at = created_at, email_verified_at = created_at;

@@ -9,6 +9,7 @@ import { userId } from '../lib/ids.js';
 import { authenticate, signToken } from '../middleware/auth.js';
 import { anonymiseParticipant } from '../lib/privacy.js';
 import { removeStored } from '../lib/storage.js';
+import { normalizeNgPhone } from '../lib/phone.js';
 
 const router = Router();
 
@@ -53,6 +54,7 @@ const DUMMY_HASH = bcrypt.hashSync('not-a-real-password', config.bcryptRounds);
 async function currentUser(db, id) {
   const { rows } = await db.query(
     `SELECT u.id, u.email, u.role, u.name, u.phone, u.location_name, u.lat, u.lng, u.created_at, u.consent_at, u.dob,
+            u.phone_verified_at, u.email_verified_at,
             tp.trade_id AS t_trade, tp.workshop, tp.association_id, tp.membership_no, tp.membership_verified, tp.approved AS t_approved,
             tp.misconduct_at, tp.misconduct_reason,
             ap.trade_id AS a_trade, ap.trainer_id, ap.started_at,
@@ -70,7 +72,7 @@ async function currentUser(db, id) {
   );
   const r = rows[0];
   const location = r.location_name ? { name: r.location_name, lat: r.lat, lng: r.lng } : undefined;
-  const account = { createdAt: r.created_at.toISOString(), consentAt: r.consent_at.toISOString(), dob: r.dob };
+  const account = { createdAt: r.created_at.toISOString(), consentAt: r.consent_at.toISOString(), dob: r.dob, phoneVerified: r.phone_verified_at != null, emailVerified: r.email_verified_at != null };
   const base = { id: r.id, role: r.role, name: r.name, email: r.email, phone: r.phone ?? undefined, location, account };
   if (r.role === 'trainer') {
     return { ...base, title: `Trainer · ${r.trade_name}`, profile: {
@@ -93,6 +95,8 @@ router.post('/register', async (req, res) => {
   if (Number.isNaN(age) || age < 0 || age > 120) throw new HttpError(400, 'Enter a valid date of birth.');
   if (age < 18) throw new HttpError(400, 'SkillPass pilot participants must be 18 or older.');
   if (input.role === 'trainer' && !input.membershipNo) throw new HttpError(400, 'Enter your trade association membership number so we can verify it.');
+  const phoneE164 = normalizeNgPhone(input.phone);
+  if (!phoneE164) throw new HttpError(400, 'Enter a Nigerian mobile number, for example 0803 000 0000.');
 
   const passwordHash = await bcrypt.hash(input.password, config.bcryptRounds);
 
@@ -101,12 +105,14 @@ router.post('/register', async (req, res) => {
     if (!trade) throw new HttpError(400, 'Choose a valid trade.');
     const taken = await db.query('SELECT 1 FROM users WHERE lower(email) = $1', [input.email]);
     if (taken.rowCount) throw new HttpError(409, 'An account with this email already exists.');
+    // One account per phone number: the number is what the SMS code proves.
+    if ((await db.query('SELECT 1 FROM users WHERE phone_e164 = $1', [phoneE164])).rowCount) throw new HttpError(409, 'This phone number already has a SkillPass account.');
 
     const id = userId({ trainer: 't', apprentice: 'a', employer: 'e' }[input.role]);
     await db.query(
-      `INSERT INTO users (id, email, password_hash, role, name, phone, dob, location_name, lat, lng, consent_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, now())`,
-      [id, input.email, passwordHash, input.role, input.name, input.phone, input.dob, input.location.name, input.location.lat, input.location.lng],
+      `INSERT INTO users (id, email, password_hash, role, name, phone, phone_e164, dob, location_name, lat, lng, consent_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, now())`,
+      [id, input.email, passwordHash, input.role, input.name, input.phone, phoneE164, input.dob, input.location.name, input.location.lat, input.location.lng],
     );
 
     if (input.role === 'trainer') {

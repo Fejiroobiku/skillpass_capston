@@ -1,5 +1,6 @@
 import { ZodError } from 'zod';
 import { HttpError } from '../lib/errors.js';
+import { DeliveryError } from '../lib/messaging.js';
 
 export function notFound(req, res) {
   res.status(404).json({ error: 'Not found.' });
@@ -18,6 +19,7 @@ export function errorHandler(err, req, res, next) {
   if (err instanceof HttpError) {
     return res.status(err.status).json({ error: err.message, ...(err.details ? { details: err.details } : {}) });
   }
+  if (err instanceof DeliveryError) return res.status(502).json({ error: err.message });
   if (err?.code === 'LIMIT_FILE_SIZE') return res.status(413).json({ error: 'That file is too large.' });
   if (err?.name === 'MulterError') return res.status(400).json({ error: 'The upload could not be read. Send one file in the "file" field.' });
   if (err?.type === 'entity.parse.failed') return res.status(400).json({ error: 'The request body is not valid JSON.' });

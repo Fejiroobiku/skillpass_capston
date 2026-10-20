@@ -46,6 +46,7 @@ export function Login() {
             </button>
           </div>
         </div>
+        <p className="-mt-2 text-right text-sm"><Link to="/forgot-password" className="font-medium text-brand-700 hover:underline">{t('forgot.link')}</Link></p>
         {error && <p role="alert" className="rounded-xl bg-bad-50 px-3.5 py-2.5 text-sm font-medium text-bad-700">{error}</p>}
         <button type="submit" disabled={!email || !password || busy} className="w-full rounded-xl bg-brand-600 px-4 py-3 text-sm font-semibold text-night transition-colors duration-150 hover:bg-brand-700 disabled:opacity-50">{busy ? t('login.busy') : t('login.submit')}</button>
       </form>

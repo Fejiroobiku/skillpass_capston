@@ -42,10 +42,12 @@ interface AuthState {
   logout: () => void;
   setAccountStatus: (id: string, status: AccountStatus, actor?: string) => Promise<void>;
   withdrawConsent: () => Promise<void>;
+  /** Reload the signed-in account, for example after confirming a phone number. */
+  refreshUser: () => Promise<void>;
 }
 
 interface ApiUser extends Omit<CurrentUser, 'account'> {
-  account: {createdAt: string;consentAt: string;dob: string;};
+  account: {createdAt: string;consentAt: string;dob: string;phoneVerified?: boolean;emailVerified?: boolean;};
 }
 
 interface AdminUserRow {
@@ -54,6 +56,8 @@ interface AdminUserRow {
   role: Role;
   status: AccountStatus;
   createdAt: string;
+  phoneVerified?: boolean;
+  emailVerified?: boolean;
 }
 
 const AuthContext = createContext<AuthState | null>(null);
@@ -74,7 +78,7 @@ export function AuthProvider({ children }: {children: React.ReactNode;}) {
     if (u?.role !== 'admin') return setAccounts([]);
     try {
       const r = await api.get<{users: AdminUserRow[];}>('/api/admin/users');
-      setAccounts(r.users.map((x) => ({ id: x.id, email: x.email, passwordHash: '', role: x.role, status: x.status, createdAt: x.createdAt, consentAt: x.createdAt, dob: '' })));
+      setAccounts(r.users.map((x) => ({ id: x.id, email: x.email, passwordHash: '', role: x.role, status: x.status, createdAt: x.createdAt, consentAt: x.createdAt, dob: '', phoneVerified: x.phoneVerified, emailVerified: x.emailVerified })));
     } catch (e) {
       spRef.current.showNotice(messageOf(e));
     }
@@ -170,9 +174,18 @@ export function AuthProvider({ children }: {children: React.ReactNode;}) {
     }
   }, [signOut]);
 
+  const refreshUser = useCallback(async () => {
+    if (!getToken()) return;
+    try {
+      setUser(toUser((await api.get<{user: ApiUser;}>('/api/auth/me')).user));
+    } catch (e) {
+      spRef.current.showNotice(messageOf(e));
+    }
+  }, []);
+
   const value = useMemo(
-    () => ({ accounts, user, ready, login, register, logout: signOut, setAccountStatus, withdrawConsent }),
-    [accounts, user, ready, login, register, signOut, setAccountStatus, withdrawConsent]
+    () => ({ accounts, user, ready, login, register, logout: signOut, setAccountStatus, withdrawConsent, refreshUser }),
+    [accounts, user, ready, login, register, signOut, setAccountStatus, withdrawConsent, refreshUser]
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

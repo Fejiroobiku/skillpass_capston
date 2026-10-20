@@ -83,7 +83,10 @@ export function AdminUsers() {
                     <td className="px-3 py-3"><p className="text-ink">{r.trade}</p><p className="text-xs text-ink-muted">{r.location}</p></td>
                     <td className="whitespace-nowrap px-3 py-3 text-ink-muted">{formatDate(r.account.createdAt)}</td>
                     <td className="px-3 py-3">
-                      {s === 'suspended' ? <Pill tone="bad">Suspended</Pill> : s === 'withdrawn' ? <Pill tone="neutral">Consent withdrawn</Pill> : !r.approved ? <Pill tone="warn">Awaiting approval</Pill> : <Pill tone="ok">Active</Pill>}
+                      <div className="flex flex-wrap gap-1">
+                        {s === 'suspended' ? <Pill tone="bad">Suspended</Pill> : s === 'withdrawn' ? <Pill tone="neutral">Consent withdrawn</Pill> : !r.approved ? <Pill tone="warn">Awaiting approval</Pill> : <Pill tone="ok">Active</Pill>}
+                        {s === 'active' && r.account.role !== 'admin' && (r.account.phoneVerified ? <Pill tone="ok">Phone ✓</Pill> : <Pill tone="warn">Phone not confirmed</Pill>)}
+                      </div>
                     </td>
                     <td className="whitespace-nowrap px-5 py-3 text-right">
                       <div className="flex justify-end gap-2">
@@ -91,7 +94,7 @@ export function AdminUsers() {
                         <button type="button" onClick={() => verifyMembership(r.account.id, actor)} className="rounded-lg border border-line px-3 py-1.5 text-sm font-medium text-ink hover:bg-canvas">Confirm membership</button>
                         }
                         {!r.approved && s === 'active' &&
-                        <button type="button" disabled={r.needsMembership} title={r.needsMembership ? 'Confirm trade association membership first' : undefined} onClick={() => approveProfile(r.account.id, actor)} className="rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-semibold text-night hover:bg-brand-700 disabled:opacity-40">Approve</button>
+                        <button type="button" disabled={r.needsMembership || !r.account.phoneVerified} title={r.needsMembership ? 'Confirm trade association membership first' : !r.account.phoneVerified ? 'They need to confirm their phone number first' : undefined} onClick={() => approveProfile(r.account.id, actor)} className="rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-semibold text-night hover:bg-brand-700 disabled:opacity-40">Approve</button>
                         }
                         {s === 'active' &&
                         <button type="button" onClick={() => setAccountStatus(r.account.id, 'suspended', actor)} className="rounded-lg border border-line px-3 py-1.5 text-sm font-medium text-bad-700 hover:bg-bad-50">Suspend</button>

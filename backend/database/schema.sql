@@ -50,6 +50,10 @@ CREATE TABLE users (
   status        text NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'suspended', 'withdrawn')),
   name          text NOT NULL,
   phone         text,
+  phone_e164    text,              -- the same number as +234XXXXXXXXXX; one account per number
+  phone_verified_at timestamptz,
+  email_verified_at timestamptz,
+  password_changed_at timestamptz, -- sessions issued before this stop working
   dob           date NOT NULL,
   location_name text,
   lat           double precision,
@@ -59,6 +63,22 @@ CREATE TABLE users (
 );
 CREATE UNIQUE INDEX users_email_lower_key ON users (lower(email));
 CREATE INDEX users_role_idx ON users (role);
+CREATE UNIQUE INDEX users_phone_e164_key ON users (phone_e164) WHERE phone_e164 IS NOT NULL;
+
+-- One-time codes (phone) and links (email, password reset). Only a SHA-256 of each secret is stored.
+CREATE TABLE contact_verifications (
+  id          text PRIMARY KEY,
+  user_id     text NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+  purpose     text NOT NULL CHECK (purpose IN ('phone', 'email', 'password_reset')),
+  target      text NOT NULL,
+  secret_hash text NOT NULL,
+  attempts    integer NOT NULL DEFAULT 0,
+  expires_at  timestamptz NOT NULL,
+  used_at     timestamptz,
+  created_at  timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX contact_verifications_user_idx ON contact_verifications (user_id, purpose, created_at DESC);
+CREATE INDEX contact_verifications_secret_idx ON contact_verifications (secret_hash);
 
 CREATE TABLE trainer_profiles (
   user_id             text PRIMARY KEY REFERENCES users (id) ON DELETE CASCADE,

@@ -454,8 +454,14 @@ describe('a new trainer on probation', () => {
 
     // not approved yet: cannot even ask for a challenge code
     assert.equal((await api('POST', '/api/evidence/challenges', { token: tokens.newTrainer })).status, 403);
-    // cannot be approved before the association confirms membership
-    assert.equal((await api('POST', `/api/admin/users/${trainerId}/approve`, { token: tokens.admin })).status, 409);
+    // cannot be approved before confirming their phone or before the association confirms membership
+    const noPhone = await api('POST', `/api/admin/users/${trainerId}/approve`, { token: tokens.admin });
+    assert.equal(noPhone.status, 409);
+    assert.match(noPhone.body.error, /phone/);
+    const sent = await api('POST', '/api/auth/phone/send', { token: tokens.newTrainer });
+    assert.equal(sent.status, 200, JSON.stringify(sent.body));
+    assert.equal((await api('POST', '/api/auth/phone/verify', { token: tokens.newTrainer, body: { code: sent.body.devCode } })).status, 200);
+    assert.equal((await api('POST', `/api/admin/users/${trainerId}/approve`, { token: tokens.admin })).status, 409); // membership still unconfirmed
     assert.equal((await api('POST', `/api/admin/trainers/${trainerId}/verify-membership`, { token: tokens.admin })).status, 200);
     assert.equal((await api('POST', `/api/admin/users/${trainerId}/approve`, { token: tokens.admin })).status, 200);
 

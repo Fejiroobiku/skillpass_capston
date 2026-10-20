@@ -22,6 +22,7 @@ import referenceRoutes from './routes/reference.js';
 import reportRoutes from './routes/reports.js';
 import trainerRoutes from './routes/trainer.js';
 import verifyRoutes from './routes/verify.js';
+import verificationRoutes from './routes/verification.js';
 
 const limiter = (windowMs, limit) => rateLimit({ windowMs, limit, standardHeaders: 'draft-7', legacyHeaders: false, skip: () => config.env === 'test' });
 
@@ -50,8 +51,12 @@ export async function createApp() {
 
   app.use('/api/auth/login', limiter(15 * 60 * 1000, 20));
   app.use('/api/auth/register', limiter(60 * 60 * 1000, 10));
+  app.use('/api/auth/password', limiter(60 * 60 * 1000, 10));
+  app.use('/api/auth/phone', limiter(15 * 60 * 1000, 30));
+  app.use('/api/auth/email', limiter(15 * 60 * 1000, 20));
 
   app.use('/api/auth', authRoutes);
+  app.use('/api/auth', verificationRoutes);
   app.use('/api', referenceRoutes);
   app.use('/api/verify', verifyRoutes);
   app.use('/api/passport', passportRoutes);

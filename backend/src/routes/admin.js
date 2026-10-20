@@ -38,12 +38,12 @@ router.get('/review', async (req, res) => {
       WHERE r.status <> 'closed' ORDER BY r.at DESC`,
   )).rows;
   const pendingTrainers = (await pool.query(
-    `SELECT u.id, u.name, u.phone, u.location_name, tp.trade_id, tp.workshop, tp.membership_no, tp.membership_verified, tp.joined_at
+    `SELECT u.id, u.name, u.phone, u.phone_verified_at, u.location_name, tp.trade_id, tp.workshop, tp.membership_no, tp.membership_verified, tp.joined_at
        FROM users u JOIN trainer_profiles tp ON tp.user_id = u.id
       WHERE u.status = 'active' AND NOT tp.approved ORDER BY tp.joined_at`,
   )).rows;
   const pendingEmployers = (await pool.query(
-    `SELECT u.id, u.name, u.phone, ep.company, ep.trade_id FROM users u JOIN employer_profiles ep ON ep.user_id = u.id
+    `SELECT u.id, u.name, u.phone, u.phone_verified_at, ep.company, ep.trade_id FROM users u JOIN employer_profiles ep ON ep.user_id = u.id
       WHERE u.status = 'active' AND NOT ep.approved ORDER BY u.created_at`,
   )).rows;
 
@@ -57,9 +57,9 @@ router.get('/review', async (req, res) => {
     })),
     pendingTrainers: pendingTrainers.map((t) => ({
       id: t.id, name: t.name, phone: t.phone, location: t.location_name, trade: t.trade_id, workshop: t.workshop,
-      membershipNo: t.membership_no, membershipVerified: t.membership_verified, joinedAt: iso(t.joined_at),
+      membershipNo: t.membership_no, membershipVerified: t.membership_verified, joinedAt: iso(t.joined_at), phoneVerified: t.phone_verified_at != null,
     })),
-    pendingEmployers: pendingEmployers.map((e) => ({ id: e.id, name: e.name, phone: e.phone, company: e.company, trade: e.trade_id })),
+    pendingEmployers: pendingEmployers.map((e) => ({ id: e.id, name: e.name, phone: e.phone, company: e.company, trade: e.trade_id, phoneVerified: e.phone_verified_at != null })),
   });
 });
 
@@ -235,7 +235,7 @@ router.post('/trades', async (req, res) => {
 
 router.get('/users', async (req, res) => {
   const { rows } = await pool.query(
-    `SELECT u.id, u.email, u.role, u.status, u.name, u.phone, u.location_name, u.created_at,
+    `SELECT u.id, u.email, u.role, u.status, u.name, u.phone, u.location_name, u.created_at, u.phone_verified_at, u.email_verified_at,
             tp.approved AS t_approved, tp.membership_verified, tp.misconduct_at, ep.approved AS e_approved,
             COALESCE(tp.trade_id, ap.trade_id, ep.trade_id) AS trade_id
        FROM users u
@@ -251,6 +251,8 @@ router.get('/users', async (req, res) => {
       approved: u.role === 'trainer' ? u.t_approved : u.role === 'employer' ? u.e_approved : undefined,
       membershipVerified: u.role === 'trainer' ? u.membership_verified : undefined,
       misconductAt: iso(u.misconduct_at),
+      phoneVerified: u.phone_verified_at != null,
+      emailVerified: u.email_verified_at != null,
     })),
   });
 });
@@ -268,8 +270,11 @@ router.post('/trainers/:id/verify-membership', async (req, res) => {
 /** Approve a trainer (membership must be verified first) or an employer. */
 router.post('/users/:id/approve', async (req, res) => {
   await tx(async (db) => {
-    const u = (await db.query('SELECT id, name, role FROM users WHERE id = $1', [req.params.id])).rows[0];
+    const u = (await db.query('SELECT id, name, role, phone_verified_at FROM users WHERE id = $1', [req.params.id])).rows[0];
     if (!u) throw new HttpError(404, 'User not found.');
+    if ((u.role === 'trainer' || u.role === 'employer') && !u.phone_verified_at) {
+      throw new HttpError(409, `${u.name} has not confirmed their phone number yet. Ask them to enter the code SkillPass texted them.`);
+    }
     if (u.role === 'trainer') {
       const t = (await db.query('SELECT membership_verified FROM trainer_profiles WHERE user_id = $1 FOR UPDATE', [u.id])).rows[0];
       if (!t.membership_verified) throw new HttpError(409, 'Verify this trainer\'s association membership first.');

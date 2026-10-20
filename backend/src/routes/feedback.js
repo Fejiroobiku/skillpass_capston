@@ -4,10 +4,10 @@ import { pool, tx } from '../db.js';
 import { HttpError } from '../lib/errors.js';
 import { logAudit, notify } from '../lib/audit.js';
 import { uid } from '../lib/ids.js';
-import { authenticate, requireRole } from '../middleware/auth.js';
+import { authenticate, requireRole, requireVerifiedPhone } from '../middleware/auth.js';
 
 const router = Router();
-router.use(authenticate, requireRole('employer'));
+router.use(authenticate, requireRole('employer'), requireVerifiedPhone);
 
 const schema = z.object({
   referralId: z.string().min(1, 'Choose the job you are rating.'),

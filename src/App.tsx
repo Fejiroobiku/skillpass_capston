@@ -32,6 +32,8 @@ import { Profile } from './pages/shared/Profile';
 import { Notifications } from './pages/shared/Notifications';
 import { UsabilitySurvey } from './pages/shared/UsabilitySurvey';
 import { ApprenticePassport } from './pages/shared/ApprenticePassport';
+import { ConfirmContact } from './pages/shared/ConfirmContact';
+import { ForgotPassword, ResetPassword, VerifyEmail } from './pages/auth/AccountRecovery';
 
 function Loading() {
   return <p role="status" className="p-10 text-center text-ink-muted">Loading SkillPass…</p>;
@@ -71,6 +73,9 @@ export function App() {
           <Routes>
             <Route path="/login" element={<GuestOnly><Login /></GuestOnly>} />
             <Route path="/register" element={<GuestOnly><Register /></GuestOnly>} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/verify" element={<PublicVerify />} />
             <Route path="/verify/:id" element={<PublicVerify />} />
             <Route path="/passport/:id" element={<PublicPassport />} />
@@ -105,6 +110,7 @@ export function App() {
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/survey" element={<UsabilitySurvey />} />
               <Route path="/people/:apprenticeId/passport" element={<ApprenticePassport />} />
+              <Route path="/confirm-contact" element={<ConfirmContact />} />
             </Route>
 
             <Route path="*" element={<HomeRedirect />} />

@@ -41,11 +41,13 @@ export async function anonymiseParticipant(db, userId) {
   await db.query(`UPDATE concern_reports SET details = '[removed: the participant withdrew consent]' WHERE apprentice_id = $1`, [userId]);
   await db.query(`UPDATE feedback SET comment = '' WHERE apprentice_id = $1`, [userId]);
   await db.query('DELETE FROM notifications WHERE user_id = $1', [userId]);
+  await db.query('DELETE FROM contact_verifications WHERE user_id = $1', [userId]);
 
   await db.query(`UPDATE trainer_profiles SET workshop = 'Withdrawn', membership_no = '' WHERE user_id = $1`, [userId]);
   await db.query(`UPDATE employer_profiles SET company = 'Withdrawn employer' WHERE user_id = $1`, [userId]);
   await db.query(
-    `UPDATE users SET status = 'withdrawn', name = 'Withdrawn participant', email = $2, phone = NULL,
+    `UPDATE users SET status = 'withdrawn', name = 'Withdrawn participant', email = $2, phone = NULL, phone_e164 = NULL,
+            phone_verified_at = NULL, email_verified_at = NULL,
             dob = DATE '1900-01-01', location_name = NULL, lat = NULL, lng = NULL, password_hash = '!'
       WHERE id = $1`,
     [userId, `withdrawn+${userId}@invalid.skillpass`],

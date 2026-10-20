@@ -86,6 +86,10 @@ export interface Account {
   createdAt: string;
   consentAt: string;
   dob: string;
+  /** Confirmed by SMS code. Needed to confirm skills, co-sign and rate. */
+  phoneVerified?: boolean;
+  /** Confirmed by email link. Needed for password reset. */
+  emailVerified?: boolean;
 }
 
 export type CredentialStatus = 'pending_apprentice' | 'pending_cosign' | 'held_review' | 'valid' | 'flagged' | 'under_review' | 'revoked';
