@@ -4,7 +4,8 @@ import { BriefcaseIcon, GraduationCapIcon, HardHatIcon } from 'lucide-react';
 import { AuthLayout } from '../../components/AuthLayout';
 import { useAuth, type RegisterInput } from '../../contexts/AuthContext';
 import { useSkillPass } from '../../contexts/SkillPassContext';
-import { places } from '../../data/people';
+import { LocationPicker } from '../../components/LocationPicker';
+import type { Place } from '../../types/skillpass';
 import { associations } from '../../data/integrity';
 import { homeByRole } from '../../data/navigation';
 
@@ -20,7 +21,8 @@ export function Register() {
   const { trades, trainers, notice, loadPublic } = useSkillPass();
   const navigate = useNavigate();
   const [role, setRole] = useState<RegisterInput['role']>('apprentice');
-  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', dob: '', trade: '', place: 'balogun', trainerId: '', workshop: '', company: '', membershipNo: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', dob: '', trade: '', trainerId: '', workshop: '', company: '', membershipNo: '' });
+  const [location, setLocation] = useState<Place | null>(null);
   const [adult, setAdult] = useState(false);
   const [consent, setConsent] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -39,6 +41,7 @@ export function Register() {
   form.password.length >= 8 &&
   !!form.dob &&
   !!form.trade &&
+  !!location &&
   adult &&
   consent && (
   role !== 'apprentice' || !!form.trainerId) && (
@@ -47,9 +50,9 @@ export function Register() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!valid) return;
+    if (!valid || !location) return;
     setBusy(true);
-    const err = await register({ role, name: form.name.trim(), email: form.email, phone: form.phone.trim(), password: form.password, dob: form.dob, trade: form.trade, location: places[form.place], trainerId: form.trainerId, workshop: form.workshop.trim(), company: form.company.trim(), membershipNo: form.membershipNo.trim(), consent });
+    const err = await register({ role, name: form.name.trim(), email: form.email, phone: form.phone.trim(), password: form.password, dob: form.dob, trade: form.trade, location, trainerId: form.trainerId, workshop: form.workshop.trim(), company: form.company.trim(), membershipNo: form.membershipNo.trim(), consent });
     setBusy(false);
     if (err) return setError(err);
     navigate(homeByRole[role]);
@@ -97,8 +100,7 @@ export function Register() {
             </select>
           </div>
           <div>
-            <label htmlFor="r-place" className="text-sm font-semibold text-ink">Location</label>
-            <select id="r-place" value={form.place} onChange={set('place')} className={input}>{Object.entries(places).map(([k, p]) => <option key={k} value={k}>{p.name}</option>)}</select>
+            <LocationPicker id="r-place" label="Location" onChange={setLocation} inputClassName={input.replace('mt-1.5 ', '')} />
           </div>
         </div>
         {role === 'apprentice' &&

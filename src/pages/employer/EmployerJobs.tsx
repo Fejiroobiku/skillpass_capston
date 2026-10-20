@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { CheckIcon, MapPinIcon, PlusIcon, SendIcon } from 'lucide-react';
-import type { TradeId } from '../../types/skillpass';
+import type { Place, TradeId } from '../../types/skillpass';
 import { PageHeader } from '../../components/PageHeader';
 import { Panel } from '../../components/Panel';
 import { Modal } from '../../components/Modal';
 import { Pill } from '../../components/StatusBadge';
 import { useSkillPass } from '../../contexts/SkillPassContext';
 import { useAuth } from '../../contexts/AuthContext';
-import { places } from '../../data/people';
+import { LocationPicker } from '../../components/LocationPicker';
 import { rankMatches } from '../../utils/matching';
 import { formatDate } from '../../utils/credentials';
 
@@ -26,11 +26,12 @@ export function EmployerJobs() {
   const myTrade = employers.find((e) => e.id === user?.id)?.trade ?? 'electrical';
   const [trade, setTrade] = useState<TradeId>(myTrade);
   const [skillIds, setSkillIds] = useState<string[]>([]);
-  const [placeKey, setPlaceKey] = useState('lekki');
+  const [location, setLocation] = useState<Place | null>(null);
   const [pay, setPay] = useState('');
 
   const create = async () => {
-    const job = await postJob({ employerId: me.id, title: title.trim(), trade, skillIds, location: places[placeKey], pay: pay.trim() || 'Negotiable' });
+    if (!location) return;
+    const job = await postJob({ employerId: me.id, title: title.trim(), trade, skillIds, location, pay: pay.trim() || 'Negotiable' });
     if (!job) return;
     setSelectedId(job.id);
     setOpen(false);
@@ -120,11 +121,8 @@ export function EmployerJobs() {
                 {trades.filter((t) => t.id === myTrade).map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
               </select>
             </div>
-            <div>
-              <label htmlFor="job-place" className="block text-sm font-semibold text-ink">Location</label>
-              <select id="job-place" value={placeKey} onChange={(e) => setPlaceKey(e.target.value)} className="mt-1.5 w-full rounded-xl border border-line bg-surface px-3 py-2.5 text-sm">
-                {Object.entries(places).map(([k, p]) => <option key={k} value={k}>{p.name}</option>)}
-              </select>
+            <div className="col-span-2">
+              <LocationPicker id="job-place" label="Job location" onChange={setLocation} inputClassName="w-full rounded-xl border border-line bg-surface px-3 py-2.5 text-sm text-ink placeholder:text-ink-subtle focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30" />
             </div>
           </div>
           <fieldset>
@@ -144,7 +142,7 @@ export function EmployerJobs() {
           </div>
           <div className="flex justify-end gap-2 pt-1">
             <button type="button" onClick={() => setOpen(false)} className="rounded-xl px-4 py-2.5 text-sm font-medium text-ink hover:bg-canvas">Cancel</button>
-            <button type="button" disabled={!title.trim() || skillIds.length === 0} onClick={create} className="rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-night transition-colors duration-150 hover:bg-brand-700 disabled:opacity-40">Post & find matches</button>
+            <button type="button" disabled={!title.trim() || skillIds.length === 0 || !location} onClick={create} className="rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-night transition-colors duration-150 hover:bg-brand-700 disabled:opacity-40">Post & find matches</button>
           </div>
         </div>
       </Modal>
