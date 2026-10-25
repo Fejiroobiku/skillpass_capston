@@ -24,6 +24,7 @@ process.env.UPLOAD_DIR = path.join(os.tmpdir(), `skillpass-test-uploads-${proces
 assert.match(process.env.DATABASE_URL, /test/, 'Refusing to wipe a database whose URL does not contain "test".');
 
 const { createApp } = await import('../src/app.js');
+const { evidenceStore } = await import('../src/lib/storage.js');
 const { pool } = await import('../src/db.js');
 const { reset } = await import('../scripts/db.js');
 
@@ -258,10 +259,23 @@ describe('evidence', () => {
     assert.equal(r.status, 201);
     assert.equal(r.body.evidence.hash.length, 64);
     assert.ok(r.body.evidence.url.startsWith('http://api.test/uploads/'));
-    const file = await fetch(base + new URL(r.body.evidence.url).pathname);
+    const link = new URL(r.body.evidence.url);
+    const file = await fetch(base + link.pathname + link.search);
     assert.equal(file.status, 200);
     assert.equal(file.headers.get('x-content-type-options'), 'nosniff');
+    assert.match(file.headers.get('cache-control'), /^private, max-age=\d+$/);
     assert.equal(Buffer.compare(Buffer.from(await file.arrayBuffer()), bytes), 0);
+  });
+
+  it('serves evidence only through signed links that have not been edited', async () => {
+    const r = await upload(tokens.t1, jpeg(), { caption: 'Private file' });
+    const link = new URL(r.body.evidence.url);
+    assert.equal((await fetch(base + link.pathname)).status, 403); // bare file address
+    const forged = new URLSearchParams(link.search);
+    forged.set('exp', String(Number(forged.get('exp')) + 86400));
+    assert.equal((await fetch(`${base}${link.pathname}?${forged}`)).status, 403); // expiry pushed later
+    const other = await upload(tokens.t1, jpeg(), { caption: 'Another file' });
+    assert.equal((await fetch(base + new URL(other.body.evidence.url).pathname + link.search)).status, 403); // signature from another file
   });
 
   it('treats the same trainer re-sending an unused file as a retry, not a duplicate', async () => {
@@ -335,7 +349,7 @@ describe('issuing a credential', () => {
 
   it('blocks and logs an attempt to upload a file already used as evidence', async () => {
     const used = (await pool.query('SELECT url FROM evidence WHERE id = $1', [state.firstEvidence[1]])).rows[0].url;
-    const bytes = Buffer.from(await (await fetch(base + used)).arrayBuffer());
+    const bytes = Buffer.from(await (await fetch(base + evidenceStore.signedPath(used))).arrayBuffer());
     const before = await auditCount('evidence.duplicate_blocked');
     const r = await upload(tokens.t4, bytes); // a different trainer tries to reuse it
     assert.equal(r.status, 409);
@@ -671,7 +685,7 @@ describe('privacy', () => {
     const cred = await issue(tokens.t1, { apprenticeId: waleId, skillId: 'el-01', evidenceIds: [video.id], cosignRequestedFrom: 't4' });
     assert.equal(cred.status, 201, JSON.stringify(cred.body));
     const credId = cred.body.credential.id;
-    const fileKey = video.url.split('/uploads/')[1];
+    const fileKey = new URL(video.url).pathname.split('/uploads/')[1];
 
     const out = await api('POST', '/api/auth/withdraw-consent', { token: reg.body.token });
     assert.equal(out.status, 200, JSON.stringify(out.body));

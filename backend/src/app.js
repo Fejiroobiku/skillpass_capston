@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { config } from './config.js';
 import { pool } from './db.js';
-import { ensureDirs } from './lib/storage.js';
+import { ensureDirs, evidenceStore } from './lib/storage.js';
 import { errorHandler, notFound } from './middleware/errors.js';
 import adminRoutes from './routes/admin.js';
 import attemptRoutes from './routes/attempts.js';
@@ -42,10 +42,11 @@ export async function createApp() {
     res.json({ ok: true });
   });
 
-  app.use('/uploads', express.static(config.uploadDir, {
+  // Evidence is private: only signed, unexpired links are served.
+  app.use('/uploads', evidenceStore.guard(), express.static(config.uploadDir, {
     index: false,
+    cacheControl: false, // set by the guard: private, until the link expires
     dotfiles: 'deny',
-    maxAge: '7d',
     setHeaders: (res) => res.setHeader('X-Content-Type-Options', 'nosniff'),
   }));
 

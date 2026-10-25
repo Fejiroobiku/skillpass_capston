@@ -3,13 +3,18 @@ import { mkdir, open, rename, rm } from 'node:fs/promises';
 import { createHash, randomUUID } from 'node:crypto';
 import path from 'node:path';
 import { config } from '../config.js';
+import { SignedUrlSigner } from './signedUrls.js';
 
 /**
- * Evidence storage: local disk for now.
+ * Evidence storage.
  *
- * To move to cloud storage (Supabase Storage or Cloudinary, as in the deployment plan), replace
- * storeFile() so it uploads the temp file and returns the public URL. Nothing else needs to change,
- * because the SHA-256 and the file type are worked out here before the file is stored.
+ * EvidenceStore is the interface the routes use; LocalDiskStore keeps files on the server's disk.
+ * To move to cloud storage (Supabase Storage, as in the deployment plan), add a subclass that uploads in
+ * store() and deletes in remove(). Nothing else needs to change, because the SHA-256 and the file type
+ * are worked out here before the file is stored.
+ *
+ * Files are private: the API never hands out a bare file address, only a signed link that expires
+ * (see signedUrls.js), checked by EvidenceStore.serve() before the file is sent.
  */
 export const tempDir = () => path.join(config.uploadDir, '.tmp');
 
@@ -44,12 +49,63 @@ export async function sniffFile(filePath) {
   return null;
 }
 
-/** Move a verified temp file into permanent storage under an unguessable name. */
-export async function storeFile(tempPath, ext) {
-  const key = `${randomUUID()}.${ext}`;
-  await rename(tempPath, path.join(config.uploadDir, key));
-  return { key, url: `/uploads/${key}` };
+export class EvidenceStore {
+  /** @param {SignedUrlSigner} signer */
+  constructor(signer) {
+    if (new.target === EvidenceStore) throw new TypeError('EvidenceStore is abstract; use a subclass.');
+    this.signer = signer;
+  }
+
+  /** Turn a stored path like /uploads/abc.jpg into a link that expires. */
+  signedPath(storedPath) {
+    return this.signer.sign(storedPath);
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  async store(tempPath, ext) {
+    throw new TypeError(`${this.constructor.name} must implement store().`);
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  async remove(key) {
+    throw new TypeError(`${this.constructor.name} must implement remove().`);
+  }
+
+  /** Express middleware placed before the file server: refuses links that are unsigned, edited or expired. */
+  guard() {
+    return (req, res, next) => {
+      const result = this.signer.check(`/uploads${req.path}`, req.query.exp, req.query.sig);
+      if (result === 'ok') {
+        res.setHeader('Cache-Control', `private, max-age=${this.signer.secondsLeft(req.query.exp)}`);
+        return next();
+      }
+      res.status(403).json({ error: result === 'expired' ? 'This evidence link has expired. Reload the page to get a fresh one.' : 'This evidence link is not valid.' });
+    };
+  }
+}
+
+/** Keeps evidence files on the server's disk under unguessable names. */
+export class LocalDiskStore extends EvidenceStore {
+  constructor(signer, dir = config.uploadDir) {
+    super(signer);
+    this.dir = dir;
+  }
+
+  async store(tempPath, ext) {
+    const key = `${randomUUID()}.${ext}`;
+    await rename(tempPath, path.join(this.dir, key));
+    return { key, url: `/uploads/${key}` };
+  }
+
+  async remove(key) {
+    await removeFile(path.join(this.dir, key));
+  }
 }
 
 export const removeFile = (filePath) => rm(filePath, { force: true }).catch(() => {});
-export const removeStored = (key) => removeFile(path.join(config.uploadDir, key));
+
+export const evidenceStore = new LocalDiskStore(new SignedUrlSigner(config.signingKey, config.evidenceUrlMinutes * 60));
+
+/** Move a verified temp file into permanent storage under an unguessable name. */
+export const storeFile = (tempPath, ext) => evidenceStore.store(tempPath, ext);
+export const removeStored = (key) => evidenceStore.remove(key);

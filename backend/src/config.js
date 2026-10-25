@@ -45,6 +45,8 @@ export const config = {
   bcryptRounds: Number(process.env.BCRYPT_ROUNDS ?? 12),
   corsOrigins: (process.env.CORS_ORIGINS ?? 'http://localhost:5173').split(',').map((s) => s.trim()).filter(Boolean),
   uploadDir: path.resolve(process.env.UPLOAD_DIR ?? 'uploads'),
+  // Evidence links expire after this many minutes; pages fetch fresh links each time they load.
+  evidenceUrlMinutes: Number(process.env.EVIDENCE_URL_MINUTES ?? 30),
   maxUploadMb: Number(process.env.MAX_UPLOAD_MB ?? 40),
   // Lets the demo build upload generated sample evidence marked source=demo. Never enable with real participants.
   allowDemoEvidence: flag(process.env.ALLOW_DEMO_EVIDENCE),

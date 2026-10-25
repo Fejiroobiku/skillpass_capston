@@ -1,5 +1,6 @@
 import { config } from '../config.js';
 import { logAudit, notify } from './audit.js';
+import { evidenceStore } from './storage.js';
 
 const iso = (d) => (d ? new Date(d).toISOString() : undefined);
 
@@ -9,7 +10,7 @@ const CREDENTIAL_COLUMNS = `
   c.signature, c.revoke_reason`;
 
 /** Evidence stored by this API lives under /uploads; seed/demo files are served by the frontend itself. */
-const publicUrl = (u) => (u && u.startsWith('/uploads/') ? `${config.publicUrl}${u}` : u ?? undefined);
+const publicUrl = (u) => (u && u.startsWith('/uploads/') ? `${config.publicUrl}${evidenceStore.signedPath(u)}` : u ?? undefined);
 
 export function mapEvidence(r) {
   return {
