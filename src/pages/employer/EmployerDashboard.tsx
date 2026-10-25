@@ -62,7 +62,7 @@ export function EmployerDashboard() {
     <>
       <PageHeader title="Verify & Co-sign" subtitle={`${me?.company ?? ''} · Check what a worker can actually do before you hire them.`} />
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="min-w-0 space-y-4">
           <form onSubmit={submit} role="search" className="flex flex-col gap-2 rounded-2xl border border-line bg-surface p-2 sm:flex-row">
             <label htmlFor="verify-id" className="sr-only">Credential ID</label>

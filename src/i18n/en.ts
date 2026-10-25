@@ -199,6 +199,7 @@ export const en = {
   'jobs.status.contacted': 'Employer contacted you',
   'jobs.status.declined': 'Declined',
   'jobs.where': '{place} · {km} km away · referred {date}',
+  'jobs.whereNear': '{place} · nearby · referred {date}',
   'jobs.interested': "I'm interested",
   'jobs.decline': 'Decline',
   'jobs.shared': 'Your passport link was shared with the employer.',

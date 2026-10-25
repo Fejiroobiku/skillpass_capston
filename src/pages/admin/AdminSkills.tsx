@@ -68,7 +68,7 @@ export function AdminSkills() {
         )}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
         <Panel title="Checklist" description={`${active.length} active skills`}>
           <div className="space-y-5">
             {skillLevels.map((lvl) => {

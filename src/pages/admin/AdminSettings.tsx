@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { CheckIcon, LockIcon } from 'lucide-react';
 import { PageHeader } from '../../components/PageHeader';
 import { Panel } from '../../components/Panel';
@@ -31,7 +31,7 @@ export function AdminSettings() {
   { name: 'Revoked stays visible', text: 'Revoked credentials remain on the verification page, marked revoked.' }];
 
 
-  const security = ['Passwords hashed with Argon2id', 'HTTPS everywhere (TLS 1.3)', 'Credentials signed with Ed25519 server key · fingerprint 7F:2A:91:C4', 'Role-based access control on every REST endpoint', 'Evidence stored privately; signed URLs expire after 10 minutes'];
+  const security = ['Passwords hashed with bcrypt', 'HTTPS for every connection in production', 'Credentials signed with an HMAC-SHA256 server key', 'Audit log sealed as an HMAC hash chain', 'Role-based access control on every REST endpoint', 'Evidence stored privately; signed links expire after 30 minutes'];
 
   return (
     <>

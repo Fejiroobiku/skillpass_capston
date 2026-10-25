@@ -38,7 +38,7 @@ export function ConfirmSkills() {
   return (
     <>
       <PageHeader title={t('confirm.title')} subtitle={t('confirm.subtitle')} />
-      <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <Panel title={t('confirm.waiting')} description={t('confirm.waitingDesc')}>
           {done && <p role="status" className="mb-4 rounded-xl bg-ok-50 p-3 text-sm font-medium text-ok-700">{done}</p>}
           {pending.length === 0 ?

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { StarIcon } from 'lucide-react';
 import type { Referral } from '../../types/skillpass';
 import { PageHeader } from '../../components/PageHeader';
@@ -44,7 +44,7 @@ export function EmployerFeedback() {
       <PageHeader title="Feedback" subtitle="One rating per real job, from verified employers only. Ratings attach to credentials and feed the trainer's trust score." />
       {!verified && <p role="status" className="mb-4 rounded-xl bg-warn-50 p-3.5 text-sm text-warn-700">Your employer account must be verified by an administrator before you can leave ratings.</p>}
       {error && <p role="alert" className="mb-4 rounded-xl bg-bad-50 p-3.5 text-sm font-medium text-bad-700">{error}</p>}
-      <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <Panel title="Your referrals">
           {myRefs.length === 0 ?
           <p className="text-sm text-ink-muted">Send referrals from Jobs & Matches to see them here.</p> :

@@ -1,4 +1,3 @@
-import React from 'react';
 import { BadgeCheckIcon, CheckIcon, CircleAlertIcon, ClockIcon, MapPinIcon, ShieldAlertIcon, ShieldXIcon, UserCheckIcon } from 'lucide-react';
 import type { PublicCredential } from '../api/types';
 import { formatDate, formatDateTime } from '../utils/credentials';
@@ -33,7 +32,7 @@ export function CredentialRecord({ credential }: {credential: PublicCredential;}
         </div>
       </div>
 
-      <div className="grid gap-6 p-5 md:grid-cols-[1.3fr_1fr] md:p-6">
+      <div className="grid grid-cols-1 gap-6 p-5 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] md:p-6">
         <div>
           <p className="text-sm text-ink-muted">{t(({ Foundation: 'level.Foundation', Intermediate: 'level.Intermediate', Advanced: 'level.Advanced' } as const)[credential.skill.level])} · {credential.skill.tradeName}</p>
           <h2 className="mt-1 text-2xl font-semibold tracking-tight text-ink">{credential.skill.name}</h2>

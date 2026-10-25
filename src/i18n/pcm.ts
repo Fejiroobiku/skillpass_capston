@@ -186,6 +186,7 @@ export const pcm: Record<MessageKey, string> = {
   'jobs.status.contacted': 'Employer don reach you',
   'jobs.status.declined': 'You no want am',
   'jobs.where': '{place} · {km} km from you · dem refer am {date}',
+  'jobs.whereNear': '{place} · e near you · dem refer am {date}',
   'jobs.interested': 'I want this work',
   'jobs.decline': 'I no want am',
   'jobs.shared': 'We don share your passport link with the employer.',

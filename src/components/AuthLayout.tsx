@@ -35,8 +35,8 @@ export function AuthLayout({ children }: {children: React.ReactNode;}) {
         <div className="flex h-16 items-center justify-between px-5 md:px-8">
           <span className="lg:hidden"><Logo compact /></span>
           <div className="ml-auto flex items-center gap-3">
-            <LanguageSwitcher />
-            <Link to="/verify" className="text-sm font-medium text-ink-muted hover:text-ink">{t('auth.verifyLink')}</Link>
+            <LanguageSwitcher compact />
+            <Link to="/verify" className="whitespace-nowrap text-sm font-medium text-ink-muted hover:text-ink">{t('auth.verifyLink')}</Link>
           </div>
         </div>
         <div className="flex flex-1 items-start justify-center px-5 pb-12 pt-4 md:items-center md:px-8">

@@ -1,4 +1,3 @@
-import React from 'react';
 import { CheckIcon, MapPinIcon, MessageSquareIcon, XIcon } from 'lucide-react';
 import { PageHeader } from '../../components/PageHeader';
 import { Pill } from '../../components/StatusBadge';
@@ -52,7 +51,7 @@ export function JobReferrals() {
                       <Pill tone={s.tone}>{t(s.label)}</Pill>
                     </div>
                     <p className="mt-1 text-sm text-ink-muted">{employer?.company} · {job.pay}</p>
-                    <p className="mt-1 flex items-center gap-1.5 text-sm text-ink-muted"><MapPinIcon className="h-4 w-4" /> {t('jobs.where', { place: job.location.name, km: m.distance.toFixed(1), date: formatDate(r.sentAt) })}</p>
+                    <p className="mt-1 flex items-center gap-1.5 text-sm text-ink-muted"><MapPinIcon className="h-4 w-4" /> {m.distance < 0.5 ? t('jobs.whereNear', { place: job.location.name, date: formatDate(r.sentAt) }) : t('jobs.where', { place: job.location.name, km: m.distance.toFixed(1), date: formatDate(r.sentAt) })}</p>
                     <ul className="mt-4 flex flex-wrap gap-2">
                       {job.skillIds.map((id) => {
                       const has = m.matchedSkillIds.includes(id);

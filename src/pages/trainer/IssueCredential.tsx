@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { CheckIcon, LockIcon, ShieldAlertIcon, UserPlusIcon } from 'lucide-react';
 import { PageHeader } from '../../components/PageHeader';
@@ -65,7 +64,7 @@ export function IssueCredential() {
         })}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
         <div className="space-y-6">
           <Panel title="1. Skill" description={`${form.apprentice?.name} · ${form.tradeName} checklist`} accent>
             <div className="space-y-5">

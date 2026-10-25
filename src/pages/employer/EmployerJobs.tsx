@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { CheckIcon, MapPinIcon, PlusIcon, SendIcon } from 'lucide-react';
 import type { Place, TradeId } from '../../types/skillpass';
 import { PageHeader } from '../../components/PageHeader';
@@ -52,7 +52,7 @@ export function EmployerJobs() {
         } />
       
 
-      <div className="grid gap-6 lg:grid-cols-[340px_1fr]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[340px_minmax(0,1fr)]">
         <nav aria-label="Your jobs" className="space-y-2">
           {myJobs.length === 0 &&
           <p className="rounded-2xl border border-dashed border-line bg-surface p-6 text-center text-sm text-ink-muted">No jobs yet. Post one to see ranked matches.</p>
