@@ -7,33 +7,40 @@ import { LanguageProvider } from './i18n';
 import { OfflineBanner } from './components/OfflineBanner';
 import { homeByRole } from './data/navigation';
 import { DashboardLayout } from './components/layout/DashboardLayout';
-import { Login } from './pages/auth/Login';
-import { Register } from './pages/auth/Register';
-import { PublicVerify } from './pages/public/PublicVerify';
-import { PublicPassport } from './pages/public/PublicPassport';
-import { TrainerDashboard } from './pages/trainer/TrainerDashboard';
-import { IssueCredential } from './pages/trainer/IssueCredential';
-import { TrainerCredentials } from './pages/trainer/TrainerCredentials';
-import { TrainerApprentices } from './pages/trainer/TrainerApprentices';
-import { TrainerSkills } from './pages/trainer/TrainerSkills';
-import { SkillsPassport } from './pages/apprentice/SkillsPassport';
-import { JobReferrals } from './pages/apprentice/JobReferrals';
-import { ConfirmSkills } from './pages/apprentice/ConfirmSkills';
-import { EmployerDashboard } from './pages/employer/EmployerDashboard';
-import { EmployerJobs } from './pages/employer/EmployerJobs';
-import { EmployerFeedback } from './pages/employer/EmployerFeedback';
-import { AdminMetrics } from './pages/admin/AdminMetrics';
-import { ReviewQueue } from './pages/admin/ReviewQueue';
-import { AdminUsers } from './pages/admin/AdminUsers';
-import { AdminSkills } from './pages/admin/AdminSkills';
-import { AdminSettings } from './pages/admin/AdminSettings';
-import { AuditLog } from './pages/AuditLog';
-import { Profile } from './pages/shared/Profile';
-import { Notifications } from './pages/shared/Notifications';
-import { UsabilitySurvey } from './pages/shared/UsabilitySurvey';
-import { ApprenticePassport } from './pages/shared/ApprenticePassport';
-import { ConfirmContact } from './pages/shared/ConfirmContact';
-import { ForgotPassword, ResetPassword, VerifyEmail } from './pages/auth/AccountRecovery';
+
+// Pages load on demand, so a phone downloads only the screens its user opens (see the technical report).
+const page = <T extends Record<string, React.ComponentType>>(load: () => Promise<T>, name: keyof T) =>
+  React.lazy(() => load().then((m) => ({ default: m[name] })));
+
+const Login = page(() => import('./pages/auth/Login'), 'Login');
+const Register = page(() => import('./pages/auth/Register'), 'Register');
+const PublicVerify = page(() => import('./pages/public/PublicVerify'), 'PublicVerify');
+const PublicPassport = page(() => import('./pages/public/PublicPassport'), 'PublicPassport');
+const TrainerDashboard = page(() => import('./pages/trainer/TrainerDashboard'), 'TrainerDashboard');
+const IssueCredential = page(() => import('./pages/trainer/IssueCredential'), 'IssueCredential');
+const TrainerCredentials = page(() => import('./pages/trainer/TrainerCredentials'), 'TrainerCredentials');
+const TrainerApprentices = page(() => import('./pages/trainer/TrainerApprentices'), 'TrainerApprentices');
+const TrainerSkills = page(() => import('./pages/trainer/TrainerSkills'), 'TrainerSkills');
+const SkillsPassport = page(() => import('./pages/apprentice/SkillsPassport'), 'SkillsPassport');
+const JobReferrals = page(() => import('./pages/apprentice/JobReferrals'), 'JobReferrals');
+const ConfirmSkills = page(() => import('./pages/apprentice/ConfirmSkills'), 'ConfirmSkills');
+const EmployerDashboard = page(() => import('./pages/employer/EmployerDashboard'), 'EmployerDashboard');
+const EmployerJobs = page(() => import('./pages/employer/EmployerJobs'), 'EmployerJobs');
+const EmployerFeedback = page(() => import('./pages/employer/EmployerFeedback'), 'EmployerFeedback');
+const AdminMetrics = page(() => import('./pages/admin/AdminMetrics'), 'AdminMetrics');
+const ReviewQueue = page(() => import('./pages/admin/ReviewQueue'), 'ReviewQueue');
+const AdminUsers = page(() => import('./pages/admin/AdminUsers'), 'AdminUsers');
+const AdminSkills = page(() => import('./pages/admin/AdminSkills'), 'AdminSkills');
+const AdminSettings = page(() => import('./pages/admin/AdminSettings'), 'AdminSettings');
+const AuditLog = page(() => import('./pages/AuditLog'), 'AuditLog');
+const Profile = page(() => import('./pages/shared/Profile'), 'Profile');
+const Notifications = page(() => import('./pages/shared/Notifications'), 'Notifications');
+const UsabilitySurvey = page(() => import('./pages/shared/UsabilitySurvey'), 'UsabilitySurvey');
+const ApprenticePassport = page(() => import('./pages/shared/ApprenticePassport'), 'ApprenticePassport');
+const ConfirmContact = page(() => import('./pages/shared/ConfirmContact'), 'ConfirmContact');
+const ForgotPassword = page(() => import('./pages/auth/AccountRecovery'), 'ForgotPassword');
+const ResetPassword = page(() => import('./pages/auth/AccountRecovery'), 'ResetPassword');
+const VerifyEmail = page(() => import('./pages/auth/AccountRecovery'), 'VerifyEmail');
 
 function Loading() {
   return <p role="status" className="p-10 text-center text-ink-muted">Loading SkillPass…</p>;
@@ -70,6 +77,7 @@ export function App() {
       <AuthProvider>
         <OfflineBanner />
         <BrowserRouter>
+          <React.Suspense fallback={<Loading />}>
           <Routes>
             <Route path="/login" element={<GuestOnly><Login /></GuestOnly>} />
             <Route path="/register" element={<GuestOnly><Register /></GuestOnly>} />
@@ -115,6 +123,7 @@ export function App() {
 
             <Route path="*" element={<HomeRedirect />} />
           </Routes>
+          </React.Suspense>
         </BrowserRouter>
       </AuthProvider>
     </SkillPassProvider>
