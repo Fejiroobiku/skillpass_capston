@@ -2,6 +2,7 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useR
 import type { Account, AccountStatus, Place, Role } from '../types/skillpass';
 import { api, getToken, messageOf, setToken, setUnauthorizedHandler } from '../api/client';
 import { useSkillPass } from './SkillPassContext';
+import { preloadPagesFor } from '../pageLoaders';
 
 export interface RegisterInput {
   role: Exclude<Role, 'admin'>;
@@ -130,6 +131,7 @@ export function AuthProvider({ children }: {children: React.ReactNode;}) {
   const start = useCallback(async (r: {token: string;user: ApiUser;}) => {
     setToken(r.token);
     const me = toUser(r.user);
+    preloadPagesFor(me.role); // fetch this role's pages while their data loads
     await Promise.all([spRef.current.load(), loadAccounts(me)]);
     setUser(me);
   }, [loadAccounts]);

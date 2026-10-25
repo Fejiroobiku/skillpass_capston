@@ -8,39 +8,44 @@ import { OfflineBanner } from './components/OfflineBanner';
 import { homeByRole } from './data/navigation';
 import { DashboardLayout } from './components/layout/DashboardLayout';
 
-// Pages load on demand, so a phone downloads only the screens its user opens (see the technical report).
+import { Login } from './pages/auth/Login';
+import { Register } from './pages/auth/Register';
+import { PublicVerify } from './pages/public/PublicVerify';
+import { PublicPassport } from './pages/public/PublicPassport';
+import { ForgotPassword, ResetPassword, VerifyEmail } from './pages/auth/AccountRecovery';
+import { getToken } from './api/client';
+import { loaders, preloadPagesFor, roleFromToken } from './pageLoaders';
+
+// Signed-in pages load on demand (see pageLoaders.ts). For a returning user, start fetching their pages now,
+// in parallel with the account check, instead of after it.
 const page = <T extends Record<string, React.ComponentType>>(load: () => Promise<T>, name: keyof T) =>
   React.lazy(() => load().then((m) => ({ default: m[name] })));
+const savedRole = roleFromToken(getToken());
+if (savedRole) preloadPagesFor(savedRole);
 
-const Login = page(() => import('./pages/auth/Login'), 'Login');
-const Register = page(() => import('./pages/auth/Register'), 'Register');
-const PublicVerify = page(() => import('./pages/public/PublicVerify'), 'PublicVerify');
-const PublicPassport = page(() => import('./pages/public/PublicPassport'), 'PublicPassport');
-const TrainerDashboard = page(() => import('./pages/trainer/TrainerDashboard'), 'TrainerDashboard');
-const IssueCredential = page(() => import('./pages/trainer/IssueCredential'), 'IssueCredential');
-const TrainerCredentials = page(() => import('./pages/trainer/TrainerCredentials'), 'TrainerCredentials');
-const TrainerApprentices = page(() => import('./pages/trainer/TrainerApprentices'), 'TrainerApprentices');
-const TrainerSkills = page(() => import('./pages/trainer/TrainerSkills'), 'TrainerSkills');
-const SkillsPassport = page(() => import('./pages/apprentice/SkillsPassport'), 'SkillsPassport');
-const JobReferrals = page(() => import('./pages/apprentice/JobReferrals'), 'JobReferrals');
-const ConfirmSkills = page(() => import('./pages/apprentice/ConfirmSkills'), 'ConfirmSkills');
-const EmployerDashboard = page(() => import('./pages/employer/EmployerDashboard'), 'EmployerDashboard');
-const EmployerJobs = page(() => import('./pages/employer/EmployerJobs'), 'EmployerJobs');
-const EmployerFeedback = page(() => import('./pages/employer/EmployerFeedback'), 'EmployerFeedback');
-const AdminMetrics = page(() => import('./pages/admin/AdminMetrics'), 'AdminMetrics');
-const ReviewQueue = page(() => import('./pages/admin/ReviewQueue'), 'ReviewQueue');
-const AdminUsers = page(() => import('./pages/admin/AdminUsers'), 'AdminUsers');
-const AdminSkills = page(() => import('./pages/admin/AdminSkills'), 'AdminSkills');
-const AdminSettings = page(() => import('./pages/admin/AdminSettings'), 'AdminSettings');
-const AuditLog = page(() => import('./pages/AuditLog'), 'AuditLog');
-const Profile = page(() => import('./pages/shared/Profile'), 'Profile');
-const Notifications = page(() => import('./pages/shared/Notifications'), 'Notifications');
-const UsabilitySurvey = page(() => import('./pages/shared/UsabilitySurvey'), 'UsabilitySurvey');
-const ApprenticePassport = page(() => import('./pages/shared/ApprenticePassport'), 'ApprenticePassport');
-const ConfirmContact = page(() => import('./pages/shared/ConfirmContact'), 'ConfirmContact');
-const ForgotPassword = page(() => import('./pages/auth/AccountRecovery'), 'ForgotPassword');
-const ResetPassword = page(() => import('./pages/auth/AccountRecovery'), 'ResetPassword');
-const VerifyEmail = page(() => import('./pages/auth/AccountRecovery'), 'VerifyEmail');
+const { trainer: t, apprentice: a, employer: e, admin: ad, shared: sh } = loaders;
+const TrainerDashboard = page(t.TrainerDashboard, 'TrainerDashboard');
+const IssueCredential = page(t.IssueCredential, 'IssueCredential');
+const TrainerCredentials = page(t.TrainerCredentials, 'TrainerCredentials');
+const TrainerApprentices = page(t.TrainerApprentices, 'TrainerApprentices');
+const TrainerSkills = page(t.TrainerSkills, 'TrainerSkills');
+const SkillsPassport = page(a.SkillsPassport, 'SkillsPassport');
+const ConfirmSkills = page(a.ConfirmSkills, 'ConfirmSkills');
+const JobReferrals = page(a.JobReferrals, 'JobReferrals');
+const EmployerDashboard = page(e.EmployerDashboard, 'EmployerDashboard');
+const EmployerJobs = page(e.EmployerJobs, 'EmployerJobs');
+const EmployerFeedback = page(e.EmployerFeedback, 'EmployerFeedback');
+const AdminMetrics = page(ad.AdminMetrics, 'AdminMetrics');
+const ReviewQueue = page(ad.ReviewQueue, 'ReviewQueue');
+const AdminUsers = page(ad.AdminUsers, 'AdminUsers');
+const AdminSkills = page(ad.AdminSkills, 'AdminSkills');
+const AuditLog = page(ad.AuditLog, 'AuditLog');
+const AdminSettings = page(ad.AdminSettings, 'AdminSettings');
+const Profile = page(sh.Profile, 'Profile');
+const Notifications = page(sh.Notifications, 'Notifications');
+const UsabilitySurvey = page(sh.UsabilitySurvey, 'UsabilitySurvey');
+const ApprenticePassport = page(sh.ApprenticePassport, 'ApprenticePassport');
+const ConfirmContact = page(sh.ConfirmContact, 'ConfirmContact');
 
 function Loading() {
   return <p role="status" className="p-10 text-center text-ink-muted">Loading SkillPass…</p>;
