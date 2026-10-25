@@ -1,4 +1,3 @@
-import React from 'react';
 import { useParams } from 'react-router-dom';
 import { LockIcon, PrinterIcon } from 'lucide-react';
 import { PublicHeader } from '../../components/PublicHeader';

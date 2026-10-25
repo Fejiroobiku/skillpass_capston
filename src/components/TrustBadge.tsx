@@ -1,4 +1,3 @@
-import React from 'react';
 import { ShieldCheckIcon, ShieldAlertIcon } from 'lucide-react';
 import { useSkillPass } from '../contexts/SkillPassContext';
 import { useT } from '../i18n';

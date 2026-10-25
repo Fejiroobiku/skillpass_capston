@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import type { Role } from '../../types/skillpass';
 import { PageHeader } from '../../components/PageHeader';
 import { Pill } from '../../components/StatusBadge';

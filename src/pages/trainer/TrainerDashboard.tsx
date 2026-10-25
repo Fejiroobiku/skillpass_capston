@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRightIcon, ClockIcon, FilePlus2Icon, TriangleAlertIcon } from 'lucide-react';
 import { PageHeader } from '../../components/PageHeader';

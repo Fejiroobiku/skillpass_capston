@@ -1,4 +1,4 @@
-import React, { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { LocateFixedIcon, MapPinIcon } from 'lucide-react';
 import type { Place } from '../types/skillpass';
 import { LAGOS_CENTRE, findArea, insideLagos, lagosAreas, nearestArea } from '../data/lagosAreas';

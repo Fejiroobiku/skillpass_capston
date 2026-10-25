@@ -274,7 +274,7 @@ INSERT INTO feedback_credentials (feedback_id, credential_id) VALUES
 INSERT INTO notifications (id, user_id, channel, title, body, at, read, link) VALUES
   ('n1', 't1', 'in_app', 'Co-sign request', 'Chinedu Okafor asked you to co-sign “Install and commission a three-phase supply” for Segun Alabi.', '2026-09-29T13:01:00+01:00', false, '/trainer'),
   ('n2', 't1', 'in_app', 'Credential flagged', 'Folake Hassan flagged SP-3WLA-9KDS (Emeka Nwosu). An administrator will review it.', '2026-09-27T17:06:00+01:00', false, '/verify/SP-3WLA-9KDS'),
-  ('n3', 't1', 'in_app', 'Audit sample selected', 'SP-6FHP-1ZRT was picked for a random spot-check.', '2026-09-29T08:00:00+01:00', true, NULL),
+  ('n3', 't1', 'in_app', 'Audit result', 'Spot-check of SP-9TRD-5HWA agreed with your assessment.', '2026-09-24T09:00:00+01:00', true, NULL),
   ('n4', 'a1', 'sms', 'New job referral', 'SkillPass: Lekki Homes needs an electrician in Lekki Phase 1 (₦180,000). Reply 1 if interested.', '2026-09-28T09:05:00+01:00', false, '/apprentice/jobs'),
   ('n5', 'a1', 'in_app', 'New job referral', 'Rewire two flats in a Lekki estate — 67% skill match.', '2026-09-28T09:05:00+01:00', false, '/apprentice/jobs'),
   ('n6', 'a1', 'sms', 'Skill verified', 'SkillPass: Babatunde Adeyemi verified “Install a solar inverter with battery backup”. ID SP-7MXV-3JYK.', '2026-09-26T16:21:00+01:00', true, '/verify/SP-7MXV-3JYK'),

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CameraIcon, CameraOffIcon, CircleIcon, MapPinIcon, SquareIcon, XIcon } from 'lucide-react';
 import type { Evidence, Place } from '../../types/skillpass';

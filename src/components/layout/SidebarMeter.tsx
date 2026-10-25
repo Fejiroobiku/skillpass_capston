@@ -1,4 +1,3 @@
-import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSkillPass } from '../../contexts/SkillPassContext';
 import { verifiedSkillIds } from '../../utils/matching';

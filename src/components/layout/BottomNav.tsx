@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { BellIcon, ClipboardListIcon, MoreHorizontalIcon, UserRoundIcon, XIcon } from 'lucide-react';

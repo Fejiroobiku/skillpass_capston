@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { CameraIcon, CloudOffIcon, FingerprintIcon, MapPinIcon, PlayIcon, RefreshCwIcon, ShieldAlertIcon, VideoIcon, XIcon } from 'lucide-react';
 import type { Evidence, Place } from '../../types/skillpass';
 import { CameraModal } from './CameraModal';

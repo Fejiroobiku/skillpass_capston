@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MailIcon, MessageSquareTextIcon, MonitorSmartphoneIcon } from 'lucide-react';
 import type { NotificationChannel } from '../../types/skillpass';

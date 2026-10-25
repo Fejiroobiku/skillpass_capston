@@ -1,4 +1,3 @@
-import React from 'react';
 import { WifiOffIcon } from 'lucide-react';
 import { useOnline } from '../offline/hooks';
 import { useT } from '../i18n';

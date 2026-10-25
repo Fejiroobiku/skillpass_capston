@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { FilePlus2Icon, MapPinIcon, PhoneIcon, UserPlusIcon } from 'lucide-react';
 import { PageHeader } from '../../components/PageHeader';

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRightIcon, CheckIcon, CircleIcon, CircleCheckBigIcon, ClockIcon, FileSearchIcon, TriangleAlertIcon } from 'lucide-react';

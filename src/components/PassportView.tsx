@@ -59,14 +59,14 @@ export function PassportView({ source, shareUrl, actions }: {source: PassportSou
                 <ul className="divide-y divide-line rounded-xl border border-line">
                   {skills.filter((s) => s.level === level).map((s) => {
                   const cred = credentials.find((c) => c.skillId === s.id);
-                  const t = cred ? trainers[cred.trainerId] : undefined;
+                  const tr = cred ? trainers[cred.trainerId] : undefined;
                   return (
                     <li key={s.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3">
                         <div className="min-w-0 flex-1">
                           <p className={`text-sm font-medium ${cred ? 'text-ink' : 'text-ink-subtle'}`}>{s.name}</p>
-                          {cred && t &&
+                          {cred && tr &&
                         <p className="mt-0.5 text-xs text-ink-muted">
-                              <TrustBadge trainerId={cred.trainerId} data={{ name: t.name, score: t.trustScore, underReview: t.underReview }} /> · {formatDate(cred.issuedAt)} ·{' '}
+                              <TrustBadge trainerId={cred.trainerId} data={{ name: tr.name, score: tr.trustScore, underReview: tr.underReview }} /> · {formatDate(cred.issuedAt)} ·{' '}
                               <Link to={`/verify/${cred.id}`} className="font-mono text-brand-700 hover:underline">{cred.id}</Link>
                             </p>
                         }

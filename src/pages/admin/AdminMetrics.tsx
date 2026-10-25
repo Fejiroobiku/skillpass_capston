@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRightIcon } from 'lucide-react';
 import { PageHeader } from '../../components/PageHeader';
@@ -55,7 +54,7 @@ export function AdminMetrics() {
     <>
       <PageHeader title="Pilot Metrics" subtitle={`Table 1 targets · ${metCount} of ${metrics.length} currently met · Lagos pilot, week 9 of 16`} />
 
-      <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <section className="overflow-hidden rounded-2xl border border-line bg-surface">
           <div className="border-b border-line px-5 py-4 md:px-6">
             <h2 className="text-lg font-semibold text-ink">Success metrics</h2>

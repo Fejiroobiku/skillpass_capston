@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { BellIcon, ClipboardListIcon, UserRoundIcon } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';

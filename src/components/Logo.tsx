@@ -1,4 +1,3 @@
-import React from 'react';
 import { BadgeCheckIcon } from 'lucide-react';
 
 /** `inverted` is kept for older call sites; on the dark Aurora theme both variants look the same. */

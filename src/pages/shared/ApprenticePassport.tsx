@@ -1,4 +1,3 @@
-import React from 'react';
 import { useParams } from 'react-router-dom';
 import { PrinterIcon } from 'lucide-react';
 import { PageHeader } from '../../components/PageHeader';
