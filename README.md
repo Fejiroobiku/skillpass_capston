@@ -2,150 +2,214 @@
 
 A trainer-verified digital skills passport for informal apprentices in Nigeria.
 
-## Description
-
-In Nigeria, most tradespeople learn through informal apprenticeship and end up with no record an employer can check. SkillPass lets a trainer issue a credential to an apprentice, backed by photo or video evidence. Anyone can then verify that credential on a public page, and the system has safeguards that keep trainers honest.
-
-This is the initial version for the supervisor review. It covers the main flow:
-trainer issues a credential -> admin reviews it if it is flagged or held -> anyone verifies it publicly -> credentials can be flagged or revoked.
-
-**GitHub repo:** [paste link here]
-**Live demo:** [paste deployed link here]
-**Demo video:** [paste link here]
-
-## Features in this version
-
-| Role | What it can do |
+| | |
 |---|---|
-| Trainer | Issue credentials with evidence, manage apprentices, view own credentials and skills |
-| Apprentice | View skills passport, confirm skills, see job referrals |
-| Employer | Post jobs, rate apprentices, flag suspicious credentials |
-| Admin | Approve trainers, review the queue, manage users and skills, view pilot metrics |
-| Public | Verify a credential by ID or link, no login needed |
+| **Walkthrough video** | [paste your video link here] |
+| **Technical report (PDF)** | [docs/SkillPass_Technical_Report.pdf](docs/SkillPass_Technical_Report.pdf) |
+| **Live demo** | [paste the deployed link here, if deployed] |
+| **Author** | Fejiro Obiku, BSc Software Engineering, African Leadership University. Supervisor: Tunde Isiaq Gbadamosi |
 
-Integrity safeguards:
-- Evidence captured in the app (camera) and file hashing (SHA-256)
-- Risk score and trust badge for trainers
-- Review queue for held or flagged credentials
-- Apprentice confirmation of skills
-- Revoke and flag workflow
-- Audit log of every sensitive action
+## Project overview
 
-## Languages
+About 93% of employment in Nigeria is informal, and most tradespeople learn through workshop apprenticeships. They finish with real skills but no record that an employer outside their area can check, and employers have no quick way to tell real skill from a bought certificate.
 
-The apprentice screens, sign-in, sign-up and public verify pages are available in English and Nigerian Pidgin.
-The language picker is in the top bar (and in the "More" menu on phones), and the choice is remembered on the device.
-Text lives in `src/i18n/en.ts` (English, the source) and `src/i18n/pcm.ts` (Pidgin, a draft to be checked by a
-Pidgin speaker from the pilot). To add Yoruba, Hausa or Igbo, copy `pcm.ts`, translate it with a native speaker and
-register it in `src/i18n/index.tsx`. Messages that come from the server are still in English.
+SkillPass lets a trainer record a skill they **watched** an apprentice perform, backed by a live photo or video. The apprentice confirms it, and anyone can verify it in under a minute through a QR code or link, with no login. Integrity safeguards keep trainers honest, and verified skills feed job referrals and employer ratings.
 
-## Weak signal and low data
+The pilot covers three trades (electrical installation, auto mechanics and tailoring) in Lagos State.
 
-- Photos and videos that fail to upload because there is no signal are kept on the phone (IndexedDB) and sent
-  automatically when the connection returns. The trainer sees them in the evidence list and can retry or discard.
-  A video still needs its code from the server, so the trainer needs a moment of signal before recording.
-- Capture is tuned for mobile data: 640×480 video at about 0.8 Mbit/s (around 3 MB for 30 seconds) and photos
-  scaled to 1600 px.
-- In the built app (`npm run build`), a service worker keeps SkillPass on the phone so it opens without signal,
-  and the web manifest lets people add it to their home screen. It is switched off during `npm run dev`.
+### What each role can do
 
-## Tech stack
+| Role | Main features |
+|---|---|
+| **Trainer** | Assess a skill against its rubric; record live video evidence showing a one-time code; issue a signed credential; see their trust score; propose new skills |
+| **Apprentice** | Confirm or reject each credential; share a passport link and QR code (switch it off or make a new link at any time); receive job referrals; report a trainer privately |
+| **Employer** | Verify a credential; rate how much they trust it; post a job and see apprentices ranked by verified skills and distance; rate work after a job |
+| **Administrator** | Approve trainers; review flags, held credentials, random audits and confidential reports; revoke; manage skills; read pilot metrics; check the tamper-evident audit log |
+| **Public** | Verify any credential by ID, link or QR code, with no account |
 
-- **Frontend:** React 18, TypeScript, Vite, Tailwind CSS, React Router
-- **Backend:** Node.js 22, Express 5, JWT authentication, bcrypt (see `backend/README.md`)
-- **Database:** PostgreSQL 14 or later
-- **Hosting (planned):** see Deployment plan
+### Integrity safeguards
 
-## Setup
+- **Evidence before credential:** a video must show a one-time code from the server; files are SHA-256 hashed and a file can never back two credentials.
+- **Apprentice confirmation:** a credential is only valid once the apprentice confirms it.
+- **Co-signing:** advanced skills and new trainers on probation need a second trainer's signature.
+- **Risk rules and trust score:** fast issuing, passing everyone, clustered days, poor employer ratings and open reports raise a trainer's risk; trust combines audit agreement, ratings and flags.
+- **Random audits:** about 10% of credentials are re-checked by an independent assessor.
+- **Signatures:** every credential carries an HMAC-SHA256 server signature; the public page shows whether it still matches.
+- **Tamper-evident audit log:** entries are sealed in an HMAC hash chain, so any edit, deletion or reordering is detected.
+- **Private evidence:** files are only served through signed links that expire after 30 minutes.
+- **Privacy (Nigeria Data Protection Act 2023):** 18+ only, phone verification, no exact GPS or phone numbers in public, and withdrawing consent removes a person's data and evidence.
 
-### Prerequisites
-- Node.js 22 or later
-- npm
-- PostgreSQL 14 or later
+### Built for Lagos conditions
 
-### Run the frontend
+- **English and Nigerian Pidgin** on the apprentice, sign-in and public pages (`src/i18n`).
+- **Weak signal:** failed uploads are kept on the phone (IndexedDB) and sent when the connection returns; video is capped at about 3 MB per 30 s; a service worker lets the app open without signal.
+- **Low-end phones:** signed-in pages load on demand. On a throttled low-end Android profile (6× CPU, 3G) the sign-in page is ready in 1.96 s and a credential check in 2.54 s (see the report).
+
+## Technical requirements
+
+| Component | Version | Notes |
+|---|---|---|
+| Node.js | 22 or later | Tested on 22.22 |
+| npm | 10 or later | Comes with Node 22 |
+| PostgreSQL | 14 or later | Tested on 16 |
+| Browser | Recent Chrome, Edge, Opera, Firefox or Safari | Mobile-first; tested from 360 px wide |
+| Operating system | Windows (with WSL), macOS or Linux | Developed on Windows 11 + WSL Ubuntu |
+
+Main frameworks and libraries:
+
+| Layer | Technology |
+|---|---|
+| Frontend | React 18.3, TypeScript 5.5, Vite 5, Tailwind CSS 3.4, React Router 6 |
+| Backend | Express 5, node-postgres 8, Zod 3 (validation), jsonwebtoken, bcryptjs, Helmet, express-rate-limit, Multer |
+| Database | PostgreSQL (schema in `backend/database/schema.sql`) |
+| Testing | Node's built-in test runner (backend), Vitest 2 + Testing Library (frontend), Playwright (browser checks) |
+| Messaging | Console mode for demos; Termii (SMS) and Resend (email) ready to switch on |
+
+## Installation
+
+### 1. Get the code
+
 ```bash
-git clone [your repo link]
-cd [repo folder]
-cp .env.example .env.local   # VITE_API_URL points at the backend, VITE_DEMO_MODE=true shows the demo helpers
-npm install
-npm run dev
+git clone https://github.com/<your-username>/<your-repo>.git
+cd <your-repo>
 ```
-Open the local address shown in the terminal (usually http://localhost:5173). The frontend needs the backend running.
 
-### Run the backend
+### 2. Database
+
+Create an empty PostgreSQL database and user, for example:
+
+```bash
+sudo -u postgres psql -c "CREATE USER skillpass WITH PASSWORD 'skillpass';"
+sudo -u postgres psql -c "CREATE DATABASE skillpass OWNER skillpass;"
+```
+
+### 3. Backend API
+
 ```bash
 cd backend
-cp .env.example .env      # set DATABASE_URL, JWT_SECRET and SIGNING_KEY (the file explains how to generate them)
+cp .env.example .env      # then set DATABASE_URL, JWT_SECRET and SIGNING_KEY (two different long random strings)
 npm install
-npm run db:schema         # create the tables in an empty database
-npm run db:seed           # load the demo accounts and data (demo databases only)
-npm run dev               # http://localhost:4000
+npm run db:schema         # create the tables
+npm run db:seed           # demo accounts and data (demo databases only)
+npm run dev               # API on http://localhost:4000
 ```
-Start the backend first, then the frontend. Full details are in `backend/README.md`.
 
-### Run the tests
+Generate the two secrets with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`. Upgrading an older database instead of creating a new one: `npm run db:migrate`.
+
+### 4. Frontend
+
+In a second terminal, from the project root:
+
 ```bash
-cd backend && npm test    # API tests against a real PostgreSQL database named skillpass_test
-cd .. && npm test         # UI tests: the real app against the real backend
+cp .env.example .env.local   # VITE_API_URL=http://localhost:4000; VITE_DEMO_MODE=true shows quick-login buttons
+npm install
+npm run dev                  # open http://localhost:5173
 ```
-Both create and wipe a database called `skillpass_test`, so create it first (`createdb skillpass_test`).
 
-### Demo accounts
-All accounts use the password `demo1234`.
+### 5. Demo accounts
+
+All use the password `demo1234`.
 
 | Role | Email |
 |---|---|
-| Admin | admin@skillpass.ng |
+| Administrator | admin@skillpass.ng |
 | Trainer | babatunde@skillpass.ng |
 | Apprentice | tobi@skillpass.ng |
 | Employer | folake@skillpass.ng |
 
-They exist after `npm run db:seed`. The login page shows quick-login buttons for each role only when `VITE_DEMO_MODE=true`.
+Texts and emails (verification codes, password resets) are printed in the backend terminal while `SMS_PROVIDER` and `EMAIL_PROVIDER` are `console`.
 
-## Designs
+### 6. Run the tests
 
-- **Figma:** [paste link]
-- **Wireframes:** `docs/wireframes/` [add images]
-- **Style guide:** the Aurora Glass theme: a dark navy background, frosted glass panels and teal-to-violet accents, with Space Grotesk headings, Inter body text and JetBrains Mono for credential IDs. Colours are CSS variables in `src/index.css`, mapped to Tailwind classes in `tailwind.config.js`; printed passports switch back to a light palette automatically. [add a screenshot of your colour palette and buttons]
-- **Database design (ERD):** `docs/erd.png` [add image]
-- **Screenshots:**
-  - Login: `docs/screenshots/login.png`
-  - Trainer: issue credential
-  - Apprentice: skills passport
-  - Public: verify page
-  - Admin: review queue and audit log
-  [add screenshots]
+```bash
+createdb skillpass_test                   # once; the tests wipe and re-seed this database
+cd backend && npm test                    # 110 API, integration and unit tests
+cd .. && npm test                         # 21 UI tests: the real app against the real API
+npm run typecheck && npm run lint         # type check and lint
+```
 
-## Database schema
+Set `TEST_DATABASE_URL` if your test database is not at `postgres://skillpass:skillpass@localhost:5432/skillpass_test`.
 
-Main tables: `users`, `trades`, `skills`, `credentials`, `evidence`, `flags`, `feedback`, `job_postings`, `referrals`, `audit_log`.
-Full schema: `backend/database/schema.sql`.
+### 7. Production build
+
+```bash
+npm run build      # frontend into dist/ (deploy to Netlify or Vercel)
+cd backend && npm start
+```
+
+## Repository structure
+
+```
+skillpass/
+├── src/                        Frontend (React + TypeScript)
+│   ├── api/                    HTTP client, ApiError and token storage
+│   ├── components/             Reusable UI: layout, evidence capture, QR codes, score ring, passport view
+│   ├── contexts/               Auth and app data providers
+│   ├── i18n/                   English and Nigerian Pidgin text
+│   ├── offline/                Upload queue for weak signal (IndexedDB)
+│   ├── pages/                  One folder per role: trainer, apprentice, employer, admin, public, shared, auth
+│   ├── pageLoaders.ts          On-demand page loading and preloading by role
+│   ├── utils/                  Matching, trust and risk calculations shown in the UI
+│   └── test/                   UI tests (Vitest + Testing Library)
+├── backend/
+│   ├── src/
+│   │   ├── routes/             REST endpoints, one file per area (auth, credentials, evidence, verify, jobs, admin…)
+│   │   ├── lib/                Domain logic: scoring (TrustScoreCalculator, RiskAssessor + rules), matching (JobMatcher),
+│   │   │                       messaging (MessageChannel family), storage (EvidenceStore, signed links), audit chain,
+│   │   │                       signing, privacy, phone numbers
+│   │   ├── middleware/         Authentication and error handling
+│   │   ├── app.js / server.js  Express app and start-up
+│   │   └── config.js           Validated environment settings
+│   ├── database/               schema.sql, seed.sql and migrations/
+│   ├── scripts/db.js           Create, migrate, seed and reset the database
+│   └── tests/                  API, module, verification, config and unit tests
+├── public/                     Icons, manifest, service worker, demo evidence images
+├── docs/                       Technical report and screenshots
+└── README.md
+```
+
+## Testing and performance (summary)
+
+| Strategy | What | Result |
+|---|---|---|
+| Unit | Classes for signed links, matching, trust score, risk rules, message channels | 29 tests pass |
+| Integration (API + database) | Every endpoint against a real PostgreSQL database, including integrity rules and privacy | 81 tests pass |
+| End-to-end UI | The real React app against the real API | 21 tests pass |
+| Security | Forged, edited and expired evidence links; tampered credential signatures; tampered audit log; role-based access | Included above |
+| Performance | Page load on desktop, mid-range and low-end Android profiles; API under load | See report |
+| Compatibility | 360, 390, 768 and 1366 px screens; Chromium-based browsers | No layout overflow |
+
+Full method and figures are in the technical report.
+
+## Languages
+
+Text lives in `src/i18n/en.ts` (English, the source) and `src/i18n/pcm.ts` (Pidgin, a draft to be checked by a Pidgin speaker from the pilot). To add Yoruba, Hausa or Igbo, copy `pcm.ts`, translate it with a native speaker and register it in `src/i18n/index.tsx`.
 
 ## Deployment plan
 
 | Part | Service | Notes |
 |---|---|---|
-| Frontend | Netlify or Vercel | Built with `npm run build`, auto-deploys from GitHub |
-| Backend API | Render | Environment variables set in the dashboard |
-| Database | Neon or Supabase PostgreSQL | Hosted free tier for the pilot |
-| Evidence files | Cloudinary or Supabase Storage | Photos and videos |
+| Frontend | Netlify or Vercel | `npm run build`, auto-deploys from GitHub |
+| Backend API | Render (Frankfurt region) | Environment variables set in the dashboard |
+| Database | Render or Supabase PostgreSQL (Frankfurt) | Personal data stays in the EU region named in the ethics application |
+| Evidence files | Supabase Storage (Frankfurt) | Add a subclass of `EvidenceStore` in `backend/src/lib/storage.js` |
 
-Steps:
-1. Push the code to GitHub.
-2. Create the database and run `schema.sql` and `seed.sql`.
-3. Deploy the backend and set the environment variables.
-4. Deploy the frontend and point it to the backend URL.
-5. Test the full flow with the demo accounts.
+## Third-party licences
 
-## Current status and next steps
+SkillPass reuses only open-source libraries with permissive licences. No external datasets or AI models are used.
 
-- Done: frontend for all roles, backend API and database, frontend connected to the API, server-side integrity rules (issuing limit, probation, co-signing, duplicate-evidence blocking, signing, scoring, audit log)
-- Done: automated tests for the API and for the app running against it
-- Done: phone verification by SMS code (required to confirm, co-sign and rate), email verification and password reset. Texts and emails print to the backend terminal until a Termii / Resend account is added
-- Next: deploy, move evidence to cloud storage
-- Done: withdrawing consent removes the participant's personal data and evidence files (see `backend/src/lib/privacy.js`)
+| Library | Used for | Licence |
+|---|---|---|
+| React, React DOM, React Router | Front-end UI and routing | MIT |
+| Framer Motion, @emotion/react | Animation and styling | MIT |
+| lucide-react | Icons | ISC |
+| qrcode.react | QR codes on passports and credentials | ISC |
+| Vite, Tailwind CSS, TypeScript | Build tools | MIT / MIT / Apache-2.0 |
+| Express, CORS, Helmet, express-rate-limit, Multer | API server, security headers, rate limits, uploads | MIT |
+| pg (node-postgres) | PostgreSQL client | MIT |
+| Zod | Input validation | MIT |
+| jsonwebtoken | Sign-in tokens | MIT |
+| bcryptjs | Password hashing | BSD-3-Clause |
+| dotenv | Configuration | BSD-2-Clause |
 
-## Author
-
-[Fejiro Obiku]
+Each library's full licence text ships in its folder under `node_modules`.
