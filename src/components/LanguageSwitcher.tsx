@@ -17,7 +17,7 @@ export function LanguageSwitcher({ className = '', compact = false }: {className
       <select
         value={lang}
         onChange={(e) => setLang(e.target.value as Lang)}
-        className={`h-10 appearance-none rounded-full border border-line bg-canvas text-sm font-medium transition-colors duration-150 hover:bg-surface focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30 [&>option]:bg-canvas [&>option]:text-ink ${size}`}>
+        className={`h-10 appearance-none rounded-sm border border-line bg-canvas text-sm font-medium transition-colors duration-150 hover:bg-surface focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30 [&>option]:bg-canvas [&>option]:text-ink ${size}`}>
         {LANGUAGES.map((l) => <option key={l.id} value={l.id}>{l.label}</option>)}
       </select>
     </label>);

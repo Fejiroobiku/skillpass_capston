@@ -29,7 +29,7 @@ export function Notifications() {
       
       <div role="tablist" aria-label="Channel" className="mb-4 flex gap-1 overflow-x-auto">
         {(['all', 'in_app', 'sms', 'email'] as const).map((f) =>
-        <button key={f} role="tab" aria-selected={filter === f} type="button" onClick={() => setFilter(f)} className={`whitespace-nowrap rounded-full px-3.5 py-2 text-sm font-medium transition-colors duration-150 ${filter === f ? 'bg-ink text-night' : 'bg-surface text-ink-muted ring-1 ring-inset ring-line hover:text-ink'}`}>
+        <button key={f} role="tab" aria-selected={filter === f} type="button" onClick={() => setFilter(f)} className={`whitespace-nowrap rounded-sm px-3.5 py-2 text-sm font-medium transition-colors duration-150 ${filter === f ? 'bg-ink text-night' : 'bg-surface text-ink-muted ring-1 ring-inset ring-line hover:text-ink'}`}>
             {f === 'all' ? 'All' : channelLabel[f]}
           </button>
         )}
@@ -41,16 +41,16 @@ export function Notifications() {
           return (
             <li key={n.id}>
               <button type="button" onClick={() => {markRead(n.id);if (n.link) navigate(n.link);}} className={`flex w-full gap-4 px-5 py-4 text-left transition-colors duration-150 hover:bg-canvas ${n.read ? '' : 'bg-brand-50/50'}`}>
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-canvas text-ink-muted"><Icon className="h-5 w-5" /></span>
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-canvas text-ink-muted"><Icon className="h-5 w-5" /></span>
                 <span className="min-w-0 flex-1">
                   <span className="flex flex-wrap items-center gap-2">
                     <span className="font-semibold text-ink">{n.title}</span>
-                    <span className="rounded-full bg-canvas px-2 py-0.5 text-[11px] font-medium text-ink-muted">{channelLabel[n.channel]}</span>
+                    <span className="rounded-sm bg-canvas px-2 py-0.5 text-[11px] font-medium text-ink-muted">{channelLabel[n.channel]}</span>
                   </span>
                   <span className="mt-0.5 block text-sm text-ink-muted">{n.body}</span>
                   <span className="mt-1 block text-xs text-ink-subtle">{formatDateTime(n.at)}</span>
                 </span>
-                {!n.read && <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-brand-600" aria-label="Unread" />}
+                {!n.read && <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-sm bg-brand-600" aria-label="Unread" />}
               </button>
             </li>);
 

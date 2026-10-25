@@ -1,5 +1,5 @@
 /* @import url() FONT IMPORTS MUST ALWAYS BE AT THE VERY TOP OF THIS FILE, ABOVE THE TAILWIND IMPORTS — DO NOT DELETE THIS COMMENT */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
 /* CRITICAL: THE FOLLOWING TAILWIND IMPORTS MUST NEVER BE DELETED OR REORDERED — DO NOT DELETE THIS COMMENT */
 @import 'tailwindcss/base';
@@ -9,37 +9,38 @@
 /* END TAILWIND IMPORTS — ALL OTHER CSS MUST GO BELOW THIS LINE */
 
 /* ---------------------------------------------------------------------------
-   Aurora Glass palette (space-separated RGB so Tailwind opacity modifiers work)
+   Signal Ledger palette (space-separated RGB so Tailwind opacity modifiers work)
    --------------------------------------------------------------------------- */
 :root {
   color-scheme: dark;
 
-  --night: 7 11 20;          /* #070B14 page background */
-  --raised: 17 25 43;        /* #11192B menus, dialogs, sheets */
-  --surface: 148 163 210;    --surface-a: 0.07;  /* glass cards */
-  --canvas: 148 163 210;     --canvas-a: 0.05;   /* subtle fills */
-  --line: 168 182 214;       --line-a: 0.16;     /* hairlines */
+  --night: 11 12 10;         /* #0B0C0A page background */
+  --raised: 21 23 19;        /* #151713 menus, dialogs, sheets */
+  --surface: 14 16 12;       --surface-a: 0.94;  /* #0E100C panels over the grid */
+  --canvas: 237 239 232;     --canvas-a: 0.04;   /* subtle fills */
+  --line: 42 45 39;          --line-a: 1;        /* #2A2D27 hairlines */
 
-  --ink: 232 238 248;        /* #E8EEF8 */
-  --ink-muted: 169 180 200;  /* #A9B4C8 */
-  --ink-subtle: 138 150 173; /* #8A96AD */
+  --ink: 237 239 232;        /* #EDEFE8 */
+  --ink-muted: 180 185 172;  /* #B4B9AC */
+  --ink-subtle: 142 147 135; /* #8E9387 */
 
-  --brand-50: 13 38 43;
-  --brand-100: 19 64 64;
-  --brand-200: 28 96 92;
-  --brand-300: 38 140 130;
-  --brand-500: 46 230 197;   /* #2EE6C5 */
-  --brand-600: 46 230 197;   /* primary buttons, dark text on top */
-  --brand-700: 127 245 221;  /* hover, links */
-  --brand-800: 184 255 240;
-  --brand-900: 220 255 248;
+  --brand-50: 26 33 12;
+  --brand-100: 40 52 16;
+  --brand-200: 70 92 26;
+  --brand-300: 130 165 50;
+  --brand-500: 200 245 96;   /* #C8F560 signal lime */
+  --brand-600: 200 245 96;   /* primary buttons, dark text on top */
+  --brand-700: 228 255 158;  /* #E4FF9E hover, links */
+  --brand-800: 238 255 196;
+  --brand-900: 246 255 226;
 
-  --violet-300: 185 175 255;
-  --violet-500: 139 124 255; /* #8B7CFF */
+  /* The second accent is a deeper green, so old two-colour accents read as one signal family. */
+  --violet-300: 190 230 140;
+  --violet-500: 143 209 79;  /* #8FD14F */
 
-  --ok-50: 14 42 30;    --ok-200: 34 102 66;   --ok-600: 61 220 132;  --ok-700: 125 235 170;
-  --warn-50: 46 34 14;  --warn-200: 122 84 24; --warn-600: 255 184 107; --warn-700: 255 205 150;
-  --bad-50: 48 18 22;   --bad-100: 70 24 28;   --bad-200: 128 44 48;  --bad-600: 217 61 66; --bad-700: 255 142 142;
+  --ok-50: 24 32 12;    --ok-200: 64 86 26;    --ok-600: 200 245 96;  --ok-700: 214 250 140;
+  --warn-50: 40 26 10;  --warn-200: 120 70 20; --warn-600: 255 159 67; --warn-700: 255 190 130;   /* #FF9F43 */
+  --bad-50: 44 14 14;   --bad-100: 64 20 20;   --bad-200: 128 40 40;  --bad-600: 255 92 92;  --bad-700: 255 145 145;
 }
 
 html,
@@ -48,22 +49,25 @@ body,
   height: 100%;
 }
 body {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Inter Tight', 'Inter', system-ui, sans-serif;
   color: rgb(var(--ink));
   background-color: rgb(var(--night));
+  /* A faint 40 px engineering grid. */
   background-image:
-    radial-gradient(600px circle at 85% -5%, rgb(var(--brand-500) / 0.16), transparent 70%),
-    radial-gradient(560px circle at 20% 105%, rgb(var(--violet-500) / 0.14), transparent 70%);
+    linear-gradient(rgb(var(--brand-500) / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--brand-500) / 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
 }
 
 @layer base {
   h1, h2, h3 {
-    font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
-    letter-spacing: -0.02em;
+    font-family: 'Inter Tight', 'Inter', system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.03em;
   }
-  /* Browsers paint form fields white by default; keep them on the glass. */
+  /* Browsers paint form fields white by default; keep them on the dark panels. */
   input, select, textarea {
     background-color: transparent;
   }
@@ -73,17 +77,14 @@ body {
   }
   ::selection {
     background: rgb(var(--brand-500) / 0.35);
+    color: rgb(var(--night));
   }
 }
 
-/* Frosted glass behind cards. Kept light so cheaper phones stay smooth. */
+/* Panels are solid in this theme: no blur, which also keeps cheaper phones smooth. */
 .bg-surface {
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-}
-/* Solid teal fills glow softly. */
-.bg-brand-600 {
-  box-shadow: 0 0 24px rgb(var(--brand-500) / 0.22);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
 @media (prefers-reduced-transparency: reduce) {
@@ -111,5 +112,4 @@ body {
   }
   body { background: #ffffff; }
   .bg-surface { -webkit-backdrop-filter: none; backdrop-filter: none; }
-  .bg-brand-600 { box-shadow: none; }
 }

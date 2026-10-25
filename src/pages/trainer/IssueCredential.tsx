@@ -22,7 +22,7 @@ export function IssueCredential() {
       <>
         {header}
         <div className="mx-auto max-w-lg rounded-2xl border border-line bg-surface p-8 text-center">
-          <div className={`mx-auto flex h-14 w-14 items-center justify-center rounded-full ${suspended ? 'bg-bad-50 text-bad-700' : 'bg-warn-50 text-warn-700'}`}>
+          <div className={`mx-auto flex h-14 w-14 items-center justify-center rounded-sm ${suspended ? 'bg-bad-50 text-bad-700' : 'bg-warn-50 text-warn-700'}`}>
             {suspended ? <ShieldAlertIcon className="h-6 w-6" /> : <LockIcon className="h-6 w-6" />}
           </div>
           <h2 className="mt-4 text-lg font-semibold text-ink">{suspended ? 'Issuing is suspended' : 'Waiting for approval'}</h2>
@@ -57,7 +57,7 @@ export function IssueCredential() {
           const active = a.id === form.apprenticeId;
           return (
             <button key={a.id} role="tab" aria-selected={active} type="button" onClick={() => form.selectApprentice(a.id)} className={`flex min-w-[160px] flex-1 items-center justify-center gap-2.5 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${active ? 'bg-brand-600 text-night' : 'text-ink hover:bg-canvas'}`}>
-              <span className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-semibold ${active ? 'bg-white/20' : 'bg-canvas text-ink-muted'}`}>{a.name.split(' ').map((p) => p[0]).join('')}</span>
+              <span className={`flex h-6 w-6 items-center justify-center rounded-sm text-[11px] font-semibold ${active ? 'bg-white/20' : 'bg-canvas text-ink-muted'}`}>{a.name.split(' ').map((p) => p[0]).join('')}</span>
               {a.name}
             </button>);
 
@@ -81,8 +81,8 @@ export function IssueCredential() {
                     return (
                       <label key={s.id} className={`flex items-center gap-3 px-4 py-3 text-sm transition-colors duration-150 ${held ? 'cursor-not-allowed bg-canvas' : selected ? 'cursor-pointer bg-brand-50' : 'cursor-pointer hover:bg-canvas'}`}>
                           <input type="radio" name="skill" value={s.id} disabled={!!held} checked={selected} onChange={() => form.setSkillId(s.id)} className="sr-only" />
-                          <span aria-hidden="true" className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${held ? 'border-ok-600 bg-ok-600 text-night' : selected ? 'border-brand-600' : 'border-line'}`}>
-                            {held ? <CheckIcon className="h-3 w-3" strokeWidth={3} /> : selected && <span className="h-2.5 w-2.5 rounded-full bg-brand-600" />}
+                          <span aria-hidden="true" className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-sm border-2 ${held ? 'border-ok-600 bg-ok-600 text-night' : selected ? 'border-brand-600' : 'border-line'}`}>
+                            {held ? <CheckIcon className="h-3 w-3" strokeWidth={3} /> : selected && <span className="h-2.5 w-2.5 rounded-sm bg-brand-600" />}
                           </span>
                           <span className={`flex-1 ${held ? 'text-ink-muted' : 'text-ink'}`}>{s.name}</span>
                           {held && <span className="whitespace-nowrap text-xs text-ink-subtle">Issued {formatDate(held.issuedAt)}</span>}

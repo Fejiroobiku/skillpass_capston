@@ -45,7 +45,7 @@ export function AdminUsers() {
         {filters.map((f) => {
           const count = f.id === 'all' ? rows.length : f.id === 'pending' ? rows.filter((r) => !r.approved).length : rows.filter((r) => r.account.role === f.id).length;
           return (
-            <button key={f.id} role="tab" aria-selected={filter === f.id} type="button" onClick={() => setFilter(f.id)} className={`flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-2 text-sm font-medium transition-colors duration-150 ${filter === f.id ? 'bg-ink text-night' : 'bg-surface text-ink-muted ring-1 ring-inset ring-line hover:text-ink'}`}>
+            <button key={f.id} role="tab" aria-selected={filter === f.id} type="button" onClick={() => setFilter(f.id)} className={`flex items-center gap-2 whitespace-nowrap rounded-sm px-3.5 py-2 text-sm font-medium transition-colors duration-150 ${filter === f.id ? 'bg-ink text-night' : 'bg-surface text-ink-muted ring-1 ring-inset ring-line hover:text-ink'}`}>
               {f.label} <span className={filter === f.id ? 'text-night/60' : 'text-ink-subtle'}>{count}</span>
             </button>);
 
@@ -72,7 +72,7 @@ export function AdminUsers() {
                   <tr key={r.account.id}>
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-3">
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-100 text-xs font-semibold text-brand-800">{initials(r.name)}</span>
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-brand-100 text-xs font-semibold text-brand-800">{initials(r.name)}</span>
                         <div className="min-w-0">
                           <p className="font-medium text-ink">{r.name}</p>
                           <p className="truncate text-xs text-ink-muted">{r.account.email} · {r.detail}</p>

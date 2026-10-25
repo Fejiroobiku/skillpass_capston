@@ -14,7 +14,7 @@ export function TrustBadge({ trainerId, withName = true, data }: {trainerId: str
   return (
     <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
       {withName && <span className="text-ink">{data ? data.name : nameOf(trainerId)}</span>}
-      <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${tone}`} title={tr('trust.title')}>
+      <span className={`inline-flex items-center gap-1 rounded-sm px-2 py-0.5 text-[11px] font-semibold ${tone}`} title={tr('trust.title')}>
         <Icon className="h-3 w-3" aria-hidden="true" /> {score}
       </span>
     </span>);

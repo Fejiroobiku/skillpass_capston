@@ -1,8 +1,8 @@
-// Aurora Glass theme.
-// Colours are CSS variables (defined in src/index.css) so the same class names render the dark glass
-// theme on screen and fall back to the original light palette when a passport is printed.
+// Signal Ledger theme: near-black with a faint grid, lime-green signal colour, square edges.
+// Colours are CSS variables (defined in src/index.css) so the same class names render the dark theme
+// on screen and fall back to the original light palette when a passport is printed.
 const rgb = (name) => `rgb(var(--${name}) / <alpha-value>)`;
-// Translucent tokens carry their own alpha, so glass panels let the background glow through.
+// Translucent tokens carry their own alpha, so panels let the background grid show faintly.
 const glass = (name) => `rgb(var(--${name}) / var(--${name}-a))`;
 
 export default {
@@ -11,10 +11,14 @@ export default {
   './src/**/*.{js,ts,jsx,tsx}'
 ],
   theme: {
+    // Square, engineered edges. "full" stays round for the camera's shutter and record buttons.
+    borderRadius: {
+      none: '0', sm: '1px', DEFAULT: '2px', md: '2px', lg: '2px', xl: '3px', '2xl': '3px', '3xl': '4px', full: '9999px',
+    },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['"Space Grotesk"', 'Inter', 'system-ui', 'sans-serif'],
+        sans: ['"Inter Tight"', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['"Inter Tight"', 'Inter', 'system-ui', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       colors: {
@@ -35,7 +39,7 @@ export default {
           muted: rgb('ink-muted'),
           subtle: rgb('ink-subtle'),
         },
-        // Deep background colour, and the dark text that sits on bright teal buttons.
+        // Deep background colour, and the dark text that sits on bright lime buttons.
         night: rgb('night'),
         line: glass('line'),
         canvas: glass('canvas'),
@@ -46,9 +50,10 @@ export default {
         warn: { 50: rgb('warn-50'), 200: rgb('warn-200'), 600: rgb('warn-600'), 700: rgb('warn-700') },
         bad: { 50: rgb('bad-50'), 100: rgb('bad-100'), 200: rgb('bad-200'), 600: rgb('bad-600'), 700: rgb('bad-700') },
       },
+      // No soft glows in this theme: a thin signal-coloured outline instead.
       boxShadow: {
-        glow: '0 0 28px rgb(var(--brand-500) / 0.35)',
-        'glow-violet': '0 0 28px rgb(var(--violet-500) / 0.35)',
+        glow: '0 0 0 1px rgb(var(--brand-500) / 0.55)',
+        'glow-violet': '0 0 0 1px rgb(var(--violet-500) / 0.55)',
       },
     },
   },

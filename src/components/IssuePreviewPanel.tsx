@@ -39,7 +39,7 @@ export function IssuePreviewPanel({ form }: {form: Form;}) {
         {issued ?
         <motion.div key="done" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }} className="space-y-5">
             <div className="rounded-2xl bg-brand-50 p-6 text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand-600 text-night"><ClockIcon className="h-7 w-7" /></div>
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-sm bg-brand-600 text-night"><ClockIcon className="h-7 w-7" /></div>
               <p className="mt-4 text-lg font-semibold text-ink">{copy?.[0] ?? 'Issued'}</p>
               <p className="mt-1 text-sm text-ink-muted">{copy?.[1]}</p>
               <p className="mt-4 font-mono text-xl font-semibold tracking-wider text-brand-800">{issued.id}</p>

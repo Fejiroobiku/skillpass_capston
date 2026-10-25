@@ -5,7 +5,7 @@ import { QrCode } from './QrCode';
 import { useT } from '../i18n';
 
 const banner = {
-  valid: { cls: 'bg-gradient-to-r from-brand-500/20 to-violet-500/15 text-brand-800', icon: BadgeCheckIcon, title: 'cr.valid.title', text: 'cr.valid.text' },
+  valid: { cls: 'bg-brand-600 text-night', icon: BadgeCheckIcon, title: 'cr.valid.title', text: 'cr.valid.text' },
   flagged: { cls: 'bg-warn-50 text-warn-700', icon: CircleAlertIcon, title: 'cr.flagged.title', text: 'cr.flagged.text' },
   under_review: { cls: 'bg-warn-50 text-warn-700', icon: CircleAlertIcon, title: 'cr.under_review.title', text: 'cr.under_review.text' },
   revoked: { cls: 'bg-bad-50 text-bad-700', icon: ShieldXIcon, title: 'cr.revoked.title', text: 'cr.revoked.text' },
@@ -25,7 +25,7 @@ export function CredentialRecord({ credential }: {credential: PublicCredential;}
   return (
     <article className="overflow-hidden rounded-3xl border border-line bg-surface">
       <div className={`flex items-start gap-3 px-5 py-4 md:px-6 ${b.cls}`}>
-        <b.icon className={`h-6 w-6 shrink-0 ${credential.status === 'valid' ? 'text-brand-500 drop-shadow-[0_0_10px_rgb(46_230_197_/_0.7)]' : ''}`} aria-hidden="true" />
+        <b.icon className={`h-6 w-6 shrink-0 ${credential.status === 'valid' ? 'text-night' : ''}`} aria-hidden="true" />
         <div>
           <p className="font-display text-lg font-semibold">{t(b.title)}</p>
           <p className="text-sm opacity-90">{credential.revokeReason ?? t(b.text)}</p>
@@ -123,7 +123,7 @@ export function CredentialRecord({ credential }: {credential: PublicCredential;}
               <ol className="space-y-2 border-l border-line pl-4">
                 {credential.history.map((h, i) =>
               <li key={`${h.at}-${i}`} className="relative text-xs">
-                    <span className="absolute -left-[21px] top-1 h-2 w-2 rounded-full bg-brand-500" aria-hidden="true" />
+                    <span className="absolute -left-[21px] top-1 h-2 w-2 rounded-sm bg-brand-500" aria-hidden="true" />
                     <p className="font-medium capitalize text-ink">{h.action.split('.')[1].replace('_', ' ')} · {h.actor}</p>
                     <p className="text-ink-subtle">{formatDateTime(h.at)}</p>
                   </li>

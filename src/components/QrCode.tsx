@@ -50,7 +50,7 @@ export function QrCode({ value, caption, fileName, size = 132 }: QrCodeProps) {
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, pad, pad, qr, qr);
       URL.revokeObjectURL(url);
-      ctx.fillStyle = '#070B14';
+      ctx.fillStyle = '#0B0C0A';
       ctx.textAlign = 'center';
       ctx.font = `600 ${14 * scale}px Inter, system-ui, sans-serif`;
       ctx.fillText(caption, canvas.width / 2, qr + pad * 1.5 + 6 * scale);
@@ -70,7 +70,7 @@ export function QrCode({ value, caption, fileName, size = 132 }: QrCodeProps) {
   return (
     <figure className="flex flex-col items-center gap-2">
       <div ref={tileRef} className="rounded-2xl bg-white p-3 shadow-glow print:shadow-none">
-        <QRCodeSVG value={value} size={size} level="M" marginSize={0} bgColor="#ffffff" fgColor="#070B14" title={`QR code: ${caption}`} />
+        <QRCodeSVG value={value} size={size} level="M" marginSize={0} bgColor="#ffffff" fgColor="#0B0C0A" title={`QR code: ${caption}`} />
       </div>
       <figcaption className="text-center text-xs font-medium text-ink-muted">{caption}</figcaption>
       <button type="button" onClick={download} className="no-print inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-brand-700 ring-1 ring-inset ring-line transition-colors duration-150 hover:bg-canvas">

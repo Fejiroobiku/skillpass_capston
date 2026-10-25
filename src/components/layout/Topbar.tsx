@@ -34,7 +34,7 @@ export function Topbar() {
   };
 
   return (
-    <header className="no-print sticky top-0 z-30 border-b border-line bg-night/70 backdrop-blur-xl">
+    <header className="no-print sticky top-0 z-30 border-b border-line bg-night">
       <div className="flex h-16 items-center gap-3 px-4 md:px-6 lg:px-8">
         <Link to={homeByRole[user.role]} className="lg:hidden" aria-label="SkillPass home">
           <Logo compact />
@@ -60,13 +60,13 @@ export function Topbar() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder={t('topbar.search')}
-              className="h-10 w-full rounded-full border border-line bg-canvas pl-9 font-mono pr-3 text-sm text-ink placeholder:text-ink-subtle focus:border-brand-500 focus:bg-surface focus:outline-none focus:ring-2 focus:ring-brand-500/30" />
+              className="h-10 w-full rounded-sm border border-line bg-canvas pl-9 font-mono pr-3 text-sm text-ink placeholder:text-ink-subtle focus:border-brand-500 focus:bg-surface focus:outline-none focus:ring-2 focus:ring-brand-500/30" />
             
           </div>
         </form>
 
         <div className="ml-auto flex items-center gap-1 md:ml-0">
-          <Link to="/verify" aria-label={t('topbar.verify')} className="flex h-10 w-10 items-center justify-center rounded-full text-ink-muted hover:bg-canvas hover:text-ink md:hidden">
+          <Link to="/verify" aria-label={t('topbar.verify')} className="flex h-10 w-10 items-center justify-center rounded-sm text-ink-muted hover:bg-canvas hover:text-ink md:hidden">
             <SearchIcon className="h-5 w-5" />
           </Link>
           <LanguageSwitcher className="mr-1 hidden sm:inline-flex" />

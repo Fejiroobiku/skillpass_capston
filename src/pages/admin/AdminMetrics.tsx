@@ -81,8 +81,8 @@ export function AdminMetrics() {
                     <td className="whitespace-nowrap px-3 py-3.5 text-ink-muted">{m.target}</td>
                     <td className="px-5 py-3.5 md:px-6">
                       <div className="flex items-center gap-2">
-                        <div className="h-2 flex-1 overflow-hidden rounded-full bg-canvas">
-                          <div className={`h-full rounded-full ${m.met === null ? 'bg-ink-subtle' : m.met ? 'bg-ok-600' : 'bg-warn-600'}`} style={{ width: `${Math.min(100, Math.round(m.progress * 100))}%` }} />
+                        <div className="h-2 flex-1 overflow-hidden rounded-sm bg-canvas">
+                          <div className={`h-full rounded-sm ${m.met === null ? 'bg-ink-subtle' : m.met ? 'bg-ok-600' : 'bg-warn-600'}`} style={{ width: `${Math.min(100, Math.round(m.progress * 100))}%` }} />
                         </div>
                         <span className={`w-14 text-right text-xs font-medium ${m.met === null ? 'text-ink-subtle' : m.met ? 'text-ok-700' : 'text-warn-700'}`}>{m.met === null ? 'No data' : m.met ? 'Met' : 'Below'}</span>
                       </div>

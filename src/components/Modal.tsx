@@ -41,7 +41,7 @@ export function Modal({ open, title, onClose, children }: ModalProps) {
           
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-semibold text-ink">{title}</h2>
-              <button type="button" onClick={onClose} aria-label="Close" className="rounded-full p-1.5 text-ink-muted transition-colors duration-150 hover:bg-canvas hover:text-ink">
+              <button type="button" onClick={onClose} aria-label="Close" className="rounded-sm p-1.5 text-ink-muted transition-colors duration-150 hover:bg-canvas hover:text-ink">
                 <XIcon className="h-5 w-5" />
               </button>
             </div>

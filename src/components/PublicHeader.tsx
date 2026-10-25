@@ -9,7 +9,7 @@ export function PublicHeader() {
   const { user } = useAuth();
   const { t } = useT();
   return (
-    <header className="no-print sticky top-0 z-30 border-b border-line bg-night/70 backdrop-blur-xl">
+    <header className="no-print sticky top-0 z-30 border-b border-line bg-night">
       <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 md:px-6">
         <Link to="/verify" aria-label="SkillPass verification"><Logo compact /></Link>
         <nav aria-label="Public" className="flex shrink-0 items-center gap-1 text-sm">

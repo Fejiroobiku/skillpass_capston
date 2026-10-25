@@ -29,8 +29,7 @@ export function PassportView({ source, shareUrl, actions }: {source: PassportSou
 
   return (
     <div className="space-y-6">
-      <section className="relative overflow-hidden rounded-3xl border border-white/15 bg-gradient-to-br from-brand-500/20 via-night/40 to-violet-500/25 p-6 text-ink md:p-8">
-        <div aria-hidden="true" className="no-print pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-brand-500/20 blur-3xl" />
+      <section className="relative overflow-hidden rounded-3xl border border-brand-500/60 bg-surface p-6 text-ink md:p-8">
         <div className="relative flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand-700">SkillPass · {apprentice.tradeName}</p>

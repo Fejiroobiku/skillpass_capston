@@ -32,13 +32,13 @@ export function StatusBadge({ status }: {status: CredentialStatus;}) {
   const meta = statusMeta[status];
   const { t } = useT();
   return (
-    <span className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium ${toneClasses[meta.tone]}`}>
-      <span className={`h-1.5 w-1.5 rounded-full ${dotClasses[meta.tone]}`} aria-hidden="true" />
+    <span className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-sm px-2.5 py-1 text-xs font-medium ${toneClasses[meta.tone]}`}>
+      <span className={`h-1.5 w-1.5 rounded-sm ${dotClasses[meta.tone]}`} aria-hidden="true" />
       {t(statusKey[status])}
     </span>);
 
 }
 
 export function Pill({ tone = 'neutral', children }: {tone?: keyof typeof toneClasses;children: React.ReactNode;}) {
-  return <span className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium ${toneClasses[tone]}`}>{children}</span>;
+  return <span className={`inline-flex items-center gap-1 whitespace-nowrap rounded-sm px-2.5 py-1 text-xs font-medium ${toneClasses[tone]}`}>{children}</span>;
 }

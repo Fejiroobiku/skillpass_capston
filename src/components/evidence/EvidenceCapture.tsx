@@ -64,8 +64,8 @@ export function EvidenceCapture({ value, onChange, code, workshop, sampleUrl, kn
             }
               </div>
               <div className="flex shrink-0 gap-1">
-                <button type="button" onClick={() => void queue.retry(item.id)} disabled={queue.sending} aria-label="Try uploading now" className="rounded-full p-1.5 text-ink-muted hover:bg-canvas hover:text-ink disabled:opacity-50"><RefreshCwIcon className="h-4 w-4" /></button>
-                <button type="button" onClick={() => void queue.discard(item.id)} aria-label="Discard this file" className="rounded-full p-1.5 text-ink-muted hover:bg-canvas hover:text-ink"><XIcon className="h-4 w-4" /></button>
+                <button type="button" onClick={() => void queue.retry(item.id)} disabled={queue.sending} aria-label="Try uploading now" className="rounded-sm p-1.5 text-ink-muted hover:bg-canvas hover:text-ink disabled:opacity-50"><RefreshCwIcon className="h-4 w-4" /></button>
+                <button type="button" onClick={() => void queue.discard(item.id)} aria-label="Discard this file" className="rounded-sm p-1.5 text-ink-muted hover:bg-canvas hover:text-ink"><XIcon className="h-4 w-4" /></button>
               </div>
             </li>
         )}
@@ -89,7 +89,7 @@ export function EvidenceCapture({ value, onChange, code, workshop, sampleUrl, kn
                   <p className="flex items-center gap-1 font-mono text-ink-subtle"><FingerprintIcon className="h-3 w-3 shrink-0" />{ev.hash.slice(0, 16)}…</p>
                   {dup && <p className="mt-1 flex items-center gap-1 font-semibold text-bad-700"><ShieldAlertIcon className="h-3.5 w-3.5" /> Matches evidence already used — remove it</p>}
                 </div>
-                <button type="button" onClick={() => onChange(value.filter((_, i) => i !== index))} aria-label="Remove evidence" className="self-start rounded-full p-1 text-ink-muted hover:bg-canvas hover:text-ink">
+                <button type="button" onClick={() => onChange(value.filter((_, i) => i !== index))} aria-label="Remove evidence" className="self-start rounded-sm p-1 text-ink-muted hover:bg-canvas hover:text-ink">
                   <XIcon className="h-4 w-4" />
                 </button>
               </li>);

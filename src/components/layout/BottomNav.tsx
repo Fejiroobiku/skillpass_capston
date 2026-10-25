@@ -31,14 +31,14 @@ export function BottomNav() {
 
   return (
     <>
-      <nav aria-label="Main" className="no-print fixed inset-x-0 bottom-0 z-30 border-t border-line bg-night/85 backdrop-blur-xl pb-[env(safe-area-inset-bottom)] lg:hidden">
+      <nav aria-label="Main" className="no-print fixed inset-x-0 bottom-0 z-30 border-t border-line bg-night pb-[env(safe-area-inset-bottom)] lg:hidden">
         <ul className="mx-auto grid max-w-2xl" style={{ gridTemplateColumns: `repeat(${tabs.length + 1}, minmax(0, 1fr))` }}>
           {tabs.map((t) =>
           <li key={t.to}>
               <NavLink to={t.to} end className={({ isActive }) => `flex flex-col items-center gap-1 px-1 pb-2 pt-2.5 text-[11px] font-medium transition-colors duration-150 ${isActive ? 'text-brand-700' : 'text-ink-muted'}`}>
                 {({ isActive }) =>
               <>
-                    <span className={`flex h-7 w-12 items-center justify-center rounded-full transition-colors duration-150 ${isActive ? 'bg-brand-100' : ''}`}>
+                    <span className={`flex h-7 w-12 items-center justify-center rounded-sm transition-colors duration-150 ${isActive ? 'bg-brand-100' : ''}`}>
                       <t.icon className="h-5 w-5" aria-hidden="true" />
                     </span>
                     <span className="max-w-full truncate">{navLabel(t, tr, true)}</span>
@@ -49,7 +49,7 @@ export function BottomNav() {
           )}
           <li>
             <button type="button" onClick={() => setMoreOpen(true)} aria-expanded={moreOpen} className={`flex w-full flex-col items-center gap-1 px-1 pb-2 pt-2.5 text-[11px] font-medium ${moreActive ? 'text-brand-700' : 'text-ink-muted'}`}>
-              <span className={`flex h-7 w-12 items-center justify-center rounded-full ${moreActive ? 'bg-brand-100' : ''}`}>
+              <span className={`flex h-7 w-12 items-center justify-center rounded-sm ${moreActive ? 'bg-brand-100' : ''}`}>
                 <MoreHorizontalIcon className="h-5 w-5" aria-hidden="true" />
               </span>
               {tr('nav.more')}
@@ -73,7 +73,7 @@ export function BottomNav() {
             
               <div className="mb-2 flex items-center justify-between px-2">
                 <p className="font-semibold text-ink">{tr('nav.more')}</p>
-                <button type="button" aria-label="Close" onClick={() => setMoreOpen(false)} className="rounded-full p-2 text-ink-muted hover:bg-canvas"><XIcon className="h-5 w-5" /></button>
+                <button type="button" aria-label="Close" onClick={() => setMoreOpen(false)} className="rounded-sm p-2 text-ink-muted hover:bg-canvas"><XIcon className="h-5 w-5" /></button>
               </div>
               <div className="mb-3 px-2"><LanguageSwitcher className="w-full [&>select]:w-full" /></div>
               <div className="flex flex-col gap-0.5">

@@ -8,8 +8,8 @@ import { outOfScope } from '../../data/pilot';
 
 function Toggle({ checked, onChange, label }: {checked: boolean;onChange: (v: boolean) => void;label: string;}) {
   return (
-    <button type="button" role="switch" aria-checked={checked} aria-label={label} onClick={() => onChange(!checked)} className={`relative h-6 w-11 shrink-0 rounded-full transition-colors duration-150 ${checked ? 'bg-brand-600' : 'bg-line'}`}>
-      <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-surface shadow transition-transform duration-150 ${checked ? 'translate-x-[22px]' : 'translate-x-0.5'}`} />
+    <button type="button" role="switch" aria-checked={checked} aria-label={label} onClick={() => onChange(!checked)} className={`relative h-6 w-11 shrink-0 rounded-sm transition-colors duration-150 ${checked ? 'bg-brand-600' : 'bg-line'}`}>
+      <span className={`absolute top-0.5 h-5 w-5 rounded-sm bg-surface shadow transition-transform duration-150 ${checked ? 'translate-x-[22px]' : 'translate-x-0.5'}`} />
     </button>);
 
 }
@@ -93,7 +93,7 @@ export function AdminSettings() {
           </Panel>
           <Panel title="Outside this pilot" description="Listed as future work.">
             <ul className="flex flex-wrap gap-2">
-              {outOfScope.map((s) => <li key={s} className="rounded-full bg-canvas px-3 py-1.5 text-xs font-medium text-ink-muted">{s}</li>)}
+              {outOfScope.map((s) => <li key={s} className="rounded-sm bg-canvas px-3 py-1.5 text-xs font-medium text-ink-muted">{s}</li>)}
             </ul>
           </Panel>
         </div>

@@ -29,7 +29,7 @@ export function TrainerApprentices() {
           return (
             <li key={a.id} className="flex flex-col rounded-2xl border border-line bg-surface p-5">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-100 font-semibold text-brand-800">{a.name.split(' ').map((p) => p[0]).join('')}</span>
+                  <span className="flex h-11 w-11 items-center justify-center rounded-sm bg-brand-100 font-semibold text-brand-800">{a.name.split(' ').map((p) => p[0]).join('')}</span>
                   <div className="min-w-0">
                     <p className="truncate font-semibold text-ink">{a.name}</p>
                     <p className="text-xs text-ink-muted">Apprentice since {formatDate(a.startedAt)}</p>
@@ -37,7 +37,7 @@ export function TrainerApprentices() {
                 </div>
                 <div className="mt-4">
                   <div className="flex justify-between text-sm"><span className="text-ink-muted">Checklist</span><span className="font-medium text-ink">{n}/{total} verified</span></div>
-                  <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-canvas"><div className="h-full rounded-full bg-brand-600" style={{ width: `${total ? n / total * 100 : 0}%` }} /></div>
+                  <div className="mt-1.5 h-2 overflow-hidden rounded-sm bg-canvas"><div className="h-full rounded-sm bg-brand-600" style={{ width: `${total ? n / total * 100 : 0}%` }} /></div>
                 </div>
                 <dl className="mt-4 space-y-1.5 text-sm text-ink-muted">
                   <div className="flex items-center gap-2"><MapPinIcon className="h-4 w-4" /><dd>{a.location.name}</dd></div>

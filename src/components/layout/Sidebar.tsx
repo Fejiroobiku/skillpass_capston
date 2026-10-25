@@ -46,7 +46,7 @@ export function Sidebar() {
           <NavLink key={item.to} to={item.to} end className={navLinkClass}>
               <item.icon className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
               <span className="flex-1">{item.label}</span>
-              {item.badge > 0 && <span className="rounded-full bg-violet-500 px-2 text-xs font-bold text-night">{item.badge}</span>}
+              {item.badge > 0 && <span className="rounded-sm bg-violet-500 px-2 text-xs font-bold text-night">{item.badge}</span>}
             </NavLink>
           )}
         </nav>

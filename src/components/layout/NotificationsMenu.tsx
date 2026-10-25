@@ -21,11 +21,11 @@ export function NotificationsMenu({ userId }: {userId: string;}) {
         onClick={() => setOpen((o) => !o)}
         aria-label={`Notifications${unread ? `, ${unread} unread` : ''}`}
         aria-expanded={open}
-        className="relative flex h-10 w-10 items-center justify-center rounded-full text-ink-muted transition-colors duration-150 hover:bg-canvas hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+        className="relative flex h-10 w-10 items-center justify-center rounded-sm text-ink-muted transition-colors duration-150 hover:bg-canvas hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
         
         <BellIcon className="h-5 w-5" />
         {unread > 0 &&
-        <span className="absolute right-1 top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-brand-600 px-1 text-[10px] font-semibold text-night ring-2 ring-night">{unread}</span>
+        <span className="absolute right-1 top-1 flex h-4 min-w-[16px] items-center justify-center rounded-sm bg-brand-600 px-1 text-[10px] font-semibold text-night ring-2 ring-night">{unread}</span>
         }
       </button>
       <AnimatePresence>
@@ -56,7 +56,7 @@ export function NotificationsMenu({ userId }: {userId: string;}) {
                 }}
                 className={`flex w-full gap-3 px-4 py-3 text-left transition-colors duration-150 hover:bg-canvas ${n.read ? '' : 'bg-brand-50/60'}`}>
                 
-                    <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-canvas text-ink-muted">
+                    <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-canvas text-ink-muted">
                       {n.channel === 'sms' ? <MessageSquareTextIcon className="h-4 w-4" /> : <MonitorSmartphoneIcon className="h-4 w-4" />}
                     </span>
                     <span className="min-w-0 flex-1">
@@ -66,7 +66,7 @@ export function NotificationsMenu({ userId }: {userId: string;}) {
                       </span>
                       <span className="mt-0.5 line-clamp-2 block text-sm text-ink-muted">{n.body}</span>
                     </span>
-                    {!n.read && <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-brand-600" aria-label="Unread" />}
+                    {!n.read && <span className="mt-2 h-2 w-2 shrink-0 rounded-sm bg-brand-600" aria-label="Unread" />}
                   </button>
                 </li>
             )}

@@ -32,9 +32,9 @@ export function ProfileMenu() {
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-haspopup="menu"
-        className="flex items-center gap-2.5 rounded-full py-1 pl-1 pr-2 transition-colors duration-150 hover:bg-canvas focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+        className="flex items-center gap-2.5 rounded-sm py-1 pl-1 pr-2 transition-colors duration-150 hover:bg-canvas focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
         
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-600 text-sm font-semibold text-night">{initials(user.name)}</span>
+        <span className="flex h-9 w-9 items-center justify-center rounded-sm bg-brand-600 text-sm font-semibold text-night">{initials(user.name)}</span>
         <span className="hidden text-left md:block">
           <span className="block max-w-[160px] truncate text-sm font-semibold leading-tight text-ink">{user.name}</span>
           <span className="block text-xs leading-tight text-ink-muted">{role}</span>

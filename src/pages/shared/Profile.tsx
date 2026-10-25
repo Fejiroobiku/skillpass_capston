@@ -40,7 +40,7 @@ export function Profile() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <Panel>
           <div className="flex items-center gap-4 border-b border-line pb-5">
-            <span className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-600 text-xl font-semibold text-night">{initials(user.name)}</span>
+            <span className="flex h-16 w-16 items-center justify-center rounded-sm bg-brand-600 text-xl font-semibold text-night">{initials(user.name)}</span>
             <div>
               <h2 className="text-xl font-semibold text-ink">{user.name}</h2>
               <p className="text-sm text-ink-muted">{user.title || roleLabel[user.role]}</p>

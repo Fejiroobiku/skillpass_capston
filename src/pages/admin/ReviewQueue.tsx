@@ -68,7 +68,7 @@ export function ReviewQueue() {
         {tabs.map((t) =>
         <button key={t.id} role="tab" aria-selected={tab === t.id} type="button" onClick={() => setTab(t.id)} className={`flex flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition-colors duration-150 ${tab === t.id ? 'bg-brand-600 text-night' : 'text-ink hover:bg-canvas'}`}>
             {t.label}
-            <span className={`rounded-full px-2 text-xs ${tab === t.id ? 'bg-white/20' : 'bg-canvas text-ink-muted'}`}>{t.count}</span>
+            <span className={`rounded-sm px-2 text-xs ${tab === t.id ? 'bg-white/20' : 'bg-canvas text-ink-muted'}`}>{t.count}</span>
           </button>
         )}
       </div>

@@ -17,11 +17,10 @@ export function AuthLayout({ children }: {children: React.ReactNode;}) {
   const { t } = useT();
   return (
     <div className="flex min-h-full w-full">
-      <aside className="relative hidden w-[44%] max-w-[560px] flex-col justify-between overflow-hidden border-r border-line bg-gradient-to-br from-brand-500/15 via-night to-violet-500/20 p-10 text-ink lg:flex">
-        <div aria-hidden="true" className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-brand-500/20 blur-3xl" />
+      <aside className="relative hidden w-[44%] max-w-[560px] flex-col justify-between overflow-hidden border-r border-line bg-surface p-10 text-ink lg:flex">
         <Logo />
         <div>
-          <img src={evidencePhotos.electrical} alt={t('auth.photoAlt')} className="relative mb-8 aspect-[4/3] w-full rounded-3xl object-cover ring-1 ring-white/15 shadow-glow" />
+          <img src={evidencePhotos.electrical} alt={t('auth.photoAlt')} className="relative mb-8 aspect-[4/3] w-full rounded-3xl object-cover ring-1 ring-line" />
           <h2 className="relative text-4xl font-semibold leading-tight tracking-tight">{t('auth.headline')}</h2>
           <ul className="mt-6 space-y-3">
             {points.map((p) =>
