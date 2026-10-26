@@ -32,14 +32,14 @@ router.post('/', async (req, res) => {
       [input.referralId],
     )).rows[0];
     if (!ref || ref.employer_id !== req.user.id || !['accepted', 'contacted'].includes(ref.status)) {
-      throw new HttpError(400, 'Ratings must be tied to a real job the apprentice took on.');
+      throw new HttpError(400, 'Ratings must be tied to a real job the artisan took on.');
     }
     if ((await db.query('SELECT 1 FROM feedback WHERE referral_id = $1', [ref.id])).rowCount) throw new HttpError(409, 'You have already rated this job.');
 
     const credentialIds = [...new Set(input.credentialIds)];
     if (credentialIds.length) {
       const owned = (await db.query('SELECT id FROM credentials WHERE id = ANY($1) AND apprentice_id = $2', [credentialIds, ref.apprentice_id])).rowCount;
-      if (owned !== credentialIds.length) throw new HttpError(400, 'Those credentials do not belong to this apprentice.');
+      if (owned !== credentialIds.length) throw new HttpError(400, 'Those credentials do not belong to this artisan.');
     }
 
     const id = uid('fb');

@@ -12,6 +12,7 @@ import { Login } from './pages/auth/Login';
 import { Register } from './pages/auth/Register';
 import { PublicVerify } from './pages/public/PublicVerify';
 import { PublicPassport } from './pages/public/PublicPassport';
+import { Terms } from './pages/public/Terms';
 import { ForgotPassword, ResetPassword, VerifyEmail } from './pages/auth/AccountRecovery';
 import { getToken } from './api/client';
 import { loaders, preloadPagesFor, roleFromToken } from './pageLoaders';
@@ -32,9 +33,12 @@ const TrainerSkills = page(t.TrainerSkills, 'TrainerSkills');
 const SkillsPassport = page(a.SkillsPassport, 'SkillsPassport');
 const ConfirmSkills = page(a.ConfirmSkills, 'ConfirmSkills');
 const JobReferrals = page(a.JobReferrals, 'JobReferrals');
+const ArtisanWork = page(a.ArtisanWork, 'ArtisanWork');
 const EmployerDashboard = page(e.EmployerDashboard, 'EmployerDashboard');
 const EmployerJobs = page(e.EmployerJobs, 'EmployerJobs');
 const EmployerFeedback = page(e.EmployerFeedback, 'EmployerFeedback');
+const EmployerHires = page(e.EmployerHires, 'EmployerHires');
+const PayCheckout = page(e.PayCheckout, 'PayCheckout');
 const AdminMetrics = page(ad.AdminMetrics, 'AdminMetrics');
 const ReviewQueue = page(ad.ReviewQueue, 'ReviewQueue');
 const AdminUsers = page(ad.AdminUsers, 'AdminUsers');
@@ -92,6 +96,7 @@ export function App() {
             <Route path="/verify" element={<PublicVerify />} />
             <Route path="/verify/:id" element={<PublicVerify />} />
             <Route path="/passport/:id" element={<PublicPassport />} />
+            <Route path="/terms" element={<Terms />} />
 
             <Route element={<RequireAuth />}>
               <Route path="/trainer" element={<RoleGuard role="trainer" />}>
@@ -105,11 +110,16 @@ export function App() {
                 <Route index element={<SkillsPassport />} />
                 <Route path="confirm" element={<ConfirmSkills />} />
                 <Route path="jobs" element={<JobReferrals />} />
+                <Route path="work" element={<ArtisanWork />} />
               </Route>
               <Route path="/employer" element={<RoleGuard role="employer" />}>
                 <Route index element={<EmployerDashboard />} />
                 <Route path="jobs" element={<EmployerJobs />} />
                 <Route path="feedback" element={<EmployerFeedback />} />
+                <Route path="hires" element={<EmployerHires />} />
+              </Route>
+              <Route path="/pay/:reference" element={<RoleGuard role="employer" />}>
+                <Route index element={<PayCheckout />} />
               </Route>
               <Route path="/admin" element={<RoleGuard role="admin" />}>
                 <Route index element={<AdminMetrics />} />

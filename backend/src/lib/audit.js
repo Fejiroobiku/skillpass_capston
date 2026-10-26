@@ -15,6 +15,7 @@ export async function getSettings(db) {
     fastMinutes: r.fast_minutes,
     smsEnabled: r.sms_enabled,
     emailEnabled: r.email_enabled,
+    reviewDays: r.review_days ?? 3,
   };
 }
 

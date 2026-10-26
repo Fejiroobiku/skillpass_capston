@@ -29,7 +29,7 @@ router.post('/', async (req, res) => {
       'SELECT u.id, u.name FROM users u JOIN apprentice_profiles ap ON ap.user_id = u.id WHERE u.id = $1 AND ap.trainer_id = $2',
       [input.apprenticeId, trainer.id],
     )).rows[0];
-    if (!apprentice) throw new HttpError(403, 'You can only assess your own apprentices.');
+    if (!apprentice) throw new HttpError(403, 'You can only assess your own artisans.');
     const skill = (await db.query(`SELECT id, name, trade_id FROM skills WHERE id = $1 AND status = 'active'`, [input.skillId])).rows[0];
     if (!skill || skill.trade_id !== trainer.trade_id) throw new HttpError(400, 'Choose a skill from your trade.');
 
@@ -39,7 +39,7 @@ router.post('/', async (req, res) => {
 
     await db.query('INSERT INTO attempts (id, trainer_id, apprentice_id, skill_id, criteria_met) VALUES ($1, $2, $3, $4, $5)', [uid('at'), trainer.id, apprentice.id, skill.id, met]);
     await logAudit(db, { actor: req.user, action: 'assessment.not_yet', target: apprentice.name, detail: `${skill.name} · ${met.length}/${rubric.length} criteria` });
-    await notify(db, apprentice.id, 'Keep practising', `“${skill.name}” was assessed as not yet competent. Your trainer can assess you again.`, { link: '/apprentice' });
+    await notify(db, apprentice.id, 'Keep practising', `“${skill.name}” was assessed as not yet competent. Your assessor can assess you again.`, { link: '/apprentice' });
   });
   res.status(201).json({ ok: true });
 });

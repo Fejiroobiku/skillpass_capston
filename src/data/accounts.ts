@@ -36,7 +36,7 @@ mk('e3', 'tunde@skillpass.ng', 'employer', '2026-09-20')];
 
 
 export const demoLogins: {role: Role;label: string;email: string;hint: string;}[] = [
-{ role: 'trainer', label: 'Trainer', email: 'babatunde@skillpass.ng', hint: 'Babatunde · Electrical' },
-{ role: 'apprentice', label: 'Apprentice', email: 'tobi@skillpass.ng', hint: 'Tobi · Electrical' },
+{ role: 'trainer', label: 'Assessor', email: 'babatunde@skillpass.ng', hint: 'Babatunde · Electrical' },
+{ role: 'apprentice', label: 'Artisan', email: 'tobi@skillpass.ng', hint: 'Tobi · Electrical' },
 { role: 'employer', label: 'Employer', email: 'folake@skillpass.ng', hint: 'Folake · Lekki Homes' },
 { role: 'admin', label: 'Admin', email: 'admin@skillpass.ng', hint: 'Fejiro · Pilot admin' }];

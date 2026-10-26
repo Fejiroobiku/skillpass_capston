@@ -14,6 +14,7 @@ export interface RegisterInput {
   trade: string;
   location: Place;
   consent: boolean;
+  acceptTerms: boolean;
   trainerId?: string;
   workshop?: string;
   company?: string;
@@ -48,7 +49,7 @@ interface AuthState {
 }
 
 interface ApiUser extends Omit<CurrentUser, 'account'> {
-  account: {createdAt: string;consentAt: string;dob: string;phoneVerified?: boolean;emailVerified?: boolean;};
+  account: {createdAt: string;consentAt: string;dob: string;phoneVerified?: boolean;emailVerified?: boolean;termsVersion?: string | null;termsAcceptedAt?: string | null;termsCurrent?: string;};
 }
 
 interface AdminUserRow {

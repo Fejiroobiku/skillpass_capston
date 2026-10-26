@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { BellIcon, ClipboardListIcon, MoreHorizontalIcon, UserRoundIcon, XIcon } from 'lucide-react';
+import { BellIcon, ClipboardListIcon, FileTextIcon, MoreHorizontalIcon, UserRoundIcon, XIcon } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { navByRole, navLabel } from '../../data/navigation';
 import { useT } from '../../i18n';
@@ -24,7 +24,8 @@ export function BottomNav() {
   ...[
   { to: '/notifications', label: tr('nav.notifications'), icon: BellIcon },
   { to: '/profile', label: tr('nav.myProfile'), icon: UserRoundIcon },
-  { to: '/survey', label: tr('nav.survey'), icon: ClipboardListIcon }].
+  { to: '/survey', label: tr('nav.survey'), icon: ClipboardListIcon },
+  { to: '/terms', label: tr('nav.terms'), icon: FileTextIcon }].
   filter((a) => !nav.some((n) => n.to === a.to))];
 
   const moreActive = extra.some((e) => e.to === pathname);

@@ -26,6 +26,7 @@ export function Register() {
   const [location, setLocation] = useState<Place | null>(null);
   const [adult, setAdult] = useState(false);
   const [consent, setConsent] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,6 +34,8 @@ export function Register() {
     setForm((f) => ({ ...f, [k]: e.target.value, ...(k === 'trade' ? { trainerId: '' } : {}) }));
     setError(null);
   };
+  // The sentence has a {link} slot where the Terms of Service link goes.
+  const [termsBefore, termsAfter = ''] = t('register.terms').split('{link}');
   const tradeTrainers = trainers.filter((t) => t.trade === form.trade && t.approved);
 
   const valid =
@@ -44,7 +47,8 @@ export function Register() {
   !!form.trade &&
   !!location &&
   adult &&
-  consent && (
+  consent &&
+  acceptTerms && (
   role !== 'apprentice' || !!form.trainerId) && (
   role !== 'employer' || form.company.trim().length > 1) && (
   role !== 'trainer' || form.membershipNo.trim().length > 3);
@@ -53,7 +57,7 @@ export function Register() {
     e.preventDefault();
     if (!valid || !location) return;
     setBusy(true);
-    const err = await register({ role, name: form.name.trim(), email: form.email, phone: form.phone.trim(), password: form.password, dob: form.dob, trade: form.trade, location, trainerId: form.trainerId, workshop: form.workshop.trim(), company: form.company.trim(), membershipNo: form.membershipNo.trim(), consent });
+    const err = await register({ role, name: form.name.trim(), email: form.email, phone: form.phone.trim(), password: form.password, dob: form.dob, trade: form.trade, location, trainerId: form.trainerId, workshop: form.workshop.trim(), company: form.company.trim(), membershipNo: form.membershipNo.trim(), consent, acceptTerms });
     setBusy(false);
     if (err) return setError(err);
     navigate('/confirm-contact'); // confirm the phone number straight after joining
@@ -128,6 +132,7 @@ export function Register() {
         <div className="space-y-2.5 rounded-xl bg-canvas p-4 text-sm">
           <label className="flex gap-3"><input type="checkbox" checked={adult} onChange={(e) => setAdult(e.target.checked)} className="mt-0.5 h-4 w-4 accent-brand-600" /><span className="text-ink">{t('register.adult')}</span></label>
           <label className="flex gap-3"><input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-0.5 h-4 w-4 accent-brand-600" /><span className="text-ink">{t('register.consent')}</span></label>
+          <label className="flex gap-3"><input type="checkbox" checked={acceptTerms} onChange={(e) => setAcceptTerms(e.target.checked)} className="mt-0.5 h-4 w-4 accent-brand-600" /><span className="text-ink">{termsBefore}<Link to="/terms" target="_blank" className="font-semibold text-brand-700 underline">{t('register.termsLink')}</Link>{termsAfter}</span></label>
         </div>
 
         {error && <p role="alert" className="rounded-xl bg-bad-50 px-3.5 py-2.5 text-sm font-medium text-bad-700">{error}</p>}

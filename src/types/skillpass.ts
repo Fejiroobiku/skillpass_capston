@@ -90,6 +90,10 @@ export interface Account {
   phoneVerified?: boolean;
   /** Confirmed by email link. Needed for password reset. */
   emailVerified?: boolean;
+  /** The Terms of Service version this person accepted, and the version in force now. */
+  termsVersion?: string | null;
+  termsAcceptedAt?: string | null;
+  termsCurrent?: string;
 }
 
 export type CredentialStatus = 'pending_apprentice' | 'pending_cosign' | 'held_review' | 'valid' | 'flagged' | 'under_review' | 'revoked';
@@ -195,9 +199,25 @@ export interface Job {
   location: Place;
   postedAt: string;
   pay: string;
+  /** Who buys the materials for this job. */
+  materialsBy?: MaterialsBy;
+  /** The employer's budget, in whole naira. */
+  materialsBudget?: number | null;
+  workmanshipBudget?: number | null;
 }
 
+export type MaterialsBy = 'employer' | 'artisan';
+
 export type ReferralStatus = 'sent' | 'accepted' | 'declined' | 'contacted';
+
+/** The artisan's price, sent when they say they are interested. */
+export interface Quote {
+  workmanship: number;
+  materials: number | null;
+  availableFrom: string;
+  note: string;
+  quotedAt?: string;
+}
 
 export interface Referral {
   id: string;
@@ -205,6 +225,94 @@ export interface Referral {
   apprenticeId: string;
   status: ReferralStatus;
   sentAt: string;
+  quote?: Quote;
+}
+
+export type AgreementStatus = 'proposed' | 'accepted' | 'in_progress' | 'submitted' | 'completed' | 'disputed' | 'resolved' | 'cancelled';
+
+/** The deal between an employer and an artisan, with the money held in escrow. Amounts are whole naira. */
+export interface Agreement {
+  id: string;
+  referralId: string;
+  jobId: string;
+  employerId: string;
+  artisanId: string;
+  materialsBy: MaterialsBy;
+  materialsAmount: number;
+  workmanshipAmount: number;
+  startDate?: string;
+  scope: string;
+  termsVersion: string;
+  status: AgreementStatus;
+  employerAcceptedAt?: string;
+  artisanAcceptedAt?: string;
+  paymentReference?: string;
+  fundedAt?: string;
+  submittedAt?: string;
+  reviewDeadline?: string;
+  completedAt?: string;
+  cancelledAt?: string;
+  cancelledBy?: string;
+  cancelReason?: string;
+  createdAt: string;
+}
+
+export interface Payment {
+  id: string;
+  agreementId: string;
+  kind: 'deposit' | 'materials_payout' | 'workmanship_payout' | 'refund';
+  amount: number;
+  provider: 'simulated' | 'paystack';
+  status: 'pending' | 'succeeded' | 'failed';
+  detail: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
+export interface JobPhoto {
+  id: string;
+  agreementId: string;
+  stage: 'before' | 'after';
+  url: string;
+  locationLabel: string;
+  locationSource: 'gps' | 'declared';
+  capturedAt: string;
+}
+
+export type DisputeReason = 'poor_work' | 'not_finished' | 'no_show' | 'materials' | 'changed_scope' | 'not_confirming' | 'other';
+
+export interface JobDispute {
+  id: string;
+  agreementId: string;
+  raisedBy: string;
+  reason: DisputeReason;
+  details: string;
+  response?: string;
+  respondedAt?: string;
+  raisedAt: string;
+  status: 'open' | 'resolved';
+  artisanSharePct?: number;
+  decisionNote?: string;
+  resolvedBy?: string;
+  resolvedAt?: string;
+}
+
+/** An artisan's rating of an employer after a finished job. */
+export interface EmployerRating {
+  id: string;
+  agreementId: string;
+  artisanId: string;
+  employerId: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
+
+export interface PayoutAccount {
+  bankCode: string;
+  bankName: string;
+  accountLast4: string;
+  accountName: string;
 }
 
 export type NotificationChannel = 'in_app' | 'sms' | 'email';
@@ -244,6 +352,8 @@ export interface Settings {
   fastMinutes: number;
   smsEnabled: boolean;
   emailEnabled: boolean;
+  /** Days the employer has to confirm finished work or raise a dispute before payment is released automatically. */
+  reviewDays?: number;
 }
 
 export type AuditAction =

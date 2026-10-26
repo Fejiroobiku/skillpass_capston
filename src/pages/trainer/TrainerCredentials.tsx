@@ -11,7 +11,7 @@ import { formatDate } from '../../utils/credentials';
 const filters: {id: 'all' | CredentialStatus;label: string;}[] = [
 { id: 'all', label: 'All' },
 { id: 'valid', label: 'Valid' },
-{ id: 'pending_apprentice', label: 'Awaiting apprentice' },
+{ id: 'pending_apprentice', label: 'Awaiting artisan' },
 { id: 'pending_cosign', label: 'Awaiting co-sign' },
 { id: 'under_review', label: 'Under review' },
 { id: 'held_review', label: 'Held' },
@@ -47,7 +47,7 @@ export function TrainerCredentials() {
             <thead className="border-b border-line bg-canvas text-xs text-ink-muted">
               <tr>
                 <th scope="col" className="px-5 py-3 font-medium">Skill</th>
-                <th scope="col" className="px-3 py-3 font-medium">Apprentice</th>
+                <th scope="col" className="px-3 py-3 font-medium">Artisan</th>
                 <th scope="col" className="px-3 py-3 font-medium">Issued</th>
                 <th scope="col" className="px-3 py-3 font-medium">Evidence</th>
                 <th scope="col" className="px-3 py-3 font-medium">Status</th>

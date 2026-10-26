@@ -28,6 +28,17 @@ const choice = (name, allowed, fallback) => {
 };
 const smsProvider = choice('SMS_PROVIDER', ['console', 'termii'], 'console');
 const emailProvider = choice('EMAIL_PROVIDER', ['console', 'resend'], 'console');
+const paymentProvider = choice('PAYMENT_PROVIDER', ['simulated', 'paystack'], 'simulated');
+
+function paystackKey() {
+  const key = required('PAYSTACK_SECRET_KEY');
+  if (!/^sk_(test|live)_/.test(key)) throw new Error('PAYSTACK_SECRET_KEY must start with sk_test_ or sk_live_.');
+  // The pilot runs in Paystack test mode. Live keys move real money, so they need a deliberate extra switch.
+  if (key.startsWith('sk_live_') && !flag(process.env.PAYSTACK_ALLOW_LIVE)) {
+    throw new Error('PAYSTACK_SECRET_KEY is a live key. The pilot uses test mode (sk_test_…). Set PAYSTACK_ALLOW_LIVE=true only after ethics approval for real payments.');
+  }
+  return key;
+}
 const port = Number(process.env.PORT ?? 4000);
 
 const jwtSecret = secret('JWT_SECRET');
@@ -61,6 +72,11 @@ export const config = {
     senderId: required('TERMII_SENDER_ID'),
     baseUrl: required('TERMII_BASE_URL').replace(/\/$/, ''),
     channel: process.env.TERMII_CHANNEL ?? 'dnd',
+  } : null,
+  paymentProvider,
+  paystack: paymentProvider === 'paystack' ? {
+    secretKey: paystackKey(),
+    baseUrl: (process.env.PAYSTACK_BASE_URL ?? 'https://api.paystack.co').replace(/\/$/, ''),
   } : null,
   emailProvider,
   resendApiKey: emailProvider === 'resend' ? required('RESEND_API_KEY') : null,

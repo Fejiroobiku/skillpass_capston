@@ -16,7 +16,7 @@ const VISIBLE = {
   'flag.dismissed': same,
   'audit.completed': same,
   'credential.flagged': (e) => ({ ...e, actor: 'A verified user', detail: 'A concern was raised and is being reviewed.' }),
-  'credential.disputed': (e) => ({ ...e, actor: 'The apprentice', detail: 'A concern was raised and is being reviewed.' }),
+  'credential.disputed': (e) => ({ ...e, actor: 'The artisan', detail: 'A concern was raised and is being reviewed.' }),
 };
 
 /** entries: [{ at, actor, action, detail, ... }] */

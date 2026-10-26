@@ -46,7 +46,7 @@ export function TrainerDashboard() {
       <div role="status" className="mb-6 flex gap-3 rounded-2xl border border-warn-200 bg-warn-50 p-4 text-sm text-warn-700">
           <ClockIcon className="h-5 w-5 shrink-0" />
           <p>
-            <span className="font-semibold">Your trainer account is awaiting approval.</span>{' '}
+            <span className="font-semibold">Your assessor account is awaiting approval.</span>{' '}
             {me.membershipVerified ? 'Your association membership is confirmed.' : `We're confirming your membership (${me.membershipNo}) with ${assoc?.name ?? 'your trade association'}.`} Issuing unlocks once an administrator approves your workshop.
           </p>
         </div>
@@ -60,7 +60,7 @@ export function TrainerDashboard() {
       {me.approved && !me.misconductAt && risk?.onProbation &&
       <div role="status" className="mb-6 flex gap-3 rounded-2xl border border-line bg-surface p-4 text-sm text-ink">
           <ClockIcon className="h-5 w-5 shrink-0 text-brand-600" />
-          <p><span className="font-semibold">Probation: {risk.probationUsed} of {settings.probationCount} credentials valid.</span> Until {settings.probationCount} of your credentials are confirmed and co-signed, every credential you sign needs a second trainer or verified employer to co-sign.</p>
+          <p><span className="font-semibold">Probation: {risk.probationUsed} of {settings.probationCount} credentials valid.</span> Until {settings.probationCount} of your credentials are confirmed and co-signed, every credential you sign needs a second assessor or verified employer to co-sign.</p>
         </div>
       }
 
@@ -80,7 +80,7 @@ export function TrainerDashboard() {
           </div>
           {trust.ratingPenalty > 0 &&
           <p className="mt-5 flex gap-2 rounded-xl bg-warn-50 p-3 text-sm text-warn-700">
-              <TriangleAlertIcon className="h-4 w-4 shrink-0 translate-y-0.5" /> −{trust.ratingPenalty} points: {trust.poorRatings} apprentices you passed received poor employer ratings.
+              <TriangleAlertIcon className="h-4 w-4 shrink-0 translate-y-0.5" /> −{trust.ratingPenalty} points: {trust.poorRatings} artisans you passed received poor employer ratings.
             </p>
           }
           {risk && risk.signals.length > 0 &&
@@ -88,7 +88,7 @@ export function TrainerDashboard() {
               <TriangleAlertIcon className="h-4 w-4 shrink-0 translate-y-0.5 text-warn-600" /> More of your credentials are being audited because of: {risk.signals.map((s) => s.label.toLowerCase()).join(', ')}.
             </p>
           }
-          <p className="mt-5 border-t border-line pt-4 text-sm text-ink-muted">Score = 40% audit agreement + 30% employer ratings + 30% never flagged, minus an automatic penalty when apprentices you passed keep getting poor ratings.</p>
+          <p className="mt-5 border-t border-line pt-4 text-sm text-ink-muted">Score = 40% audit agreement + 30% employer ratings + 30% never flagged, minus an automatic penalty when artisans you passed keep getting poor ratings.</p>
         </Panel>
 
         <Panel title="Needs your attention">
@@ -131,7 +131,7 @@ export function TrainerDashboard() {
           )}
           </ul>
         }
-        <p className="mt-4 border-t border-line pt-4 text-xs text-ink-muted">{apprentices.filter((a) => a.trainerId === me.id).length} apprentices linked to your workshop.</p>
+        <p className="mt-4 border-t border-line pt-4 text-xs text-ink-muted">{apprentices.filter((a) => a.trainerId === me.id).length} artisans linked to your workshop.</p>
       </Panel>
     </>);
 

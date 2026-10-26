@@ -85,7 +85,7 @@ export const statusMeta: Record<CredentialStatus, {label: string;tone: 'ok' | 'w
   flagged: { label: 'Flagged', tone: 'warn' },
   under_review: { label: 'Under review', tone: 'warn' },
   revoked: { label: 'Revoked', tone: 'bad' },
-  pending_apprentice: { label: 'Awaiting apprentice', tone: 'neutral' },
+  pending_apprentice: { label: 'Awaiting artisan', tone: 'neutral' },
   pending_cosign: { label: 'Awaiting co-sign', tone: 'neutral' },
   held_review: { label: 'Held for review', tone: 'neutral' }
 };

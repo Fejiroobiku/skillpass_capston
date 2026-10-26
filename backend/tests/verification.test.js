@@ -15,7 +15,7 @@ async function join(over = {}) {
   n += 1;
   const r = await api('POST', '/api/auth/register', { body: {
     role: 'apprentice', name: `Test Person ${n}`, email: `person${n}@example.com`, phone: `0809 111 ${String(2000 + n)}`,
-    password: 'a-good-password', dob: '1998-06-01', trade: 'electrical', trainerId: 't1', consent: true,
+    password: 'a-good-password', dob: '1998-06-01', trade: 'electrical', trainerId: 't1', consent: true, acceptTerms: true,
     location: { name: 'Yaba', lat: 6.5095, lng: 3.3711 }, ...over,
   } });
   return r;
@@ -86,7 +86,7 @@ describe('phone verification', () => {
   it('administrators cannot approve an employer who has not confirmed their phone', async () => {
     const reg = await api('POST', '/api/auth/register', { body: {
       role: 'employer', name: 'Uche Builders', email: 'uche@example.com', phone: '0817 000 1234', password: 'a-good-password',
-      dob: '1985-01-01', trade: 'electrical', company: 'Uche Builders', consent: true, location: { name: 'Ikeja', lat: 6.6, lng: 3.35 },
+      dob: '1985-01-01', trade: 'electrical', company: 'Uche Builders', consent: true, acceptTerms: true, location: { name: 'Ikeja', lat: 6.6, lng: 3.35 },
     } });
     assert.equal(reg.status, 201);
     const admin = await login('admin@skillpass.ng');

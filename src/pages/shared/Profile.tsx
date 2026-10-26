@@ -29,7 +29,7 @@ export function Profile() {
   ['Phone', <span key="phone" className="flex flex-wrap items-center gap-2">{profile?.phone ?? '—'} {user.account.phoneVerified ? <Pill tone="ok">Confirmed</Pill> : user.role !== 'admin' && <Link to="/confirm-contact" className="text-sm font-semibold text-brand-700 hover:underline">Confirm</Link>}</span>],
   ...(profile ? [['Trade', tradeName], ['Location', profile.location.name]] as [string, React.ReactNode][] : []),
   ...(t ? [['Workshop', t.workshop], ['Approval', t.approved ? <Pill tone="ok">Approved to issue</Pill> : <Pill tone="warn">Awaiting approval</Pill>], ['Association', `${associations.find((x) => x.id === t.associationId)?.name ?? '—'} · ${t.membershipNo}`], ['Trust score', `${sp.trustOf(t.id).score} / 100`]] as [string, React.ReactNode][] : []),
-  ...(a ? [['Trainer', `${sp.nameOf(a.trainerId)} · ${sp.trainers.find((x) => x.id === a.trainerId)?.workshop ?? ''}`], ['Apprentice since', formatDate(a.startedAt)]] as [string, React.ReactNode][] : []),
+  ...(a ? [['Assessor', `${sp.nameOf(a.trainerId)} · ${sp.trainers.find((x) => x.id === a.trainerId)?.workshop ?? ''}`], ['Artisan since', formatDate(a.startedAt)]] as [string, React.ReactNode][] : []),
   ...(e ? [['Company', e.company], ['Co-signing', e.approved ? <Pill tone="ok">Approved</Pill> : <Pill tone="warn">Awaiting approval</Pill>]] as [string, React.ReactNode][] : []),
   ['Member since', formatDate(user.account.createdAt)]];
 

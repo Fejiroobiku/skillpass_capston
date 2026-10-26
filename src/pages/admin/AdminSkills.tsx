@@ -33,7 +33,7 @@ export function AdminSkills() {
     <>
       <PageHeader
         title="Trades & Skills"
-        subtitle="Manage the pre-loaded checklists and review skills proposed by trainers."
+        subtitle="Manage the pre-loaded checklists and review skills proposed by assessors."
         actions={
         <button type="button" onClick={() => setTradeOpen(true)} className="inline-flex items-center gap-2 rounded-xl border border-line bg-surface px-4 py-2.5 text-sm font-semibold text-ink hover:bg-canvas">
             <PlusIcon className="h-4 w-4" /> Add trade
@@ -42,7 +42,7 @@ export function AdminSkills() {
       
 
       {proposals.length > 0 &&
-      <Panel className="mb-6" title="Proposed by trainers" description={`${proposals.length} waiting for review`}>
+      <Panel className="mb-6" title="Proposed by assessors" description={`${proposals.length} waiting for review`}>
           <ul className="divide-y divide-line">
             {proposals.map((s) =>
           <li key={s.id} className="flex flex-col gap-3 py-3 first:pt-0 last:pb-0 sm:flex-row sm:items-center">

@@ -153,14 +153,14 @@ export class PoorRatingsRule extends RiskRule {
 
   evaluate({ ids, feedback }) {
     const poor = feedback.filter((f) => f.rating <= POOR_RATING && f.credentialIds.some((id) => ids.has(id))).length;
-    return poor >= 2 ? this.signal(`${poor} ratings of ${POOR_RATING}★ or less for apprentices they passed`) : null;
+    return poor >= 2 ? this.signal(`${poor} ratings of ${POOR_RATING}★ or less for artisans they passed`) : null;
   }
 }
 
 /** Confidential reports from apprentices that are still open. */
 export class OpenReportsRule extends RiskRule {
   constructor() {
-    super('reports', 'Apprentice report');
+    super('reports', 'Artisan report');
   }
 
   evaluate({ openReportCount }) {

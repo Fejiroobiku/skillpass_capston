@@ -82,7 +82,7 @@ export async function assertEligibleCosigner(db, cosignerId, issuingTrainer) {
   const ok = u && u.status === 'active' && u.id !== issuingTrainer.id && (
     (u.role === 'trainer' && u.t_approved && u.t_trade === issuingTrainer.trade_id && !u.misconduct_at) ||
     (u.role === 'employer' && u.e_approved && u.e_trade === issuingTrainer.trade_id));
-  if (!ok) throw new HttpError(400, 'That co-signer is not eligible. Choose an approved trainer or employer in the same trade.');
+  if (!ok) throw new HttpError(400, 'That co-signer is not eligible. Choose an approved assessor or employer in the same trade.');
 }
 
 /** Pick an independent assessor for a trade, preferring ones with an NSQ id. */
@@ -116,14 +116,14 @@ export async function markMisconduct(db, trainerId, reason, actor) {
     'SELECT u.name FROM users u JOIN trainer_profiles tp ON tp.user_id = u.id WHERE u.id = $1 FOR UPDATE OF tp',
     [trainerId],
   )).rows[0];
-  if (!t) throw new HttpError(404, 'Trainer not found.');
+  if (!t) throw new HttpError(404, 'Assessor not found.');
   await db.query('UPDATE trainer_profiles SET misconduct_at = now(), misconduct_reason = $2 WHERE user_id = $1', [trainerId, reason]);
   const affected = (await db.query(
     `UPDATE credentials SET status = 'under_review' WHERE trainer_id = $1 AND status <> 'revoked' RETURNING id, apprentice_id`,
     [trainerId],
   )).rows;
   await logAudit(db, { actor, action: 'trainer.misconduct', target: t.name, detail: `${reason} · ${affected.length} earlier credentials moved to under review · association notified` });
-  for (const c of affected) await logAudit(db, { action: 'credential.under_review', target: c.id, detail: 'Issuing trainer found cheating' });
+  for (const c of affected) await logAudit(db, { action: 'credential.under_review', target: c.id, detail: 'Issuing assessor found cheating' });
   for (const apprenticeId of new Set(affected.map((c) => c.apprentice_id))) {
     await notify(db, apprenticeId, 'Credential under review',
       `Credentials signed by ${t.name} are being re-checked. You may be asked to show the skill to an assessor.`,
@@ -169,7 +169,7 @@ export async function loadTrainerForIssuing(db, trainerId, { lock = false } = {}
     [trainerId],
   );
   const t = rows[0];
-  if (!t || !t.approved || !t.membership_verified) throw new HttpError(403, 'Your trainer account is not approved to issue.');
+  if (!t || !t.approved || !t.membership_verified) throw new HttpError(403, 'Your assessor account is not approved to issue.');
   if (t.misconduct_at) throw new HttpError(403, 'Issuing is suspended while your credentials are under review.');
   return t;
 }

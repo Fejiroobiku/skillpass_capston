@@ -1,6 +1,6 @@
 # SkillPass
 
-A trainer-verified digital skills passport for informal apprentices in Nigeria.
+An assessor-verified digital skills passport for informal artisans in Nigeria, with safe job payments through escrow.
 
 | | |
 |---|---|
@@ -13,7 +13,11 @@ A trainer-verified digital skills passport for informal apprentices in Nigeria.
 
 About 93% of employment in Nigeria is informal, and most tradespeople learn through workshop apprenticeships. They finish with real skills but no record that an employer outside their area can check, and employers have no quick way to tell real skill from a bought certificate.
 
-SkillPass lets a trainer record a skill they **watched** an apprentice perform, backed by a live photo or video. The apprentice confirms it, and anyone can verify it in under a minute through a QR code or link, with no login. Integrity safeguards keep trainers honest, and verified skills feed job referrals and employer ratings.
+SkillPass lets an **assessor** (an approved, experienced tradesperson) record a skill they **watched** an **artisan** perform, backed by a live photo or video. The artisan confirms it, and anyone can verify it in under a minute through a QR code or link, with no login. Integrity safeguards keep assessors honest, and verified skills feed job referrals.
+
+When an employer hires through SkillPass, both sides agree the price in the app with **materials and workmanship shown separately**. The employer pays into **escrow** before work starts: materials money goes to the artisan at once, and workmanship is held until the employer confirms the job (or released automatically after 3 days). Disputes freeze the money and an administrator decides how it is shared. Both sides rate each other. Everything is governed by a plain-language [Terms of Service](src/data/terms.ts) (English and Pidgin) that everyone accepts.
+
+> **Names:** the app calls the two main roles **Assessor** and **Artisan** (an artisan may have learned as an apprentice or be self-taught). In the code and database the role ids are still `trainer` and `apprentice`, so URLs such as `/trainer` and `/apprentice` are unchanged.
 
 The pilot covers three trades (electrical installation, auto mechanics and tailoring) in Lagos State.
 
@@ -21,18 +25,19 @@ The pilot covers three trades (electrical installation, auto mechanics and tailo
 
 | Role | Main features |
 |---|---|
-| **Trainer** | Assess a skill against its rubric; record live video evidence showing a one-time code; issue a signed credential; see their trust score; propose new skills |
-| **Apprentice** | Confirm or reject each credential; share a passport link and QR code (switch it off or make a new link at any time); receive job referrals; report a trainer privately |
-| **Employer** | Verify a credential; rate how much they trust it; post a job and see apprentices ranked by verified skills and distance; rate work after a job |
-| **Administrator** | Approve trainers; review flags, held credentials, random audits and confidential reports; revoke; manage skills; read pilot metrics; check the tamper-evident audit log |
+| **Assessor** | Assess a skill against its rubric; record live video evidence showing a one-time code; issue a signed credential; see their trust score; propose new skills |
+| **Artisan** | Confirm or reject each credential; share a passport link and QR code (switch it off or make a new link at any time); send a quote for referred jobs; accept job terms; take before/after photos; get paid; raise a dispute; rate employers; report an assessor privately |
+| **Employer** | Verify a credential; post a job (who buys materials, materials and workmanship budgets); compare quotes; offer a job with clear terms; pay into escrow; confirm the work to release payment, or raise a dispute; rate the artisan |
+| **Administrator** | Approve assessors and employers; review flags, held credentials, random audits, confidential reports and **job disputes** (split held money 0–100%); revoke; manage skills; set the review period; read pilot metrics; check the tamper-evident audit log |
 | **Public** | Verify any credential by ID, link or QR code, with no account |
 
 ### Integrity safeguards
 
 - **Evidence before credential:** a video must show a one-time code from the server; files are SHA-256 hashed and a file can never back two credentials.
-- **Apprentice confirmation:** a credential is only valid once the apprentice confirms it.
-- **Co-signing:** advanced skills and new trainers on probation need a second trainer's signature.
-- **Risk rules and trust score:** fast issuing, passing everyone, clustered days, poor employer ratings and open reports raise a trainer's risk; trust combines audit agreement, ratings and flags.
+- **Artisan confirmation:** a credential is only valid once the artisan confirms it.
+- **Escrow:** job money is held by SkillPass until the employer confirms the work; disputes freeze it until an administrator decides (Terms of Service, sections 6 and 8).
+- **Co-signing:** advanced skills and new assessors on probation need a second assessor's signature.
+- **Risk rules and trust score:** fast issuing, passing everyone, clustered days, poor employer ratings and open reports raise an assessor's risk; trust combines audit agreement, ratings and flags.
 - **Random audits:** about 10% of credentials are re-checked by an independent assessor.
 - **Signatures:** every credential carries an HMAC-SHA256 server signature; the public page shows whether it still matches.
 - **Tamper-evident audit log:** entries are sealed in an HMAC hash chain, so any edit, deletion or reordering is detected.
@@ -41,7 +46,7 @@ The pilot covers three trades (electrical installation, auto mechanics and tailo
 
 ### Built for Lagos conditions
 
-- **English and Nigerian Pidgin** on the apprentice, sign-in and public pages (`src/i18n`).
+- **English and Nigerian Pidgin** on the artisan, sign-in, Terms and public pages (`src/i18n`).
 - **Weak signal:** failed uploads are kept on the phone (IndexedDB) and sent when the connection returns; video is capped at about 3 MB per 30 s; a service worker lets the app open without signal.
 - **Low-end phones:** signed-in pages load on demand. On a throttled low-end Android profile (6× CPU, 3G) the sign-in page is ready in 1.96 s and a credential check in 2.54 s (see the report).
 
@@ -64,6 +69,7 @@ Main frameworks and libraries:
 | Database | PostgreSQL (schema in `backend/database/schema.sql`) |
 | Testing | Node's built-in test runner (backend), Vitest 2 + Testing Library (frontend), Playwright (browser checks) |
 | Messaging | Console mode for demos; Termii (SMS) and Resend (email) ready to switch on |
+| Payments | Simulated escrow for demos (no money moves); Paystack (Checkout, Transfers, Refunds) in test mode with `PAYMENT_PROVIDER=paystack` |
 
 ## Installation
 
@@ -94,7 +100,9 @@ npm run db:seed           # demo accounts and data (demo databases only)
 npm run dev               # API on http://localhost:4000
 ```
 
-Generate the two secrets with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`. Upgrading an older database instead of creating a new one: `npm run db:migrate`.
+Generate the two secrets with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`. Upgrading an older database instead of creating a new one: `npm run db:migrate`. To start again with fresh demo data (development only): `npm run db:reset`.
+
+**Payments.** By default `PAYMENT_PROVIDER=simulated`: employers pay on a test checkout page and no money moves. To use Paystack in test mode, set `PAYMENT_PROVIDER=paystack` and `PAYSTACK_SECRET_KEY=sk_test_…`, and point the Paystack webhook at `<PUBLIC_URL>/api/payments/paystack/webhook`. Live keys are refused unless `PAYSTACK_ALLOW_LIVE=true`.
 
 ### 4. Frontend
 
@@ -113,9 +121,9 @@ All use the password `demo1234`.
 | Role | Email |
 |---|---|
 | Administrator | admin@skillpass.ng |
-| Trainer | babatunde@skillpass.ng |
-| Apprentice | tobi@skillpass.ng |
-| Employer | folake@skillpass.ng |
+| Assessor | babatunde@skillpass.ng |
+| Artisan | tobi@skillpass.ng (a job in progress) · emeka@skillpass.ng (a dispute waiting for the admin) |
+| Employer | folake@skillpass.ng (quotes, jobs, a decided and an open dispute) |
 
 Texts and emails (verification codes, password resets) are printed in the backend terminal while `SMS_PROVIDER` and `EMAIL_PROVIDER` are `console`.
 
@@ -123,8 +131,8 @@ Texts and emails (verification codes, password resets) are printed in the backen
 
 ```bash
 createdb skillpass_test                   # once; the tests wipe and re-seed this database
-cd backend && npm test                    # 110 API, integration and unit tests
-cd .. && npm test                         # 21 UI tests: the real app against the real API
+cd backend && npm test                    # 137 API, integration and unit tests
+cd .. && npm test                         # 24 UI tests: the real app against the real API
 npm run typecheck && npm run lint         # type check and lint
 ```
 
@@ -147,7 +155,7 @@ skillpass/
 │   ├── contexts/               Auth and app data providers
 │   ├── i18n/                   English and Nigerian Pidgin text
 │   ├── offline/                Upload queue for weak signal (IndexedDB)
-│   ├── pages/                  One folder per role: trainer, apprentice, employer, admin, public, shared, auth
+│   ├── pages/                  One folder per role: trainer (assessor), apprentice (artisan), employer, admin, public, shared, auth
 │   ├── pageLoaders.ts          On-demand page loading and preloading by role
 │   ├── utils/                  Matching, trust and risk calculations shown in the UI
 │   └── test/                   UI tests (Vitest + Testing Library)
@@ -172,9 +180,9 @@ skillpass/
 
 | Strategy | What | Result |
 |---|---|---|
-| Unit | Classes for signed links, matching, trust score, risk rules, message channels | 29 tests pass |
-| Integration (API + database) | Every endpoint against a real PostgreSQL database, including integrity rules and privacy | 81 tests pass |
-| End-to-end UI | The real React app against the real API | 21 tests pass |
+| Unit | Classes for signed links, matching, trust score, risk rules, message channels, payment gateways (Paystack requests in kobo, webhook signatures) | 37 tests pass |
+| Integration (API + database) | Every endpoint against a real PostgreSQL database, including integrity rules, privacy, and the full job flow: terms, quotes, agreements, escrow, photos, automatic release, disputes and two-way ratings | 100 tests pass |
+| End-to-end UI | The real React app against the real API | 24 tests pass |
 | Security | Forged, edited and expired evidence links; tampered credential signatures; tampered audit log; role-based access | Included above |
 | Performance | Page load on desktop, mid-range and low-end Android profiles; API under load | See report |
 | Compatibility | 360, 390, 768 and 1366 px screens; Chromium-based browsers | No layout overflow |

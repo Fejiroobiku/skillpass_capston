@@ -42,8 +42,8 @@ export function IssueCredential() {
         {header}
         <div className="mx-auto max-w-lg rounded-2xl border border-dashed border-line bg-surface p-8 text-center">
           <UserPlusIcon className="mx-auto h-8 w-8 text-ink-subtle" />
-          <h2 className="mt-3 font-semibold text-ink">No apprentices linked yet</h2>
-          <p className="mt-1 text-sm text-ink-muted">Apprentices link to you when they register and choose your workshop.</p>
+          <h2 className="mt-3 font-semibold text-ink">No artisans linked yet</h2>
+          <p className="mt-1 text-sm text-ink-muted">Artisans link to you when they register and choose your workshop.</p>
         </div>
       </>);
 
@@ -52,7 +52,7 @@ export function IssueCredential() {
   return (
     <>
       {header}
-      <div role="tablist" aria-label="Apprentice" className="mb-6 flex gap-1 overflow-x-auto rounded-2xl border border-line bg-surface p-1.5">
+      <div role="tablist" aria-label="Artisan" className="mb-6 flex gap-1 overflow-x-auto rounded-2xl border border-line bg-surface p-1.5">
         {form.myApprentices.map((a) => {
           const active = a.id === form.apprenticeId;
           return (
@@ -93,7 +93,7 @@ export function IssueCredential() {
                 </fieldset>
               )}
               <p className="text-xs text-ink-muted">Missing a skill? <Link to="/trainer/skills" className="font-medium text-brand-700 hover:underline">Propose it to the administrator</Link>.</p>
-              {form.attemptSaved && <p role="status" className="rounded-xl bg-canvas p-3 text-sm text-ink">Recorded as <strong>not yet competent</strong>. Your apprentice has been told to keep practising.</p>}
+              {form.attemptSaved && <p role="status" className="rounded-xl bg-canvas p-3 text-sm text-ink">Recorded as <strong>not yet competent</strong>. Your artisan has been told to keep practising.</p>}
             </div>
           </Panel>
 

@@ -17,7 +17,7 @@ export function RevokeModal({ credentialId, mode, onClose, onConfirm }: RevokeMo
     <Modal open={!!credentialId} title={isFlag ? 'Flag this credential' : 'Revoke credential'} onClose={onClose}>
       <p className="text-sm text-ink-muted">
         {isFlag ?
-        'The credential will show as flagged until an administrator reviews the evidence. The issuing trainer is notified.' :
+        'The credential will show as flagged until an administrator reviews the evidence. The issuing assessor is notified.' :
         'The credential stays visible on the verification page, marked as revoked, with your reason. This cannot be undone.'}
       </p>
       <p className="mt-3 font-mono text-sm text-ink">{credentialId}</p>
@@ -27,7 +27,7 @@ export function RevokeModal({ credentialId, mode, onClose, onConfirm }: RevokeMo
         rows={3}
         value={reason}
         onChange={(e) => setReason(e.target.value)}
-        placeholder={isFlag ? 'What does not match what you saw?' : 'e.g. Issued in error to the wrong apprentice'}
+        placeholder={isFlag ? 'What does not match what you saw?' : 'e.g. Issued in error to the wrong artisan'}
         className="mt-1.5 w-full resize-none rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30" />
       
       <div className="mt-5 flex justify-end gap-2">

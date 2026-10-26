@@ -37,7 +37,7 @@ export function EvidenceCapture({ value, onChange, code, workshop, sampleUrl, kn
           <p className="font-mono text-2xl font-semibold tracking-[0.2em] text-brand-800">{code || '····'}</p>
         </div>
         <p className="text-sm text-ink">
-          Start the video by showing this code, then film <strong>the apprentice doing the task</strong>. The code works once and expires after 15 minutes, so old footage can't be reused.
+          Start the video by showing this code, then film <strong>the artisan doing the task</strong>. The code works once and expires after 15 minutes, so old footage can't be reused.
         </p>
       </div>
 

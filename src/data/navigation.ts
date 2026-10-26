@@ -6,6 +6,8 @@ import {
   ClipboardCheckIcon,
   FilePlus2Icon,
   GaugeIcon,
+  HandCoinsIcon,
+  HardHatIcon,
   IdCardIcon,
   LayoutDashboardIcon,
   ListChecksIcon,
@@ -42,19 +44,21 @@ export const navByRole: Record<Role, NavItem[]> = {
   { to: '/trainer', label: 'Dashboard', short: 'Home', icon: LayoutDashboardIcon },
   { to: '/trainer/issue', label: 'Issue Credential', short: 'Issue', icon: FilePlus2Icon },
   { to: '/trainer/credentials', label: 'Credentials', icon: ShieldCheckIcon },
-  { to: '/trainer/apprentices', label: 'Apprentices', icon: UsersRoundIcon },
+  { to: '/trainer/apprentices', label: 'Artisans', icon: UsersRoundIcon },
   { to: '/trainer/skills', label: 'Skill Framework', short: 'Skills', icon: BookOpenCheckIcon }],
 
   apprentice: [
   { to: '/apprentice', label: 'Skills Passport', short: 'Passport', icon: IdCardIcon, i18n: 'nav.passport', i18nShort: 'nav.passport.short' },
   { to: '/apprentice/confirm', label: 'Confirm & Report', short: 'Confirm', icon: UserCheckIcon, i18n: 'nav.confirm', i18nShort: 'nav.confirm.short' },
   { to: '/apprentice/jobs', label: 'Job Referrals', short: 'Jobs', icon: BriefcaseIcon, i18n: 'nav.jobs', i18nShort: 'nav.jobs.short' },
+  { to: '/apprentice/work', label: 'My Jobs', short: 'Work', icon: HardHatIcon, i18n: 'nav.work', i18nShort: 'nav.work.short' },
   { to: '/notifications', label: 'Alerts', icon: BellIcon, i18n: 'nav.alerts' },
   { to: '/profile', label: 'Profile', icon: UserRoundIcon, i18n: 'nav.profile' }],
 
   employer: [
   { to: '/employer', label: 'Verify & Co-sign', short: 'Verify', icon: ShieldCheckIcon },
   { to: '/employer/jobs', label: 'Jobs & Matches', short: 'Jobs', icon: BriefcaseIcon },
+  { to: '/employer/hires', label: 'Hires & Payments', short: 'Hires', icon: HandCoinsIcon },
   { to: '/employer/feedback', label: 'Feedback', icon: StarIcon },
   { to: '/notifications', label: 'Alerts', icon: BellIcon }],
 
@@ -69,8 +73,8 @@ export const navByRole: Record<Role, NavItem[]> = {
 };
 
 export const roleLabel: Record<Role, string> = {
-  trainer: 'Trainer',
-  apprentice: 'Apprentice',
+  trainer: 'Assessor',
+  apprentice: 'Artisan',
   employer: 'Employer',
   admin: 'Administrator'
 };

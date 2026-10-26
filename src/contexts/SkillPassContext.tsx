@@ -1,6 +1,14 @@
 import React, { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import type {
+  Agreement,
   AppNotification,
+  DisputeReason,
+  EmployerRating,
+  JobDispute,
+  JobPhoto,
+  Payment,
+  PayoutAccount,
+  Quote,
   Apprentice,
   Attempt,
   AuditEntry,
@@ -68,6 +76,28 @@ interface Bootstrap {
   verifications: VerificationEvent[];
   trust: Record<string, TrustBreakdown>;
   risk: Record<string, TrainerRisk>;
+  agreements: Agreement[];
+  payments: Payment[];
+  jobPhotos: JobPhoto[];
+  disputes: JobDispute[];
+  employerRatings: EmployerRating[];
+  employerRatingSummary: Record<string, {avg: number;count: number;}>;
+  payoutAccount: PayoutAccount | null;
+}
+
+export interface OfferInput {
+  referralId: string;
+  materialsAmount: number;
+  workmanshipAmount: number;
+  startDate: string;
+  scope: string;
+}
+
+export interface PayoutInput {
+  bankCode: string;
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
 }
 
 const DEFAULT_SETTINGS: Settings = { dailyLimit: 5, auditRatePct: 10, probationCount: 5, clusterThreshold: 4, fastMinutes: 15, smsEnabled: true, emailEnabled: true };
@@ -75,7 +105,8 @@ const DEFAULT_SETTINGS: Settings = { dailyLimit: 5, auditRatePct: 10, probationC
 const EMPTY: Bootstrap = {
   trades: [], skills: [], settings: DEFAULT_SETTINGS, trainers: [], apprentices: [], employers: [], admins: [], credentials: [],
   flags: [], samples: [], reports: [], feedback: [], jobs: [], referrals: [], auditLog: [], notifications: [],
-  susResponses: [], verifications: [], trust: {}, risk: {}
+  susResponses: [], verifications: [], trust: {}, risk: {},
+  agreements: [], payments: [], jobPhotos: [], disputes: [], employerRatings: [], employerRatingSummary: {}, payoutAccount: null
 };
 
 const NO_TRUST: TrustBreakdown = {
@@ -224,10 +255,38 @@ function useSkillPassStore() {
   };
 
   const postJob = async (job: Omit<Job, 'id' | 'postedAt'>): Promise<Job | undefined> =>
-  (await act(() => api.post<{job: Job;}>('/api/jobs', { title: job.title, skillIds: job.skillIds, location: job.location, pay: job.pay })))?.job;
+  (await act(() => api.post<{job: Job;}>('/api/jobs', {
+    title: job.title, skillIds: job.skillIds, location: job.location, pay: job.pay,
+    materialsBy: job.materialsBy ?? 'employer', materialsBudget: job.materialsBudget ?? null, workmanshipBudget: job.workmanshipBudget ?? null
+  })))?.job;
 
   const sendReferral = (jobId: string, apprenticeId: string, _employerId?: string) => act(() => api.post(`/api/jobs/${jobId}/referrals`, { apprenticeId }));
   const setReferralStatus = (referralId: string, status: ReferralStatus) => act(() => api.patch(`/api/referrals/${referralId}`, { status }));
+
+  // ---- job agreements and escrow ------------------------------------------------------------------------------
+  // Each returns an error message, or null when the server accepted it.
+
+  const errorOf = async (fn: () => Promise<unknown>) => (await attempt(fn)).error ?? null;
+  const sendQuote = (referralId: string, quote: Omit<Quote, 'quotedAt'>) => errorOf(() => api.patch(`/api/referrals/${referralId}`, { status: 'accepted', quote }));
+  const offerAgreement = (input: OfferInput) => errorOf(() => api.post('/api/agreements', { ...input, acceptTerms: true }));
+  const acceptAgreement = (id: string) => errorOf(() => api.post(`/api/agreements/${id}/accept`, { acceptTerms: true }));
+  const cancelAgreement = (id: string, reason: string) => errorOf(() => api.post(`/api/agreements/${id}/cancel`, { reason }));
+  const savePayoutAccount = (input: PayoutInput) => errorOf(() => api.put('/api/payout-account', input));
+  const submitJob = (id: string) => errorOf(() => api.post(`/api/agreements/${id}/submit`));
+  const completeJob = (id: string) => errorOf(() => api.post(`/api/agreements/${id}/complete`));
+  const raiseDispute = (id: string, reason: DisputeReason, details: string) => errorOf(() => api.post(`/api/agreements/${id}/disputes`, { reason, details }));
+  const respondDispute = (id: string, details: string) => errorOf(() => api.post(`/api/disputes/${id}/respond`, { details }));
+  const resolveDispute = (id: string, artisanSharePct: number, note: string) => errorOf(() => api.post(`/api/admin/disputes/${id}/resolve`, { artisanSharePct, note }));
+  const rateEmployer = (id: string, rating: number, comment: string) => errorOf(() => api.post(`/api/agreements/${id}/rate-employer`, { rating, comment }));
+
+  /** Start paying into escrow. Resolves to the checkout page to open. */
+  const startCheckout = async (id: string): Promise<{checkoutUrl?: string;reference?: string;error?: string;}> => {
+    try {
+      return await api.post<{checkoutUrl: string;reference: string;}>(`/api/agreements/${id}/checkout`);
+    } catch (e) {
+      return { error: messageOf(e) };
+    }
+  };
 
   // ---- notifications, survey, verification timing ------------------------------------------------------------
 
@@ -268,7 +327,11 @@ function useSkillPassStore() {
     issueCredential, confirmCredential, disputeCredential, recordAttempt, cosign, revoke, raiseFlag,
     markMisconduct, reinstate, resolveFlag, completeSample, assignAssessor, runAuditSampling, auditTrainer, releaseHeld,
     verifyMembership, approveProfile, reportConcern, updateReport, addFeedback, postJob, sendReferral, setReferralStatus,
-    proposeSkill, reviewSkill, addSkill, addTrade, markRead, markAllRead, updateSettings, submitSus, recordVerification, rateVerification
+    proposeSkill, reviewSkill, addSkill, addTrade, markRead, markAllRead, updateSettings, submitSus, recordVerification, rateVerification,
+    agreements: data.agreements, payments: data.payments, jobPhotos: data.jobPhotos, disputes: data.disputes, employerRatings: data.employerRatings,
+    employerRatingSummary: data.employerRatingSummary, payoutAccount: data.payoutAccount,
+    sendQuote, offerAgreement, acceptAgreement, cancelAgreement, savePayoutAccount, startCheckout, submitJob, completeJob,
+    raiseDispute, respondDispute, resolveDispute, rateEmployer
   };
 }
 

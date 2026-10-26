@@ -22,10 +22,10 @@ router.post('/', requireRole('apprentice'), async (req, res) => {
   const input = schema.parse(req.body);
   await tx(async (db) => {
     const trainerId = (await db.query('SELECT trainer_id FROM apprentice_profiles WHERE user_id = $1', [req.user.id])).rows[0]?.trainer_id;
-    if (!trainerId) throw new HttpError(400, 'You are not linked to a trainer yet.');
+    if (!trainerId) throw new HttpError(400, 'You are not linked to an assessor yet.');
     await db.query('INSERT INTO concern_reports (id, apprentice_id, trainer_id, category, details) VALUES ($1, $2, $3, $4, $5)', [uid('cr'), req.user.id, trainerId, input.category, input.details]);
-    await logAudit(db, { actor: { id: null, name: 'Confidential' }, action: 'report.received', target: 'Confidential report', detail: 'Apprentice report received (identity visible to administrators only)' });
-    await notifyAdmins(db, 'Confidential apprentice report', 'A new report needs review. The trainer has not been told.', '/admin/review');
+    await logAudit(db, { actor: { id: null, name: 'Confidential' }, action: 'report.received', target: 'Confidential report', detail: 'Artisan report received (identity visible to administrators only)' });
+    await notifyAdmins(db, 'Confidential artisan report', 'A new report needs review. The assessor has not been told.', '/admin/review');
   });
   res.status(201).json({ ok: true });
 });

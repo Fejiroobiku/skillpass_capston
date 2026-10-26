@@ -1,7 +1,9 @@
 import { Router } from 'express';
 import { pool } from '../db.js';
 import { getSettings } from '../lib/audit.js';
-import { forViewer, loadCredentialsFull, scopeFor } from '../lib/credentials.js';
+import { forViewer, loadCredentialsFull, publicUrl, scopeFor } from '../lib/credentials.js';
+import { processPayments, releaseOverdue } from '../lib/escrow.js';
+import { tx } from '../db.js';
 import { redactHistory } from '../lib/history.js';
 import { loadRisk, loadTrust } from '../lib/integrity.js';
 import { authenticate } from '../middleware/auth.js';
@@ -39,6 +41,8 @@ const publicTrust = (t) => ({
 router.get('/', async (req, res) => {
   const me = req.user;
   const admin = me.role === 'admin';
+  // Jobs whose review period ran out are paid out before anyone looks at them (Terms of Service, section 6).
+  await processPayments(await tx((db) => releaseOverdue(db)));
   const settings = await getSettings(pool);
 
   // credentials
@@ -85,6 +89,21 @@ router.get('/', async (req, res) => {
       me.role === 'apprentice' ? [jobRows.map((j) => j.id), me.id] : [jobRows.map((j) => j.id)])).rows
     : [];
   referralRows.forEach((r) => ids.add(r.apprentice_id));
+
+  // job agreements, the money behind them, photos and disputes: only the two sides and administrators
+  const agreementWhere = admin ? 'TRUE' : me.role === 'employer' ? 'a.employer_id = $1' : me.role === 'apprentice' ? 'a.artisan_id = $1' : 'FALSE';
+  const agreementRows = (await pool.query(`SELECT a.* FROM job_agreements a WHERE ${agreementWhere} ORDER BY a.created_at DESC`, admin || agreementWhere === 'FALSE' ? [] : [me.id])).rows;
+  const agreementIds = agreementRows.map((a) => a.id);
+  agreementRows.forEach((a) => { ids.add(a.employer_id); ids.add(a.artisan_id); });
+  const byAgreement = async (table, order) => (agreementIds.length
+    ? (await pool.query(`SELECT * FROM ${table} WHERE agreement_id = ANY($1) ORDER BY ${order}`, [agreementIds])).rows : []);
+  const paymentRows = await byAgreement('payments', 'created_at');
+  const photoRows = await byAgreement('job_photos', 'captured_at');
+  const disputeRows = await byAgreement('job_disputes', 'raised_at DESC');
+  const employerRatingRows = admin
+    ? (await pool.query('SELECT * FROM employer_ratings ORDER BY created_at DESC')).rows
+    : (await pool.query('SELECT * FROM employer_ratings WHERE employer_id = $1 OR artisan_id = $1 ORDER BY created_at DESC', [me.id])).rows;
+  const payout = me.role === 'apprentice' ? (await pool.query('SELECT * FROM payout_accounts WHERE user_id = $1', [me.id])).rows[0] : null;
 
   // feedback
   let fbWhere = 'FALSE';
@@ -175,13 +194,39 @@ router.get('/', async (req, res) => {
     samples: sampleRows.map((s) => ({ id: s.id, credentialId: s.credential_id, assessor: s.reviewer_id ?? '', assessorId: s.assessor_id ?? undefined, reason: s.reason ?? undefined, selectedAt: iso(s.selected_at), result: s.result })),
     reports: reportRows.map((r) => ({ id: r.id, apprenticeId: r.apprentice_id, trainerId: r.trainer_id, category: r.category, details: r.details, at: iso(r.at), status: r.status })),
     feedback: feedbackRows.map((f) => ({ id: f.id, apprenticeId: f.apprentice_id, employerId: f.employer_id, credentialIds: f.credential_ids, rating: f.rating, comment: f.comment, createdAt: iso(f.created_at), referralId: f.referral_id ?? undefined })),
-    jobs: jobRows.map((j) => ({ id: j.id, employerId: j.employer_id, title: j.title, trade: j.trade_id, skillIds: j.skill_ids, location: { name: j.location_name, lat: j.lat, lng: j.lng }, postedAt: iso(j.posted_at), pay: j.pay })),
-    referrals: referralRows.map((r) => ({ id: r.id, jobId: r.job_id, apprenticeId: r.apprentice_id, status: r.status, sentAt: iso(r.sent_at) })),
+    jobs: jobRows.map((j) => ({
+      id: j.id, employerId: j.employer_id, title: j.title, trade: j.trade_id, skillIds: j.skill_ids, location: { name: j.location_name, lat: j.lat, lng: j.lng },
+      postedAt: iso(j.posted_at), pay: j.pay, materialsBy: j.materials_by, materialsBudget: j.materials_budget ?? null, workmanshipBudget: j.workmanship_budget ?? null,
+    })),
+    referrals: referralRows.map((r) => ({
+      id: r.id, jobId: r.job_id, apprenticeId: r.apprentice_id, status: r.status, sentAt: iso(r.sent_at),
+      quote: r.quoted_at ? { workmanship: r.quote_workmanship, materials: r.quote_materials ?? null, availableFrom: r.available_from ?? '', note: r.quote_note, quotedAt: iso(r.quoted_at) } : undefined,
+    })),
     auditLog: admin ? auditEntries : redactHistory(auditEntries),
     notifications: notifications.map((n) => ({ id: n.id, userId: n.user_id, channel: n.channel, title: n.title, body: n.body, at: iso(n.at), read: n.read, link: n.link ?? undefined })),
     susResponses: sus.map((s) => ({ id: s.id, userId: s.user_id, role: s.role, score: Number(s.score), at: iso(s.at) })),
     verifications: verifications.map((v) => ({ id: v.id, credentialId: v.credential_id, seconds: v.seconds, trustRating: v.trust_rating ?? undefined, at: iso(v.at) })),
     trust, risk,
+    agreements: agreementRows.map((a) => ({
+      id: a.id, referralId: a.referral_id, jobId: a.job_id, employerId: a.employer_id, artisanId: a.artisan_id,
+      materialsBy: a.materials_by, materialsAmount: a.materials_amount, workmanshipAmount: a.workmanship_amount,
+      startDate: a.start_date ?? undefined, scope: a.scope, termsVersion: a.terms_version, status: a.status,
+      employerAcceptedAt: iso(a.employer_accepted_at), artisanAcceptedAt: iso(a.artisan_accepted_at), paymentReference: a.payment_reference ?? undefined,
+      fundedAt: iso(a.funded_at), submittedAt: iso(a.submitted_at), reviewDeadline: iso(a.review_deadline), completedAt: iso(a.completed_at),
+      cancelledAt: iso(a.cancelled_at), cancelledBy: a.cancelled_by ?? undefined, cancelReason: a.cancel_reason ?? undefined, createdAt: iso(a.created_at),
+    })),
+    payments: paymentRows.map((p) => ({ id: p.id, agreementId: p.agreement_id, kind: p.kind, amount: p.amount, provider: p.provider, status: p.status, detail: p.detail, createdAt: iso(p.created_at), completedAt: iso(p.completed_at) })),
+    jobPhotos: photoRows.map((p) => ({ id: p.id, agreementId: p.agreement_id, stage: p.stage, url: publicUrl(p.url), locationLabel: p.location_label, locationSource: p.location_source, capturedAt: iso(p.captured_at) })),
+    disputes: disputeRows.map((d) => ({
+      id: d.id, agreementId: d.agreement_id, raisedBy: d.raised_by, reason: d.reason, details: d.details, response: d.response ?? undefined,
+      respondedAt: iso(d.responded_at), raisedAt: iso(d.raised_at), status: d.status, artisanSharePct: d.artisan_share_pct ?? undefined,
+      decisionNote: d.decision_note ?? undefined, resolvedBy: d.resolved_by ?? undefined, resolvedAt: iso(d.resolved_at),
+    })),
+    employerRatings: employerRatingRows.map((r) => ({ id: r.id, agreementId: r.agreement_id, artisanId: r.artisan_id, employerId: r.employer_id, rating: r.rating, comment: r.comment, createdAt: iso(r.created_at) })),
+    employerRatingSummary: Object.fromEntries((await pool.query(
+      `SELECT employer_id, round(avg(rating)::numeric, 1)::float AS avg, count(*)::int AS n FROM employer_ratings WHERE employer_id = ANY($1) GROUP BY employer_id`,
+      [employers.map((e) => e.id)])).rows.map((r) => [r.employer_id, { avg: r.avg, count: r.n }])),
+    payoutAccount: payout ? { bankCode: payout.bank_code, bankName: payout.bank_name, accountLast4: payout.account_number.slice(-4), accountName: payout.account_name } : null,
   });
 });
 

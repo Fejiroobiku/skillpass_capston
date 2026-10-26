@@ -1,11 +1,12 @@
 import { Suspense } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import { LockIcon } from 'lucide-react';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import { BottomNav } from './BottomNav';
 import { NoticeBanner } from '../NoticeBanner';
 import { PhoneBanner } from '../PhoneBanner';
+import { TermsGate } from '../TermsGate';
 
 export function DashboardLayout() {
   return (
@@ -22,10 +23,11 @@ export function DashboardLayout() {
         </main>
         <footer className="no-print hidden border-t border-line px-8 py-4 text-xs text-ink-muted lg:flex lg:items-center lg:justify-between">
           <p className="flex items-center gap-2"><LockIcon className="h-3.5 w-3.5" aria-hidden="true" /> Credentials are server-signed. Every issue, flag and revoke is written to an append-only audit log.</p>
-          <p>SkillPass pilot · Lagos 2026 · NDPA 2023 compliant</p>
+          <p>SkillPass pilot · Lagos 2026 · NDPA 2023 compliant · <Link to="/terms" className="underline-offset-2 hover:text-ink hover:underline">Terms of Service</Link></p>
         </footer>
       </div>
       <BottomNav />
+      <TermsGate />
     </div>);
 
 }

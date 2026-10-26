@@ -7,9 +7,10 @@ import { TrustBadge } from '../../components/TrustBadge';
 import { useSkillPass } from '../../contexts/SkillPassContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { assessors, auditReasonLabel, concernLabels } from '../../data/integrity';
+import { DisputeDecision } from '../../components/jobs/DisputeDecision';
 import { formatDate } from '../../utils/credentials';
 
-type Tab = 'flags' | 'audits' | 'held' | 'risk' | 'reports' | 'under_review';
+type Tab = 'flags' | 'audits' | 'held' | 'risk' | 'reports' | 'under_review' | 'disputes';
 
 export function ReviewQueue() {
   const { user } = useAuth();
@@ -21,6 +22,8 @@ export function ReviewQueue() {
   const held = credentials.filter((c) => c.status === 'held_review');
   const openReports = reports.filter((r) => r.status !== 'closed');
   const underReview = credentials.filter((c) => c.status === 'under_review');
+  const openDisputes = sp.disputes.filter((d) => d.status === 'open');
+  const failedPayments = sp.payments.filter((p) => p.status === 'failed');
   const risky = trainers.filter((t) => t.approved).map((t) => ({ t, risk: riskOf(t.id)! })).filter((x) => x.risk.signals.length > 0 || x.risk.onProbation).sort((a, b) => b.risk.signals.length - a.risk.signals.length);
   const [tab, setTab] = useState<Tab>('flags');
   const [notice, setNotice] = useState<string | null>(null);
@@ -28,10 +31,11 @@ export function ReviewQueue() {
   const tabs: {id: Tab;label: string;count: number;}[] = [
   { id: 'flags', label: 'Flags', count: openFlags.length },
   { id: 'audits', label: 'Audits', count: pendingSamples.length },
-  { id: 'risk', label: 'Trainer risk', count: risky.filter((r) => r.risk.signals.length).length },
-  { id: 'reports', label: 'Apprentice reports', count: openReports.length },
+  { id: 'risk', label: 'Assessor risk', count: risky.filter((r) => r.risk.signals.length).length },
+  { id: 'reports', label: 'Artisan reports', count: openReports.length },
   { id: 'under_review', label: 'Under review', count: underReview.length },
-  { id: 'held', label: 'Held', count: held.length }];
+  { id: 'held', label: 'Held', count: held.length },
+  { id: 'disputes', label: 'Job disputes', count: openDisputes.length + failedPayments.length }];
 
 
   const describe = (credentialId: string) => {
@@ -87,7 +91,7 @@ export function ReviewQueue() {
               <div className="flex flex-wrap gap-2">
                 <button type="button" onClick={() => resolveFlag(f.id, 'dismiss', actor)} className={secondary}>Dismiss</button>
                 <button type="button" onClick={() => resolveFlag(f.id, 'revoke', actor)} className={danger}>Uphold & revoke</button>
-                <button type="button" onClick={() => resolveFlag(f.id, 'misconduct', actor)} className={`${btn} bg-bad-600 text-white hover:bg-bad-700`}>Trainer cheated</button>
+                <button type="button" onClick={() => resolveFlag(f.id, 'misconduct', actor)} className={`${btn} bg-bad-600 text-white hover:bg-bad-700`}>Assessor cheated</button>
               </div>
             </article>);
 
@@ -152,7 +156,7 @@ export function ReviewQueue() {
 
         {tab === 'reports' &&
         <>
-            <p className="flex items-center gap-2 text-xs text-ink-muted"><LockIcon className="h-3.5 w-3.5" /> Confidential. The trainer is never told who reported them.</p>
+            <p className="flex items-center gap-2 text-xs text-ink-muted"><LockIcon className="h-3.5 w-3.5" /> Confidential. The assessor is never told who reported them.</p>
             {openReports.length === 0 ? empty : openReports.map((r) =>
           <article key={r.id} className={card}>
                 <div className="flex-1">
@@ -166,7 +170,7 @@ export function ReviewQueue() {
                 <div className="flex flex-wrap gap-2">
                   {r.status === 'open' && <button type="button" onClick={() => {updateReport(r.id, 'investigating', actor);auditTrainer(r.trainerId, actor);}} className={secondary}>Investigate & audit</button>}
                   <button type="button" onClick={() => updateReport(r.id, 'closed', actor)} className={secondary}>Close</button>
-                  <button type="button" onClick={() => {markMisconduct(r.trainerId, `Apprentice report upheld: ${concernLabels[r.category].toLowerCase()}`, actor);updateReport(r.id, 'closed', actor);}} className={danger}>Uphold</button>
+                  <button type="button" onClick={() => {markMisconduct(r.trainerId, `Artisan report upheld: ${concernLabels[r.category].toLowerCase()}`, actor);updateReport(r.id, 'closed', actor);}} className={danger}>Uphold</button>
                 </div>
               </article>
           )}
@@ -178,7 +182,7 @@ export function ReviewQueue() {
             <div className="flex-1">
               <p className="font-semibold text-ink">{describe(c.id).skill?.name}</p>
               {credLine(c.id, c.trainerId)}
-              <p className="mt-1 text-xs text-ink-subtle">Automatically placed under review because the trainer was found cheating. Re-assess the apprentice, then decide.</p>
+              <p className="mt-1 text-xs text-ink-subtle">Automatically placed under review because the assessor was found cheating. Re-assess the artisan, then decide.</p>
             </div>
             <div className="flex gap-2">
               <button type="button" onClick={() => sp.revoke(c.id, 'Not demonstrated on re-assessment', actor)} className={danger}>Revoke</button>
@@ -187,12 +191,22 @@ export function ReviewQueue() {
           </article>
         ))}
 
+        {tab === 'disputes' &&
+        <>
+            <p className="text-xs text-ink-muted">Payment is frozen while a dispute is open. Check the agreed scope, the before and after photos and both accounts, then decide what share of the held workmanship goes to the artisan. The rest is refunded to the employer.</p>
+            {failedPayments.map((p) =>
+          <p key={p.id} role="alert" className="rounded-sm bg-bad-50 p-3 text-sm text-bad-700">Payment failed: {p.kind.replace('_', ' ')} of ₦{p.amount.toLocaleString('en-NG')} · {p.detail}</p>
+          )}
+            {openDisputes.length === 0 && failedPayments.length === 0 ? empty : openDisputes.map((d) => <DisputeDecision key={d.id} dispute={d} />)}
+          </>
+        }
+
         {tab === 'held' && (held.length === 0 ? empty : held.map((c) =>
         <article key={c.id} className={card}>
             <div className="flex-1">
               <p className="font-semibold text-ink">{describe(c.id).skill?.name}</p>
               {credLine(c.id, c.trainerId)}
-              <p className="mt-1 text-xs text-ink-subtle">Held because the trainer passed the daily limit of {settings.dailyLimit}.</p>
+              <p className="mt-1 text-xs text-ink-subtle">Held because the assessor passed the daily limit of {settings.dailyLimit}.</p>
             </div>
             <div className="flex gap-2">
               <button type="button" onClick={() => releaseHeld(c.id, false, actor)} className={danger}>Reject</button>

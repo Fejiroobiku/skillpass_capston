@@ -147,7 +147,7 @@ router.post('/audit-samples/:id/complete', async (req, res) => {
     if (!s) throw new HttpError(404, 'Audit sample not found.');
     if (s.result !== 'pending') throw new HttpError(409, 'This audit sample is already complete.');
     await db.query('UPDATE audit_samples SET result = $2 WHERE id = $1', [s.id, outcome === 'agree' ? 'agree' : 'disagree']);
-    await logAudit(db, { actor: req.user, action: 'audit.completed', target: s.credential_id, detail: outcome === 'agree' ? 'Re-check agrees with trainer' : 'Re-check disagrees with trainer' });
+    await logAudit(db, { actor: req.user, action: 'audit.completed', target: s.credential_id, detail: outcome === 'agree' ? 'Re-check agrees with assessor' : 'Re-check disagrees with assessor' });
     const c = await loadCredential(db, s.credential_id, { lock: true });
     await notify(db, c.trainerId, 'Audit result', `Spot-check of ${c.id} ${outcome === 'agree' ? 'agreed' : 'did not agree'} with your assessment.`, { link: '/trainer' });
     if (outcome !== 'agree' && c.status !== 'revoked') await revokeCredential(db, c, 'Independent re-check found the skill was not demonstrated', req.user);
@@ -171,7 +171,7 @@ router.post('/audit-samples/:id/assign', async (req, res) => {
 /** Queue every valid credential a trainer has issued for independent re-checking (used when risk signals pile up). */
 router.post('/trainers/:id/audit', async (req, res) => {
   const selected = await tx(async (db) => {
-    if (!(await db.query('SELECT 1 FROM trainer_profiles WHERE user_id = $1', [req.params.id])).rowCount) throw new HttpError(404, 'Trainer not found.');
+    if (!(await db.query('SELECT 1 FROM trainer_profiles WHERE user_id = $1', [req.params.id])).rowCount) throw new HttpError(404, 'Assessor not found.');
     const picked = (await db.query(
       `SELECT c.id, c.skill_id FROM credentials c
         WHERE c.trainer_id = $1 AND c.status = 'valid'
@@ -260,7 +260,7 @@ router.get('/users', async (req, res) => {
 router.post('/trainers/:id/verify-membership', async (req, res) => {
   await tx(async (db) => {
     const r = await db.query('UPDATE trainer_profiles SET membership_verified = true WHERE user_id = $1 RETURNING user_id', [req.params.id]);
-    if (!r.rowCount) throw new HttpError(404, 'Trainer not found.');
+    if (!r.rowCount) throw new HttpError(404, 'Assessor not found.');
     const name = (await db.query('SELECT name FROM users WHERE id = $1', [req.params.id])).rows[0].name;
     await logAudit(db, { actor: req.user, action: 'trainer.membership_verified', target: name, detail: 'Trade association confirmed membership' });
   });
@@ -277,7 +277,7 @@ router.post('/users/:id/approve', async (req, res) => {
     }
     if (u.role === 'trainer') {
       const t = (await db.query('SELECT membership_verified FROM trainer_profiles WHERE user_id = $1 FOR UPDATE', [u.id])).rows[0];
-      if (!t.membership_verified) throw new HttpError(409, 'Verify this trainer\'s association membership first.');
+      if (!t.membership_verified) throw new HttpError(409, 'Verify this assessor\'s association membership first.');
       await db.query('UPDATE trainer_profiles SET approved = true WHERE user_id = $1', [u.id]);
       const { probationCount } = await getSettings(db);
       await logAudit(db, { actor: req.user, action: 'trainer.approved', target: u.name, detail: `Approved · probation until ${probationCount} credentials are valid` });
@@ -285,9 +285,9 @@ router.post('/users/:id/approve', async (req, res) => {
     } else if (u.role === 'employer') {
       await db.query('UPDATE employer_profiles SET approved = true WHERE user_id = $1', [u.id]);
       await logAudit(db, { actor: req.user, action: 'employer.approved', target: u.name, detail: 'Verified employer' });
-      await notify(db, u.id, 'Employer verified', 'You can now rate apprentices after jobs and co-sign skills.', { link: '/employer' });
+      await notify(db, u.id, 'Employer verified', 'You can now rate artisans after jobs and co-sign skills.', { link: '/employer' });
     } else {
-      throw new HttpError(400, 'Only trainers and employers need approval.');
+      throw new HttpError(400, 'Only assessors and employers need approval.');
     }
   });
   res.json({ ok: true });
@@ -345,7 +345,7 @@ router.get('/audit-log', async (req, res) => {
 
 const SETTING_COLUMNS = {
   dailyLimit: 'daily_limit', auditRatePct: 'audit_rate_pct', probationCount: 'probation_count',
-  clusterThreshold: 'cluster_threshold', fastMinutes: 'fast_minutes', smsEnabled: 'sms_enabled', emailEnabled: 'email_enabled',
+  clusterThreshold: 'cluster_threshold', fastMinutes: 'fast_minutes', smsEnabled: 'sms_enabled', emailEnabled: 'email_enabled', reviewDays: 'review_days',
 };
 
 const settingsSchema = z.object({
@@ -356,6 +356,7 @@ const settingsSchema = z.object({
   fastMinutes: z.number().int().min(1).max(240),
   smsEnabled: z.boolean(),
   emailEnabled: z.boolean(),
+  reviewDays: z.number().int().min(1).max(14),
 }).partial().refine((o) => Object.keys(o).length > 0, { message: 'Nothing to update.' });
 
 router.patch('/settings', async (req, res) => {

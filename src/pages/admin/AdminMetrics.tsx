@@ -33,12 +33,12 @@ export function AdminMetrics() {
 
   const pct = (n: number) => `${Math.round(n * 100)}%`;
   const metrics: Metric[] = [
-  { problem: 'Verifiable record', name: 'Apprentices with ≥1 verified credential', value: `${pct(holderPct)} (${holders.length}/${apprentices.length})`, target: '≥ 80%', progress: holderPct / 0.8, met: holderPct >= 0.8 },
+  { problem: 'Verifiable record', name: 'Artisans with ≥1 verified credential', value: `${pct(holderPct)} (${holders.length}/${apprentices.length})`, target: '≥ 80%', progress: holderPct / 0.8, met: holderPct >= 0.8 },
   { problem: 'Integrity', name: 'Spot-check agreement', value: `${pct(agreePct)} (${done.length} checked)`, target: '≥ 80%', progress: agreePct / 0.8, met: done.length ? agreePct >= 0.8 : null },
   { problem: 'Integrity', name: 'Credentials carrying evidence', value: pct(evidencePct), target: '100%', progress: evidencePct, met: evidencePct >= 1 },
   { problem: 'Employer trust', name: 'Median time to verify', value: medSecs === null ? '—' : `${medSecs}s`, target: '< 60s', progress: medSecs === null ? 0 : Math.min(1, 60 / Math.max(medSecs, 1)), met: medSecs === null ? null : medSecs < 60 },
   { problem: 'Employer trust', name: 'Mean employer trust rating', value: ratings.length ? `${meanTrust.toFixed(1)} / 5` : '—', target: '≥ 4.0', progress: meanTrust / 4, met: ratings.length ? meanTrust >= 4 : null },
-  { problem: 'Opportunities', name: 'Verified apprentices referred', value: `${pct(referralPct)} · ${pct(contactPct)} led to contact`, target: '≥ 30%', progress: referralPct / 0.3, met: referralPct >= 0.3 },
+  { problem: 'Opportunities', name: 'Verified artisans referred', value: `${pct(referralPct)} · ${pct(contactPct)} led to contact`, target: '≥ 30%', progress: referralPct / 0.3, met: referralPct >= 0.3 },
   { problem: 'Usability', name: 'SUS score (all roles)', value: susResponses.length ? `${sus.toFixed(1)} (${susResponses.length} responses)` : '—', target: '≥ 68', progress: sus / 68, met: susResponses.length ? sus >= 68 : null }];
 
   const metCount = metrics.filter((m) => m.met).length;

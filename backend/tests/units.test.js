@@ -240,3 +240,85 @@ describe('MessageChannel family', () => {
     assert.ok(createEmailChannel({ emailProvider: 'console' }) instanceof ConsoleChannel);
   });
 });
+
+/* ------------------------------------------------------------------ payments */
+
+const { PaymentGateway, PaystackGateway, SimulatedGateway, toKobo, createPaymentGateway } = await import('../src/lib/payments.js');
+const { createHmac } = await import('node:crypto');
+
+/** A stand-in for fetch that records each request and answers like Paystack. */
+function fakePaystack(answers) {
+  const calls = [];
+  const fetchImpl = async (url, init) => {
+    const path = url.replace('https://api.paystack.co', '');
+    calls.push({ path, method: init.method, body: init.body ? JSON.parse(init.body) : undefined, auth: init.headers.authorization });
+    const key = Object.keys(answers).find((k) => path.startsWith(k));
+    const data = answers[key];
+    return { ok: data !== undefined, status: data === undefined ? 400 : 200, json: async () => (data === undefined ? { status: false, message: 'Bad request' } : { status: true, data }) };
+  };
+  return { calls, fetchImpl };
+}
+
+describe('PaymentGateway: escrow providers', () => {
+  it('cannot be used without a subclass', () => {
+    assert.throws(() => new PaymentGateway('x'), TypeError);
+  });
+
+  it('converts naira to kobo for Paystack', () => {
+    assert.equal(toKobo(76000), 7600000);
+  });
+
+  it('starts a Paystack checkout in kobo with the secret key, and reads back the result', async () => {
+    const { calls, fetchImpl } = fakePaystack({
+      '/transaction/initialize': { authorization_url: 'https://checkout.paystack.com/abc' },
+      '/transaction/verify/': { status: 'success', amount: 7600000 },
+    });
+    const gw = new PaystackGateway({ secretKey: 'sk_test_123', fetchImpl });
+    assert.equal(gw.isTestMode, true);
+    const { checkoutUrl } = await gw.startCheckout({ reference: 'sp-dep-1', amount: 76000, email: 'e@x.ng', callbackUrl: 'http://app/pay/sp-dep-1' });
+    assert.equal(checkoutUrl, 'https://checkout.paystack.com/abc');
+    assert.deepEqual({ amount: calls[0].body.amount, currency: calls[0].body.currency, reference: calls[0].body.reference }, { amount: 7600000, currency: 'NGN', reference: 'sp-dep-1' });
+    assert.equal(calls[0].auth, 'Bearer sk_test_123');
+    assert.deepEqual(await gw.confirm('sp-dep-1'), { paid: true, amount: 76000 });
+  });
+
+  it('pays an artisan by creating a transfer recipient once, then a transfer', async () => {
+    const { calls, fetchImpl } = fakePaystack({ '/transferrecipient': { recipient_code: 'RCP_1' }, '/transfer': { status: 'success' } });
+    const gw = new PaystackGateway({ secretKey: 'sk_test_123', fetchImpl });
+    const out = await gw.payout({ account: { bankCode: '058', accountNumber: '0123456789', accountName: 'Tobi' }, amount: 48000, reference: 'sp-out-1', reason: 'SkillPass job' });
+    assert.deepEqual(out, { status: 'succeeded', recipientCode: 'RCP_1' });
+    assert.deepEqual(calls.map((c) => c.path), ['/transferrecipient', '/transfer']);
+    assert.equal(calls[1].body.amount, 4800000);
+    await gw.payout({ account: { bankCode: '058', accountNumber: '0123456789', accountName: 'Tobi', recipientCode: 'RCP_1' }, amount: 1, reference: 'sp-out-2', reason: 'x' });
+    assert.equal(calls.length, 3); // no second recipient
+  });
+
+  it('turns a Paystack refusal into a readable PaymentError', async () => {
+    const gw = new PaystackGateway({ secretKey: 'sk_test_123', fetchImpl: fakePaystack({}).fetchImpl });
+    await assert.rejects(gw.refund({ depositReference: 'r', amount: 10 }), /Paystack: Bad request/);
+  });
+
+  it('accepts only webhooks signed with the secret key', () => {
+    const gw = new PaystackGateway({ secretKey: 'sk_test_123', fetchImpl: async () => ({}) });
+    const body = Buffer.from('{"event":"charge.success","data":{"reference":"sp-dep-1"}}');
+    const good = createHmac('sha512', 'sk_test_123').update(body).digest('hex');
+    assert.equal(gw.verifyWebhook(body, good), true);
+    assert.equal(gw.verifyWebhook(body, good.replace(/.$/, (c) => (c === '0' ? '1' : '0'))), false);
+    assert.equal(gw.verifyWebhook(Buffer.from('{"tampered":true}'), good), false);
+    assert.equal(gw.verifyWebhook(body, undefined), false);
+  });
+
+  it('simulates payments without moving money', async () => {
+    const gw = new SimulatedGateway({ appUrl: 'http://app' });
+    assert.equal(gw.isSimulated, true);
+    assert.equal((await gw.startCheckout({ reference: 'sp-dep-9' })).checkoutUrl, 'http://app/pay/sp-dep-9');
+    assert.deepEqual(await gw.confirm('sp-dep-9'), { paid: false, amount: 0 });
+    gw.markPaid('sp-dep-9', 500);
+    assert.deepEqual(await gw.confirm('sp-dep-9'), { paid: true, amount: 500 });
+  });
+
+  it('is chosen from the config', () => {
+    assert.ok(createPaymentGateway({ paymentProvider: 'simulated', appUrl: 'http://app' }) instanceof SimulatedGateway);
+    assert.ok(createPaymentGateway({ paymentProvider: 'paystack', paystack: { secretKey: 'sk_test_1' } }) instanceof PaystackGateway);
+  });
+});

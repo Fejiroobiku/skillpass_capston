@@ -119,7 +119,7 @@ describe('authentication', () => {
     tokens.e1 = await login('folake@skillpass.ng');
     const me = await api('GET', '/api/auth/me', { token: tokens.t1 });
     assert.equal(me.body.user.role, 'trainer');
-    assert.equal(me.body.user.title, 'Trainer · Electrical Installation');
+    assert.equal(me.body.user.title, 'Assessor · Electrical Installation');
     assert.equal(me.body.user.profile.approved, true);
   });
 
@@ -139,7 +139,7 @@ describe('authentication', () => {
   it('registers an apprentice, but not an under-18 or one without consent', async () => {
     const person = (over = {}) => ({
       role: 'apprentice', name: 'Ada Nwankwo', email: 'ada@example.com', phone: '08031234567', password: 'a-good-password',
-      dob: '2000-01-15', trade: 'electrical', trainerId: 't1', consent: true,
+      dob: '2000-01-15', trade: 'electrical', trainerId: 't1', consent: true, acceptTerms: true,
       location: { name: 'Ajah', lat: 6.4698, lng: 3.5852 }, ...over,
     });
     assert.equal((await api('POST', '/api/auth/register', { body: person({ dob: '2015-01-15' }) })).status, 400);
@@ -459,7 +459,7 @@ describe('a new trainer on probation', () => {
   it('registers, is approved by an administrator, and then needs a co-signer on every credential', async () => {
     const reg = await api('POST', '/api/auth/register', { body: {
       role: 'trainer', name: 'Segun Ojo', email: 'segun.ojo@example.com', phone: '08055550000', password: 'a-good-password',
-      dob: '1985-03-02', trade: 'electrical', consent: true, membershipNo: 'ECAN/LA/9999', workshop: 'Ojo Wiring',
+      dob: '1985-03-02', trade: 'electrical', consent: true, acceptTerms: true, membershipNo: 'ECAN/LA/9999', workshop: 'Ojo Wiring',
       location: { name: 'Yaba', lat: 6.5095, lng: 3.3711 },
     } });
     assert.equal(reg.status, 201, JSON.stringify(reg.body));
@@ -482,7 +482,7 @@ describe('a new trainer on probation', () => {
     // an apprentice joins them
     const app = await api('POST', '/api/auth/register', { body: {
       role: 'apprentice', name: 'Bola Ade', email: 'bola.ade@example.com', phone: '08066660000', password: 'a-good-password',
-      dob: '2001-07-09', trade: 'electrical', consent: true, trainerId, location: { name: 'Yaba', lat: 6.5095, lng: 3.3711 },
+      dob: '2001-07-09', trade: 'electrical', consent: true, acceptTerms: true, trainerId, location: { name: 'Yaba', lat: 6.5095, lng: 3.3711 },
     } });
     assert.equal(app.status, 201, JSON.stringify(app.body));
 
@@ -549,7 +549,7 @@ describe('flags and disputes', () => {
     assert.equal(r.body.credential.status, 'flagged');
     assert.equal((await api('POST', '/api/credentials/SP-5ZTQ-2WEN/confirm', { token: tokens.a1 })).status, 409); // cannot confirm what you disputed
     const adminNotes = await api('GET', '/api/notifications', { token: tokens.admin });
-    assert.ok(adminNotes.body.notifications.some((n) => n.title === 'Apprentice disputed a credential'));
+    assert.ok(adminNotes.body.notifications.some((n) => n.title === 'Artisan disputed a credential'));
   });
 
   it('the issuing trainer can revoke their own credential, but not someone else\'s', async () => {
@@ -676,7 +676,7 @@ describe('privacy', () => {
   it('withdrawing consent removes an apprentice\'s personal data and evidence, and withdraws their credentials', async () => {
     const reg = await api('POST', '/api/auth/register', { body: {
       role: 'apprentice', name: 'Wale Adisa', email: 'wale.adisa@example.com', phone: '08077770000', password: 'a-good-password',
-      dob: '1999-04-11', trade: 'electrical', consent: true, trainerId: 't1', location: { name: 'Yaba', lat: 6.5095, lng: 3.3711 },
+      dob: '1999-04-11', trade: 'electrical', consent: true, acceptTerms: true, trainerId: 't1', location: { name: 'Yaba', lat: 6.5095, lng: 3.3711 },
     } });
     assert.equal(reg.status, 201, JSON.stringify(reg.body));
     const waleId = reg.body.user.id;

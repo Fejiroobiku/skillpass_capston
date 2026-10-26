@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { BellIcon, ChevronDownIcon, ClipboardListIcon, IdCardIcon, LogOutIcon, SearchCheckIcon, UserRoundIcon } from 'lucide-react';
+import { BellIcon, ChevronDownIcon, ClipboardListIcon, IdCardIcon, LogOutIcon, SearchCheckIcon, UserRoundIcon, FileTextIcon } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useDismiss } from '../../hooks/useDismiss';
 import { initials } from '../../utils/credentials';
@@ -22,7 +22,8 @@ export function ProfileMenu() {
   ...(user.role === 'apprentice' ? [{ to: '/apprentice', label: t('nav.passport'), icon: IdCardIcon }] : []),
   { to: '/notifications', label: t('nav.notifications'), icon: BellIcon },
   { to: '/survey', label: t('nav.survey'), icon: ClipboardListIcon },
-  { to: '/verify', label: t('menu.publicVerify'), icon: SearchCheckIcon }];
+  { to: '/verify', label: t('menu.publicVerify'), icon: SearchCheckIcon },
+  { to: '/terms', label: t('nav.terms'), icon: FileTextIcon }];
 
 
   return (

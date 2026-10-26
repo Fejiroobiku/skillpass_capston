@@ -41,7 +41,7 @@ export function EmployerFeedback() {
 
   return (
     <>
-      <PageHeader title="Feedback" subtitle="One rating per real job, from verified employers only. Ratings attach to credentials and feed the trainer's trust score." />
+      <PageHeader title="Feedback" subtitle="One rating per real job, from verified employers only. Ratings attach to credentials and feed the assessor's trust score." />
       {!verified && <p role="status" className="mb-4 rounded-xl bg-warn-50 p-3.5 text-sm text-warn-700">Your employer account must be verified by an administrator before you can leave ratings.</p>}
       {error && <p role="alert" className="mb-4 rounded-xl bg-bad-50 p-3.5 text-sm font-medium text-bad-700">{error}</p>}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">

@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { naira } from '../../api/jobs';
 import { CheckIcon, MapPinIcon, PlusIcon, SendIcon } from 'lucide-react';
-import type { Place, TradeId } from '../../types/skillpass';
+import type { MaterialsBy, Place, TradeId } from '../../types/skillpass';
 import { PageHeader } from '../../components/PageHeader';
 import { Panel } from '../../components/Panel';
 import { Modal } from '../../components/Modal';
@@ -27,24 +29,32 @@ export function EmployerJobs() {
   const [trade, setTrade] = useState<TradeId>(myTrade);
   const [skillIds, setSkillIds] = useState<string[]>([]);
   const [location, setLocation] = useState<Place | null>(null);
-  const [pay, setPay] = useState('');
+  const [materialsBy, setMaterialsBy] = useState<MaterialsBy>('employer');
+  const [materialsBudget, setMaterialsBudget] = useState('');
+  const [workmanshipBudget, setWorkmanshipBudget] = useState('');
 
   const create = async () => {
     if (!location) return;
-    const job = await postJob({ employerId: me.id, title: title.trim(), trade, skillIds, location, pay: pay.trim() || 'Negotiable' });
+    const job = await postJob({
+      employerId: me.id, title: title.trim(), trade, skillIds, location, pay: '', materialsBy,
+      materialsBudget: materialsBy === 'artisan' && materialsBudget ? Number(materialsBudget) : null,
+      workmanshipBudget: workmanshipBudget ? Number(workmanshipBudget) : null
+    });
     if (!job) return;
     setSelectedId(job.id);
     setOpen(false);
     setTitle('');
     setSkillIds([]);
-    setPay('');
+    setMaterialsBy('employer');
+    setMaterialsBudget('');
+    setWorkmanshipBudget('');
   };
 
   return (
     <div>
       <PageHeader
         title="Jobs & Matches"
-        subtitle="Post a job and we rank apprentices by verified skills and distance."
+        subtitle="Post a job and we rank artisans by verified skills and distance."
         actions={
         <button type="button" onClick={() => setOpen(true)} className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-night transition-colors duration-150 hover:bg-brand-700">
             <PlusIcon className="h-4 w-4" /> Post a job
@@ -70,9 +80,9 @@ export function EmployerJobs() {
         </nav>
 
         {selected &&
-        <Panel title="Ranked matches" description={`Only skills with a valid credential count. ${matches.length} apprentice${matches.length === 1 ? '' : 's'} qualify.`}>
+        <Panel title="Ranked matches" description={`Only skills with a valid credential count. ${matches.length} artisan${matches.length === 1 ? '' : 's'} qualify.`}>
             {matches.length === 0 ?
-          <p className="rounded-xl bg-canvas p-6 text-center text-sm text-ink-muted">No apprentices hold a verified credential for these skills yet.</p> :
+          <p className="rounded-xl bg-canvas p-6 text-center text-sm text-ink-muted">No artisans hold a verified credential for these skills yet.</p> :
 
           <ol className="divide-y divide-line">
                 {matches.map((m, i) => {
@@ -86,14 +96,18 @@ export function EmployerJobs() {
                           <p className="font-semibold text-ink">{m.apprentice.name}</p>
                           <span className="text-sm font-semibold text-brand-700">{m.score}%</span>
                         </div>
-                        <p className="mt-0.5 flex items-center gap-1.5 text-sm text-ink-muted"><MapPinIcon className="h-3.5 w-3.5" /> {m.apprentice.location.name} · {m.distance.toFixed(1)} km · trained by {trainer?.name}</p>
+                        <p className="mt-0.5 flex items-center gap-1.5 text-sm text-ink-muted"><MapPinIcon className="h-3.5 w-3.5" /> {m.apprentice.location.name} · {m.distance.toFixed(1)} km · assessed by {trainer?.name}</p>
                         <p className="mt-1.5 text-xs text-ink-muted">
                           <span className="font-medium text-ok-700">{m.matchedSkillIds.length}/{selected.skillIds.length} skills verified</span>
                           {m.missingSkillIds.length > 0 && <> · missing {m.missingSkillIds.map((id) => skills.find((s) => s.id === id)?.name).join(', ')}</>}
                         </p>
                       </div>
                       {ref ?
-                  <Pill tone="ok"><CheckIcon className="h-3.5 w-3.5" /> {ref.status === 'sent' ? 'Referral sent' : ref.status === 'accepted' ? 'Interested' : ref.status === 'contacted' ? 'Contacted' : 'Declined'}</Pill> :
+                  ref.quote && ref.status !== 'declined' ?
+                  <Link to="/employer/hires" className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-sm border border-brand-500 px-3 py-2 text-sm font-semibold text-ink hover:bg-brand-50">
+                        Quote {naira(ref.quote.workmanship + (ref.quote.materials ?? 0))} →
+                      </Link> :
+                  <Pill tone="ok"><CheckIcon className="h-3.5 w-3.5" /> {ref.status === 'sent' ? 'Referral sent' : ref.status === 'accepted' ? 'Interested' : ref.status === 'contacted' ? 'Hired' : 'Declined'}</Pill> :
 
                   <button type="button" onClick={() => sendReferral(selected.id, m.apprentice.id, me.id)} className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-line px-4 py-2.5 text-sm font-semibold text-ink transition-colors duration-150 hover:bg-canvas">
                           <SendIcon className="h-4 w-4" /> Send referral
@@ -136,10 +150,30 @@ export function EmployerJobs() {
               )}
             </div>
           </fieldset>
-          <div>
-            <label htmlFor="job-pay" className="block text-sm font-semibold text-ink">Pay</label>
-            <input id="job-pay" value={pay} onChange={(e) => setPay(e.target.value)} className="mt-1.5 w-full rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30" placeholder="e.g. ₦150,000 fixed" />
+          <fieldset>
+            <legend className="text-sm font-semibold text-ink">Who buys the materials?</legend>
+            <div className="mt-1.5 grid grid-cols-2 gap-2">
+              {([['employer', 'I will buy them'], ['artisan', 'The artisan buys them']] as const).map(([v, label]) =>
+              <label key={v} className={`flex cursor-pointer items-center gap-2 rounded-sm border px-3 py-2.5 text-sm ${materialsBy === v ? 'border-brand-500 bg-brand-50 text-ink' : 'border-line text-ink-muted'}`}>
+                  <input type="radio" name="materials-by" value={v} checked={materialsBy === v} onChange={() => setMaterialsBy(v)} className="accent-brand-600" /> {label}
+                </label>
+              )}
+            </div>
+            <p className="mt-1 text-xs text-ink-subtle">{materialsBy === 'artisan' ? 'You pay the materials money upfront into escrow; it goes to the artisan straight away so they can buy them.' : 'Only the workmanship (labour) is paid through SkillPass.'}</p>
+          </fieldset>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label htmlFor="job-work" className="block text-sm font-semibold text-ink">Workmanship budget (₦)</label>
+              <input id="job-work" inputMode="numeric" value={workmanshipBudget} onChange={(e) => setWorkmanshipBudget(e.target.value.replace(/\D/g, ''))} className="mt-1.5 w-full rounded-sm border border-line bg-surface px-3.5 py-2.5 font-mono text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30" placeholder="e.g. 150000" />
+            </div>
+            {materialsBy === 'artisan' &&
+            <div>
+                <label htmlFor="job-mat" className="block text-sm font-semibold text-ink">Materials budget (₦)</label>
+                <input id="job-mat" inputMode="numeric" value={materialsBudget} onChange={(e) => setMaterialsBudget(e.target.value.replace(/\D/g, ''))} className="mt-1.5 w-full rounded-sm border border-line bg-surface px-3.5 py-2.5 font-mono text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30" placeholder="e.g. 80000" />
+              </div>
+            }
           </div>
+          <p className="text-xs text-ink-subtle">Artisans reply with their own quote. You agree the final amounts before paying.</p>
           <div className="flex justify-end gap-2 pt-1">
             <button type="button" onClick={() => setOpen(false)} className="rounded-xl px-4 py-2.5 text-sm font-medium text-ink hover:bg-canvas">Cancel</button>
             <button type="button" disabled={!title.trim() || skillIds.length === 0 || !location} onClick={create} className="rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-night transition-colors duration-150 hover:bg-brand-700 disabled:opacity-40">Post & find matches</button>

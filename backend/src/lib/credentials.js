@@ -10,7 +10,7 @@ const CREDENTIAL_COLUMNS = `
   c.signature, c.revoke_reason`;
 
 /** Evidence stored by this API lives under /uploads; seed/demo files are served by the frontend itself. */
-const publicUrl = (u) => (u && u.startsWith('/uploads/') ? `${config.publicUrl}${evidenceStore.signedPath(u)}` : u ?? undefined);
+export const publicUrl = (u) => (u && u.startsWith('/uploads/') ? `${config.publicUrl}${evidenceStore.signedPath(u)}` : u ?? undefined);
 
 export function mapEvidence(r) {
   return {

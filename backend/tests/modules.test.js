@@ -77,7 +77,7 @@ describe('bootstrap: what each role is allowed to see', () => {
     t.e1 = await login('folake@skillpass.ng');
     const b = await boot(t.e1);
     assert.ok(b.apprentices.length > 0 && b.apprentices.every((a) => a.phone === '' && a.trade === 'electrical'));
-    assert.ok(b.jobs.length === 2 && b.jobs.every((j) => j.employerId === 'e1'));
+    assert.ok(b.jobs.length === 4 && b.jobs.every((j) => j.employerId === 'e1'));
     assert.ok(b.credentials.every((c) => c.status === 'valid' || c.cosignRequestedFrom === 'e1' || c.cosignerId === 'e1'));
     assert.ok(b.employers.every((e) => e.phone === '' || e.id === 'e1'));
   });
@@ -162,7 +162,7 @@ describe('employer ratings', () => {
   it('are refused for an employer an administrator has not verified', async () => {
     const reg = await api('POST', '/api/auth/register', { body: {
       role: 'employer', name: 'Kemi Ola', email: 'kemi@example.com', phone: '08012345678', password: 'a-good-password', dob: '1990-02-02',
-      trade: 'electrical', company: 'Ola Wiring', consent: true, location: { name: 'Yaba', lat: 6.5, lng: 3.37 },
+      trade: 'electrical', company: 'Ola Wiring', consent: true, acceptTerms: true, location: { name: 'Yaba', lat: 6.5, lng: 3.37 },
     } });
     assert.equal(reg.status, 201);
     t.newEmployer = reg.body.token;
@@ -206,7 +206,7 @@ describe('jobs and referrals', () => {
     assert.equal((await set(t.a1, 'accepted')).status, 200);
     assert.equal((await set(t.a1, 'declined')).status, 409);
     assert.equal((await set(t.a1, 'contacted')).status, 409);
-    assert.ok((await api('GET', '/api/notifications', { token: t.e1 })).body.notifications.some((n) => n.title === 'Apprentice interested'));
+    assert.ok((await api('GET', '/api/notifications', { token: t.e1 })).body.notifications.some((n) => n.title === 'Artisan interested'));
     assert.equal((await set(t.e1, 'contacted')).status, 200);
     const mine = (await boot(t.a1)).referrals.find((r) => r.id === t.referral.id);
     assert.equal(mine.status, 'contacted');

@@ -47,4 +47,13 @@ describe('startup secrets', () => {
     assert.notEqual(r.status, 0);
     assert.match(r.stderr, /at least 32 characters/);
   });
+
+  it('accepts a Paystack test key and refuses a live key unless deliberately allowed', () => {
+    assert.equal(load({ PAYMENT_PROVIDER: 'paystack', PAYSTACK_SECRET_KEY: 'sk_test_abc' }).status, 0);
+    const live = load({ PAYMENT_PROVIDER: 'paystack', PAYSTACK_SECRET_KEY: 'sk_live_abc' });
+    assert.notEqual(live.status, 0);
+    assert.match(live.stderr, /live key/);
+    assert.equal(load({ PAYMENT_PROVIDER: 'paystack', PAYSTACK_SECRET_KEY: 'sk_live_abc', PAYSTACK_ALLOW_LIVE: 'true' }).status, 0);
+    assert.notEqual(load({ PAYMENT_PROVIDER: 'paystack' }).status, 0);
+  });
 });

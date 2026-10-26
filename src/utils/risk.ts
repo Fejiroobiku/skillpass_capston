@@ -46,10 +46,10 @@ settings: Settings)
 
   const ids = new Set(mine.map((c) => c.id));
   const poor = feedback.filter((f) => f.rating <= POOR_RATING && f.credentialIds.some((id) => ids.has(id))).length;
-  if (poor >= 2) signals.push({ id: 'poor_ratings', label: 'Poor employer ratings', detail: `${poor} ratings of ${POOR_RATING}★ or less for apprentices they passed` });
+  if (poor >= 2) signals.push({ id: 'poor_ratings', label: 'Poor employer ratings', detail: `${poor} ratings of ${POOR_RATING}★ or less for artisans they passed` });
 
   const open = reports.filter((r) => r.trainerId === trainer.id && r.status !== 'closed').length;
-  if (open > 0) signals.push({ id: 'reports', label: 'Apprentice report', detail: `${open} confidential report${open > 1 ? 's' : ''} open` });
+  if (open > 0) signals.push({ id: 'reports', label: 'Artisan report', detail: `${open} confidential report${open > 1 ? 's' : ''} open` });
 
   const level = signals.length >= 2 ? 'high' : signals.length === 1 ? 'medium' : 'low';
   // Only valid credentials count toward finishing probation (same rule as the server).

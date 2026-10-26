@@ -1,7 +1,7 @@
 import type { AppNotification, SusResponse, VerificationEvent } from '../types/skillpass';
 
 export const dataCollection = [
-{ label: 'Requirements interviews', value: 18, detail: '5 trainers · 9 apprentices · 4 employers' },
+{ label: 'Requirements interviews', value: 18, detail: '5 assessors · 9 artisans · 4 employers' },
 { label: 'Baseline questionnaires', value: 31, detail: 'Collected in weeks 2–3' },
 { label: 'Spot-check assessments', value: 5, detail: 'Independent re-checks this pilot' }];
 
@@ -30,8 +30,8 @@ export const seedNotifications: AppNotification[] = [
 { id: 'n4', userId: 'a1', channel: 'sms', title: 'New job referral', body: 'SkillPass: Lekki Homes needs an electrician in Lekki Phase 1 (₦180,000). Reply 1 if interested.', at: '2026-09-28T09:05:00', read: false, link: '/apprentice/jobs' },
 { id: 'n5', userId: 'a1', channel: 'in_app', title: 'New job referral', body: 'Rewire two flats in a Lekki estate — 67% skill match.', at: '2026-09-28T09:05:00', read: false, link: '/apprentice/jobs' },
 { id: 'n6', userId: 'a1', channel: 'sms', title: 'Skill verified', body: 'SkillPass: Babatunde Adeyemi verified “Install a solar inverter with battery backup”. ID SP-7MXV-3JYK.', at: '2026-09-26T16:21:00', read: true, link: '/verify/SP-7MXV-3JYK' },
-{ id: 'n7', userId: 'e1', channel: 'in_app', title: '3 matches for your job', body: 'Rewire two flats in a Lekki estate has 3 verified apprentices nearby.', at: '2026-09-28T09:01:00', read: false, link: '/employer/jobs' },
-{ id: 'n8', userId: 'ad1', channel: 'in_app', title: 'Trainer awaiting approval', body: 'Kunle Bakare (Auto Mechanics, Surulere) registered as a trainer.', at: '2026-09-29T10:00:00', read: false, link: '/admin/users' },
+{ id: 'n7', userId: 'e1', channel: 'in_app', title: '3 matches for your job', body: 'Rewire two flats in a Lekki estate has 3 verified artisans nearby.', at: '2026-09-28T09:01:00', read: false, link: '/employer/jobs' },
+{ id: 'n8', userId: 'ad1', channel: 'in_app', title: 'Assessor awaiting approval', body: 'Kunle Bakare (Auto Mechanics, Surulere) registered as an assessor.', at: '2026-09-29T10:00:00', read: false, link: '/admin/users' },
 { id: 'n9', userId: 'ad1', channel: 'in_app', title: 'New flag', body: 'SP-3WLA-9KDS was flagged by an employer.', at: '2026-09-27T17:06:00', read: false, link: '/admin/review' }];
 
 
@@ -48,4 +48,4 @@ export const susStatements = [
 'I needed to learn a lot of things before I could get going with SkillPass.'];
 
 
-export const outOfScope = ['Payments', 'NIN integration', 'Native mobile apps', 'Blockchain anchoring', 'Integration with the official NSQ database'];
+export const outOfScope = ['Live payments with real money', 'NIN integration', 'Native mobile apps', 'Blockchain anchoring', 'Integration with the official NSQ database'];

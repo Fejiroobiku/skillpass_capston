@@ -42,6 +42,7 @@ export async function anonymiseParticipant(db, userId) {
   await db.query(`UPDATE feedback SET comment = '' WHERE apprentice_id = $1`, [userId]);
   await db.query('DELETE FROM notifications WHERE user_id = $1', [userId]);
   await db.query('DELETE FROM contact_verifications WHERE user_id = $1', [userId]);
+  await db.query('DELETE FROM payout_accounts WHERE user_id = $1', [userId]); // bank details are not kept
 
   await db.query(`UPDATE trainer_profiles SET workshop = 'Withdrawn', membership_no = '' WHERE user_id = $1`, [userId]);
   await db.query(`UPDATE employer_profiles SET company = 'Withdrawn employer' WHERE user_id = $1`, [userId]);

@@ -16,6 +16,10 @@ interface CameraModalProps {
   /** Called instead of onCapture when there is no signal, so the file can be kept on the phone and sent later. */
   onQueued?: (blob: Blob, meta: EvidenceMeta) => void;
   onClose: () => void;
+  /** Where the capture is sent. Defaults to credential evidence; job photos pass their own uploader. */
+  upload?: (blob: Blob, meta: EvidenceMeta) => Promise<Evidence>;
+  /** Caption stored with a photo. */
+  photoCaption?: string;
 }
 
 const MAX_SECONDS = 30;
@@ -36,7 +40,7 @@ interface Loc {
   source?: 'gps' | 'declared';
 }
 
-export function CameraModal({ mode, code, workshop, fallbackUrl, onCapture, onQueued, onClose }: CameraModalProps) {
+export function CameraModal({ mode, code, workshop, fallbackUrl, onCapture, onQueued, onClose, upload = uploadEvidence, photoCaption = 'Live photo of finished work' }: CameraModalProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
@@ -128,11 +132,11 @@ export function CameraModal({ mode, code, workshop, fallbackUrl, onCapture, onQu
   });
 
   /** Send the captured file to the server. On a refusal (duplicate file, expired code) stay open so the trainer can retry. */
-  const send = async (blob: Blob, meta: Parameters<typeof uploadEvidence>[1]) => {
+  const send = async (blob: Blob, meta: EvidenceMeta) => {
     setBusy(true);
     setUploadError(null);
     try {
-      const ev = await uploadEvidence(blob, meta);
+      const ev = await upload(blob, meta);
       onCapture(ev);
       onClose();
     } catch (e) {
@@ -152,7 +156,7 @@ export function CameraModal({ mode, code, workshop, fallbackUrl, onCapture, onQu
     setBusy(true);
     const shot = await snapshot();
     setBusy(false);
-    if (shot) await send(shot.blob, { kind: 'photo', caption: 'Live photo of finished work', ...where });
+    if (shot) await send(shot.blob, { kind: 'photo', caption: photoCaption, ...where });
   };
 
   const startRecording = async () => {
@@ -174,7 +178,7 @@ export function CameraModal({ mode, code, workshop, fallbackUrl, onCapture, onQu
       setRecording(false);
       const blob = new Blob(chunks, { type: rec.mimeType || 'video/webm' });
       const duration = Math.max(1, Math.round((Date.now() - startedAt) / 1000));
-      await send(blob, { kind: 'video', caption: 'Live video of apprentice performing the task', challengeCode: code, durationSec: duration, ...where });
+      await send(blob, { kind: 'video', caption: 'Live video of artisan performing the task', challengeCode: code, durationSec: duration, ...where });
     };
     setSeconds(0);
     rec.start(500);
@@ -198,8 +202,8 @@ export function CameraModal({ mode, code, workshop, fallbackUrl, onCapture, onQu
       } else blob = await demoPhoto(fallbackUrl, workshop.name);
       lastDemo.blob = blob;
       lastDemo.kind = kind;
-      const ev = await uploadEvidence(blob, {
-        kind, caption: reuse ? 'Re-used file (duplicate test)' : kind === 'video' ? 'Live video of apprentice performing the task' : 'Live photo of finished work',
+      const ev = await upload(blob, {
+        kind, caption: reuse ? 'Re-used file (duplicate test)' : kind === 'video' ? 'Live video of artisan performing the task' : photoCaption,
         locationLabel: location.label === 'Locating…' ? `${workshop.name} (workshop, not GPS)` : location.label,
         lat: location.lat ?? workshop.lat, lng: location.lng ?? workshop.lng,
         locationSource: location.source ?? 'declared',
@@ -276,7 +280,7 @@ export function CameraModal({ mode, code, workshop, fallbackUrl, onCapture, onQu
                 </button>
             }
               <p className="text-center text-xs text-white/60">
-                {mode === 'video' ? `Hold the code to the camera, then film the apprentice doing the task (${MIN_SECONDS}–${MAX_SECONDS}s).` : 'Photos are stamped with time and location. Gallery uploads are disabled.'}
+                {mode === 'video' ? `Hold the code to the camera, then film the artisan doing the task (${MIN_SECONDS}–${MAX_SECONDS}s).` : 'Photos are stamped with time and location. Gallery uploads are disabled.'}
               </p>
               {busy && <p role="status" className="text-center text-xs font-medium text-white/80">Uploading… keep this open.</p>}
               {uploadError && <p role="alert" className="w-full rounded-xl bg-bad-600/90 px-3 py-2 text-center text-xs font-medium text-white">{uploadError}</p>}

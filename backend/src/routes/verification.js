@@ -76,7 +76,7 @@ router.post('/phone/send', authenticate, async (req, res) => {
     await checkSendLimits(db, me.id, 'phone');
     return createSecret(db, { userId: me.id, purpose: 'phone', target: me.phone_e164, secret: code, minutes: PHONE_CODE_MINUTES });
   });
-  await sendSms(me.phone_e164, `Your SkillPass code is ${code}. It expires in ${PHONE_CODE_MINUTES} minutes. Never share it with anyone, including your trainer.`);
+  await sendSms(me.phone_e164, `Your SkillPass code is ${code}. It expires in ${PHONE_CODE_MINUTES} minutes. Never share it with anyone, including your assessor.`);
   res.json({ sentTo: maskPhone(me.phone_e164), expiresAt: expiresAt.toISOString(), resendAfterSeconds: RESEND_SECONDS, ...(showSmsCode() ? { devCode: code } : {}) });
 });
 

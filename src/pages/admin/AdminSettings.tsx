@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { api } from '../../api/client';
 import { CheckIcon, LockIcon } from 'lucide-react';
 import { PageHeader } from '../../components/PageHeader';
 import { Panel } from '../../components/Panel';
@@ -22,16 +24,21 @@ export function AdminSettings() {
   const [saved, setSaved] = useState(false);
   const actor = user?.name ?? 'Administrator';
   const [probation, setProbation] = useState(settings.probationCount);
-  const dirty = limit !== settings.dailyLimit || rate !== settings.auditRatePct || probation !== settings.probationCount;
+  const [reviewDays, setReviewDays] = useState(settings.reviewDays ?? 3);
+  const [gateway, setGateway] = useState<{provider: string;testMode: boolean;} | null>(null);
+  useEffect(() => {
+    api.get<{provider: string;testMode: boolean;}>('/api/payments/info').then(setGateway).catch(() => setGateway(null));
+  }, []);
+  const dirty = limit !== settings.dailyLimit || rate !== settings.auditRatePct || probation !== settings.probationCount || reviewDays !== (settings.reviewDays ?? 3);
 
   const locked = [
   { name: 'Evidence before credential', text: 'At least one photo or video on every credential.' },
-  { name: 'Co-signature for advanced skills', text: 'A second approved trainer or approved employer must co-sign.' },
+  { name: 'Co-signature for advanced skills', text: 'A second approved assessor or approved employer must co-sign.' },
   { name: 'Tamper resistance', text: 'Server-signed credentials and an append-only audit log.' },
   { name: 'Revoked stays visible', text: 'Revoked credentials remain on the verification page, marked revoked.' }];
 
 
-  const security = ['Passwords hashed with bcrypt', 'HTTPS for every connection in production', 'Credentials signed with an HMAC-SHA256 server key', 'Audit log sealed as an HMAC hash chain', 'Role-based access control on every REST endpoint', 'Evidence stored privately; signed links expire after 30 minutes'];
+  const security = ['Passwords hashed with bcrypt', 'HTTPS for every connection in production', 'Credentials signed with an HMAC-SHA256 server key', 'Audit log sealed as an HMAC hash chain', 'Role-based access control on every REST endpoint', 'Evidence stored privately; signed links expire after 30 minutes', 'Escrow webhooks verified with Paystack\'s HMAC-SHA512 signature, then re-checked with Paystack', 'Bank details shown masked; deleted when consent is withdrawn'];
 
   return (
     <>
@@ -40,7 +47,7 @@ export function AdminSettings() {
         <Panel title="Integrity rules" description="Adjustable thresholds. Changes are written to the audit log.">
           <div className="space-y-5">
             <div>
-              <label htmlFor="limit" className="block text-sm font-semibold text-ink">Daily issuing limit per trainer</label>
+              <label htmlFor="limit" className="block text-sm font-semibold text-ink">Daily issuing limit per assessor</label>
               <p className="text-xs text-ink-muted">Credentials beyond this are held for administrator review.</p>
               <input id="limit" type="number" min={1} max={50} value={limit} onChange={(e) => {setLimit(Math.max(1, Number(e.target.value)));setSaved(false);}} className="mt-2 w-28 rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30" />
             </div>
@@ -53,13 +60,18 @@ export function AdminSettings() {
               </div>
             </div>
             <div>
-              <label htmlFor="probation" className="block text-sm font-semibold text-ink">Probation period for new trainers</label>
+              <label htmlFor="probation" className="block text-sm font-semibold text-ink">Probation period for new assessors</label>
               <p className="text-xs text-ink-muted">Number of first credentials that must all be co-signed.</p>
               <input id="probation" type="number" min={0} max={50} value={probation} onChange={(e) => {setProbation(Math.max(0, Number(e.target.value)));setSaved(false);}} className="mt-2 w-28 rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30" />
             </div>
-            <p className="rounded-xl bg-canvas p-3 text-xs text-ink-muted">Risk-based audits trigger when a trainer signs credentials under {settings.fastMinutes} min apart, passes ≥95% of 5+ assessments, issues {settings.clusterThreshold}+ in one day, gets 2+ poor employer ratings, or has an open apprentice report.</p>
+            <div>
+              <label htmlFor="review-days" className="block text-sm font-semibold text-ink">Job review period (days)</label>
+              <p className="text-xs text-ink-muted">After an artisan marks a job done, the employer has this long to confirm or dispute before payment is released automatically. The <Link to="/terms#payments" className="underline">Terms of Service</Link> promise 3 days; if you change this, update the terms too.</p>
+              <input id="review-days" type="number" min={1} max={14} value={reviewDays} onChange={(e) => {setReviewDays(Math.min(14, Math.max(1, Number(e.target.value))));setSaved(false);}} className="mt-2 w-28 rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30" />
+            </div>
+            <p className="rounded-xl bg-canvas p-3 text-xs text-ink-muted">Risk-based audits trigger when an assessor signs credentials under {settings.fastMinutes} min apart, passes ≥95% of 5+ assessments, issues {settings.clusterThreshold}+ in one day, gets 2+ poor employer ratings, or has an open artisan report.</p>
             <div className="flex items-center gap-3">
-              <button type="button" disabled={!dirty} onClick={() => {updateSettings({ dailyLimit: limit, auditRatePct: rate, probationCount: probation }, actor);setSaved(true);}} className="rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-night hover:bg-brand-700 disabled:opacity-40">Save rules</button>
+              <button type="button" disabled={!dirty} onClick={() => {updateSettings({ dailyLimit: limit, auditRatePct: rate, probationCount: probation, reviewDays }, actor);setSaved(true);}} className="rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-night hover:bg-brand-700 disabled:opacity-40">Save rules</button>
               {saved && <span role="status" className="flex items-center gap-1 text-sm font-medium text-ok-700"><CheckIcon className="h-4 w-4" /> Saved</span>}
             </div>
             <ul className="space-y-3 border-t border-line pt-5">
@@ -80,9 +92,13 @@ export function AdminSettings() {
                 <div><p className="text-sm font-medium text-ink">SMS gateway</p><p className="text-xs text-ink-muted">Referrals, verified skills and co-sign requests</p></div>
                 <Toggle label="SMS gateway" checked={settings.smsEnabled} onChange={(v) => updateSettings({ smsEnabled: v }, actor)} />
               </li>
-              <li className="flex items-center justify-between gap-4 pt-4">
+              <li className="flex items-center justify-between gap-4 py-4">
                 <div><p className="text-sm font-medium text-ink">E-mail service</p><p className="text-xs text-ink-muted">Account and admin notices</p></div>
                 <Toggle label="E-mail service" checked={settings.emailEnabled} onChange={(v) => updateSettings({ emailEnabled: v }, actor)} />
+              </li>
+              <li className="flex items-center justify-between gap-4 pt-4">
+                <div><p className="text-sm font-medium text-ink">Escrow payments</p><p className="text-xs text-ink-muted">Job deposits, payouts to artisans and refunds. Set with PAYMENT_PROVIDER on the server.</p></div>
+                <span className="whitespace-nowrap rounded-sm bg-canvas px-2.5 py-1 font-mono text-xs text-ink">{gateway ? gateway.provider === 'paystack' ? `Paystack${gateway.testMode ? ' · test mode' : ' · LIVE'}` : 'Simulated · no money moves' : '…'}</span>
               </li>
             </ul>
           </Panel>

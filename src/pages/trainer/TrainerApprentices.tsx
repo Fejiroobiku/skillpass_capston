@@ -15,12 +15,12 @@ export function TrainerApprentices() {
 
   return (
     <>
-      <PageHeader title="Apprentices" subtitle="Each apprentice is linked to one trainer — you. They link themselves when they register." />
+      <PageHeader title="Artisans" subtitle="Each artisan is linked to one assessor — you. They link themselves when they register." />
       {mine.length === 0 ?
       <div className="rounded-2xl border border-dashed border-line bg-surface p-10 text-center">
           <UserPlusIcon className="mx-auto h-8 w-8 text-ink-subtle" />
-          <p className="mt-3 font-semibold text-ink">No apprentices yet</p>
-          <p className="mt-1 text-sm text-ink-muted">Share your workshop name so apprentices can select you when they sign up.</p>
+          <p className="mt-3 font-semibold text-ink">No artisans yet</p>
+          <p className="mt-1 text-sm text-ink-muted">Share your workshop name so artisans can select you when they sign up.</p>
         </div> :
 
       <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -32,7 +32,7 @@ export function TrainerApprentices() {
                   <span className="flex h-11 w-11 items-center justify-center rounded-sm bg-brand-100 font-semibold text-brand-800">{a.name.split(' ').map((p) => p[0]).join('')}</span>
                   <div className="min-w-0">
                     <p className="truncate font-semibold text-ink">{a.name}</p>
-                    <p className="text-xs text-ink-muted">Apprentice since {formatDate(a.startedAt)}</p>
+                    <p className="text-xs text-ink-muted">Artisan since {formatDate(a.startedAt)}</p>
                   </div>
                 </div>
                 <div className="mt-4">

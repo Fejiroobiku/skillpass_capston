@@ -131,7 +131,7 @@ export function EmployerDashboard() {
           }
         </div>
 
-        <Panel title="Co-sign requests" description={me?.approved ? 'Advanced skills where a trainer asked you to confirm the work.' : 'Approved employers can co-sign advanced skills.'} className="self-start">
+        <Panel title="Co-sign requests" description={me?.approved ? 'Advanced skills where an assessor asked you to confirm the work.' : 'Approved employers can co-sign advanced skills.'} className="self-start">
           {!me?.approved ?
           <p className="rounded-xl bg-warn-50 p-4 text-sm text-warn-700">Your employer account is awaiting administrator approval.</p> :
           requests.length === 0 ?
@@ -161,7 +161,7 @@ export function EmployerDashboard() {
           const target = flagging;
           setFlagging(null);
           if (target && user && (await raiseFlag(target, reason, user.id))) {
-            setNotice('Flag sent. An administrator will review the evidence and the trainer will be notified.');
+            setNotice('Flag sent. An administrator will review the evidence and the assessor will be notified.');
             void verified.reload();
           }
         }} />

@@ -190,7 +190,7 @@ INSERT INTO credentials (id, apprentice_id, trainer_id, skill_id, issued_at, sta
   ('SP-1RKD-6PLW', 'a8', 't4', 'el-06', '2026-09-29T13:00:00+01:00', 'pending_cosign', ARRAY['Phase rotation checked', 'Load balanced across phases', 'Changeover wired and tested', 'Earthing tested']::text[], 'Commissioned 3-phase supply for a small factory.', true, 'advanced', 't1', NULL, '2026-09-29T13:00:00+01:00', false, false, 'unsigned', NULL),
   ('SP-4NAT-2XHE', 'a4', 't2', 'ta-01', '2026-09-05T10:00:00+01:00', 'valid', ARRAY['Measures chest, waist, hip and length', 'Records measurements clearly', 'Re-checks key measurements']::text[], '', false, NULL, NULL, NULL, '2026-09-05T10:00:00+01:00', false, false, 'unsigned', NULL),
   ('SP-9CEB-3MUF', 'a4', 't2', 'ta-04', '2026-09-19T12:30:00+01:00', 'valid', ARRAY['Fabric cut on grain', 'Seams neat and finished', 'Fit checked on client', 'Hems even']::text[], '', false, NULL, NULL, NULL, '2026-09-19T12:30:00+01:00', false, false, 'unsigned', NULL),
-  ('SP-2DVS-8LQJ', 'a5', 't2', 'ta-02', '2026-09-12T11:20:00+01:00', 'revoked', ARRAY['Threads machine unaided', 'Winds bobbin correctly', 'Sews straight seam at even tension']::text[], '', false, NULL, NULL, NULL, '2026-09-12T11:20:00+01:00', false, false, 'unsigned', 'Audit re-check found the apprentice could not thread the machine unaided.'),
+  ('SP-2DVS-8LQJ', 'a5', 't2', 'ta-02', '2026-09-12T11:20:00+01:00', 'revoked', ARRAY['Threads machine unaided', 'Winds bobbin correctly', 'Sews straight seam at even tension']::text[], '', false, NULL, NULL, NULL, '2026-09-12T11:20:00+01:00', false, false, 'unsigned', 'Audit re-check found the artisan could not thread the machine unaided.'),
   ('SP-6HWK-5GAY', 'a6', 't3', 'me-02', '2026-09-08T09:50:00+01:00', 'valid', ARRAY['Vehicle raised and supported safely', 'Pads and discs measured', 'Caliper slides cleaned and greased', 'Brake test done before handover']::text[], '', false, NULL, NULL, NULL, '2026-09-08T09:50:00+01:00', false, false, 'unsigned', NULL),
   ('SP-3PZN-1VKR', 'a6', 't3', 'me-03', '2026-09-21T14:15:00+01:00', 'held_review', ARRAY['Scanner connected and codes read', 'Live data interpreted', 'Fault confirmed by physical check', 'Codes cleared and re-tested']::text[], '', false, NULL, NULL, NULL, '2026-09-21T14:15:00+01:00', true, false, 'unsigned', NULL),
   ('SP-7LBX-4SDC', 'a7', 't3', 'me-01', '2026-09-14T10:40:00+01:00', 'valid', ARRAY['Correct oil grade selected', 'Sump plug torqued and washer replaced', 'Filter fitted and checked for leaks', 'Level checked after run']::text[], '', false, NULL, NULL, NULL, '2026-09-14T10:40:00+01:00', false, false, 'unsigned', NULL);
@@ -238,10 +238,15 @@ INSERT INTO concern_reports (id, apprentice_id, trainer_id, category, details, a
 INSERT INTO job_postings (id, employer_id, title, trade_id, location_name, lat, lng, pay, posted_at) VALUES
   ('j1', 'e1', 'Rewire two flats in a Lekki estate', 'electrical', 'Lekki Phase 1', 6.4474, 3.4727, '₦180,000 fixed', '2026-09-28T09:00:00+01:00'),
   ('j2', 'e1', 'Solar backup install for estate clubhouse', 'electrical', 'Ajah', 6.4698, 3.5852, '₦250,000 fixed', '2026-09-29T12:00:00+01:00'),
+  ('j5', 'e1', 'Security lights for the estate gate', 'electrical', 'Ajah', 6.4698, 3.5852, '₦105,000 fixed', '2026-10-15T10:00:00+01:00'),
+  ('j6', 'e1', 'Replace a faulty distribution board in Ikota', 'electrical', 'Lekki Phase 1', 6.4474, 3.4727, '₦75,000 fixed', '2026-10-12T09:00:00+01:00'),
   ('j3', 'e2', 'Seasonal tailor for wedding orders', 'tailoring', 'Ikoyi', 6.4541, 3.4347, '₦12,000 per day', '2026-09-26T10:00:00+01:00'),
   ('j4', 'e3', 'Junior mechanic, brake and service bay', 'mechanic', 'Surulere', 6.4969, 3.3538, '₦90,000 monthly', '2026-09-27T08:30:00+01:00');
 
 INSERT INTO job_skills (job_id, skill_id) VALUES
+  ('j5', 'el-02'),
+  ('j5', 'el-03'),
+  ('j6', 'el-05'),
   ('j1', 'el-03'),
   ('j1', 'el-04'),
   ('j1', 'el-05'),
@@ -255,7 +260,9 @@ INSERT INTO job_skills (job_id, skill_id) VALUES
 INSERT INTO referrals (id, job_id, apprentice_id, status, sent_at) VALUES
   ('r1', 'j1', 'a1', 'sent', '2026-09-28T09:05:00+01:00'),
   ('r2', 'j2', 'a1', 'accepted', '2026-09-29T12:10:00+01:00'),
-  ('r3', 'j1', 'a2', 'contacted', '2026-09-28T09:05:00+01:00');
+  ('r3', 'j1', 'a2', 'contacted', '2026-09-28T09:05:00+01:00'),
+  ('r4', 'j5', 'a1', 'contacted', '2026-10-15T10:10:00+01:00'),
+  ('r5', 'j6', 'a2', 'contacted', '2026-10-12T09:20:00+01:00');
 
 INSERT INTO feedback (id, apprentice_id, employer_id, referral_id, rating, comment, created_at) VALUES
   ('fb1', 'a1', 'e1', NULL, 5, 'Rewired the estate gatehouse board cleanly and on time.', '2026-09-25T18:00:00+01:00'),
@@ -271,6 +278,68 @@ INSERT INTO feedback_credentials (feedback_id, credential_id) VALUES
   ('fb5', 'SP-9WXC-2HJK'),
   ('fb3', 'SP-9CEB-3MUF');
 
+-- ---------------------------------------------------------------------------
+-- Terms, job prices, quotes, agreements, escrow payments, job photos, disputes, employer ratings
+-- ---------------------------------------------------------------------------
+
+UPDATE users SET terms_version = '2026-10-v1', terms_accepted_at = consent_at;
+
+UPDATE job_postings SET materials_by = 'employer', workmanship_budget = 180000 WHERE id = 'j1';
+UPDATE job_postings SET materials_by = 'artisan', materials_budget = 120000, workmanship_budget = 130000 WHERE id = 'j2';
+UPDATE job_postings SET materials_by = 'artisan', materials_budget = 45000, workmanship_budget = 60000 WHERE id = 'j5';
+UPDATE job_postings SET materials_by = 'employer', workmanship_budget = 75000 WHERE id = 'j6';
+
+UPDATE referrals SET quote_workmanship = 120000, quote_materials = 125000, available_from = '2026-10-30',
+  quote_note = 'I will buy a 5 kVA inverter and two 200 Ah batteries in Alaba and share the receipts.', quoted_at = '2026-09-29T15:00:00+01:00'
+ WHERE id = 'r2';
+UPDATE referrals SET quote_workmanship = 180000, available_from = '2026-10-01', quote_note = '', quoted_at = '2026-09-28T11:00:00+01:00' WHERE id = 'r3';
+UPDATE referrals SET quote_workmanship = 60000, quote_materials = 45000, available_from = '2026-10-18', quote_note = 'Four 50 W LED floodlights with photocells.', quoted_at = '2026-10-15T12:00:00+01:00' WHERE id = 'r4';
+UPDATE referrals SET quote_workmanship = 75000, available_from = '2026-10-14', quote_note = '', quoted_at = '2026-10-12T10:00:00+01:00' WHERE id = 'r5';
+
+INSERT INTO payout_accounts (user_id, bank_code, bank_name, account_number, account_name) VALUES
+  ('a1', '058', 'Guaranty Trust Bank', '0123456789', 'Tobi Ogunleye'),
+  ('a2', '999992', 'OPay', '8031184420', 'Emeka Nwosu');
+
+INSERT INTO job_agreements (id, referral_id, job_id, employer_id, artisan_id, materials_by, materials_amount, workmanship_amount, start_date, scope,
+                            terms_version, status, employer_accepted_at, artisan_accepted_at, payment_reference, funded_at, submitted_at, review_deadline, completed_at) VALUES
+  ('ag1', 'r3', 'j1', 'e1', 'a2', 'employer', 0, 180000, '2026-10-01', 'Rewire both flats: new final circuits, sockets and switches. Employer supplies cables and fittings.',
+   '2026-10-v1', 'resolved', '2026-09-28T12:00:00+01:00', '2026-09-28T13:00:00+01:00', 'sp-dep-ag1', '2026-09-29T09:00:00+01:00', '2026-10-06T17:00:00+01:00', '2026-10-09T17:00:00+01:00', '2026-10-10T12:00:00+01:00'),
+  ('ag2', 'r4', 'j5', 'e1', 'a1', 'artisan', 45000, 60000, '2026-10-18', 'Supply and fit four LED floodlights with photocells at the estate gate.',
+   '2026-10-v1', 'in_progress', '2026-10-15T13:00:00+01:00', '2026-10-15T14:00:00+01:00', 'sp-dep-ag2', '2026-10-16T09:00:00+01:00', NULL, NULL, NULL),
+  ('ag3', 'r5', 'j6', 'e1', 'a2', 'employer', 0, 75000, '2026-10-14', 'Remove the old distribution board, fit the new one supplied by the employer, test every circuit.',
+   '2026-10-v1', 'disputed', '2026-10-12T11:00:00+01:00', '2026-10-12T12:00:00+01:00', 'sp-dep-ag3', '2026-10-13T09:00:00+01:00', '2026-10-21T16:00:00+01:00', '2026-10-24T16:00:00+01:00', NULL);
+
+INSERT INTO payments (id, agreement_id, kind, amount, provider, reference, status, detail, created_at, completed_at) VALUES
+  ('pay1', 'ag1', 'deposit', 180000, 'simulated', 'sp-dep-ag1', 'succeeded', 'Workmanship into escrow', '2026-09-29T09:00:00+01:00', '2026-09-29T09:00:00+01:00'),
+  ('pay2', 'ag1', 'workmanship_payout', 126000, 'simulated', 'sp-out-ag1-w', 'succeeded', '70% of workmanship after dispute decision', '2026-10-10T12:00:00+01:00', '2026-10-10T12:00:00+01:00'),
+  ('pay3', 'ag1', 'refund', 54000, 'simulated', 'sp-ref-ag1', 'succeeded', '30% of workmanship refunded after dispute decision', '2026-10-10T12:00:00+01:00', '2026-10-10T12:00:00+01:00'),
+  ('pay4', 'ag2', 'deposit', 105000, 'simulated', 'sp-dep-ag2', 'succeeded', 'Materials ₦45,000 + workmanship ₦60,000 into escrow', '2026-10-16T09:00:00+01:00', '2026-10-16T09:00:00+01:00'),
+  ('pay5', 'ag2', 'materials_payout', 45000, 'simulated', 'sp-out-ag2-m', 'succeeded', 'Materials money sent to the artisan', '2026-10-16T09:00:00+01:00', '2026-10-16T09:00:00+01:00'),
+  ('pay6', 'ag3', 'deposit', 75000, 'simulated', 'sp-dep-ag3', 'succeeded', 'Workmanship into escrow', '2026-10-13T09:00:00+01:00', '2026-10-13T09:00:00+01:00');
+
+INSERT INTO job_photos (id, agreement_id, uploaded_by, stage, url, sha256, location_label, lat, lng, location_source, captured_at) VALUES
+  ('jp1', 'ag1', 'a2', 'before', '/fd213f5f-02ae-46fe-bd1c-7f74ab6a99f9.jpg', encode(sha256('jp1'::bytea), 'hex'), 'Lekki Phase 1', 6.4474, 3.4727, 'gps', '2026-10-01T09:10:00+01:00'),
+  ('jp2', 'ag1', 'a2', 'after', '/32383737-c0e6-4fb2-b59c-44fc5566bffc.jpg', encode(sha256('jp2'::bytea), 'hex'), 'Lekki Phase 1', 6.4474, 3.4727, 'gps', '2026-10-06T16:40:00+01:00'),
+  ('jp3', 'ag2', 'a1', 'before', '/fd213f5f-02ae-46fe-bd1c-7f74ab6a99f9.jpg', encode(sha256('jp3'::bytea), 'hex'), 'Ajah', 6.4698, 3.5852, 'gps', '2026-10-18T09:30:00+01:00'),
+  ('jp4', 'ag3', 'a2', 'before', '/fd213f5f-02ae-46fe-bd1c-7f74ab6a99f9.jpg', encode(sha256('jp4'::bytea), 'hex'), 'Ikota, Lekki', 6.4474, 3.4727, 'gps', '2026-10-14T09:05:00+01:00'),
+  ('jp5', 'ag3', 'a2', 'after', '/32383737-c0e6-4fb2-b59c-44fc5566bffc.jpg', encode(sha256('jp5'::bytea), 'hex'), 'Ikota, Lekki', 6.4474, 3.4727, 'gps', '2026-10-21T15:50:00+01:00');
+
+INSERT INTO job_disputes (id, agreement_id, raised_by, reason, details, response, responded_at, raised_at, status, artisan_share_pct, decision_note, resolved_by, resolved_at) VALUES
+  ('jd1', 'ag1', 'e1', 'poor_work', 'Conduit in flat B is not level and two boxes are loose. It needed rework by another electrician.',
+   'Flat A is complete. The employer added a third room halfway through the job.', '2026-10-08T10:00:00+01:00', '2026-10-07T18:00:00+01:00',
+   'resolved', 70, 'Photos show flat A finished to standard and flat B conduit needing rework. 70% of workmanship to the artisan, 30% back to the employer.', 'ad1', '2026-10-10T12:00:00+01:00'),
+  ('jd2', 'ag3', 'e1', 'not_finished', 'Two circuits still trip when the pumping machine starts. The job is not finished.',
+   'The new board is fitted and tested. The tripping comes from the pump motor, which was not part of this job.', '2026-10-23T09:00:00+01:00', '2026-10-22T19:00:00+01:00',
+   'open', NULL, NULL, NULL, NULL);
+
+INSERT INTO employer_ratings (id, agreement_id, artisan_id, employer_id, rating, comment, created_at) VALUES
+  ('er1', 'ag1', 'a2', 'e1', 3, 'Paid after the decision, but added a room halfway through the job.', '2026-10-10T15:00:00+01:00');
+
+INSERT INTO notifications (id, user_id, channel, title, body, at, read, link) VALUES
+  ('n10', 'e1', 'in_app', 'New quote', 'Tobi Ogunleye quoted ₦120,000 workmanship + ₦125,000 materials for Solar backup install for estate clubhouse.', '2026-09-29T15:00:00+01:00', false, '/employer/hires'),
+  ('n11', 'ad1', 'in_app', 'New job dispute', 'Lekki Homes Facility Management disputed “Replace a faulty distribution board in Ikota”. ₦75,000 is held.', '2026-10-22T19:00:00+01:00', false, '/admin/review'),
+  ('n12', 'a1', 'in_app', 'Payment received into escrow', 'Lekki Homes paid ₦105,000. ₦45,000 for materials was sent to your account; ₦60,000 is held until the job is confirmed.', '2026-10-16T09:00:00+01:00', false, '/apprentice/work');
+
 INSERT INTO notifications (id, user_id, channel, title, body, at, read, link) VALUES
   ('n1', 't1', 'in_app', 'Co-sign request', 'Chinedu Okafor asked you to co-sign “Install and commission a three-phase supply” for Segun Alabi.', '2026-09-29T13:01:00+01:00', false, '/trainer'),
   ('n2', 't1', 'in_app', 'Credential flagged', 'Folake Hassan flagged SP-3WLA-9KDS (Emeka Nwosu). An administrator will review it.', '2026-09-27T17:06:00+01:00', false, '/verify/SP-3WLA-9KDS'),
@@ -278,8 +347,8 @@ INSERT INTO notifications (id, user_id, channel, title, body, at, read, link) VA
   ('n4', 'a1', 'sms', 'New job referral', 'SkillPass: Lekki Homes needs an electrician in Lekki Phase 1 (₦180,000). Reply 1 if interested.', '2026-09-28T09:05:00+01:00', false, '/apprentice/jobs'),
   ('n5', 'a1', 'in_app', 'New job referral', 'Rewire two flats in a Lekki estate — 67% skill match.', '2026-09-28T09:05:00+01:00', false, '/apprentice/jobs'),
   ('n6', 'a1', 'sms', 'Skill verified', 'SkillPass: Babatunde Adeyemi verified “Install a solar inverter with battery backup”. ID SP-7MXV-3JYK.', '2026-09-26T16:21:00+01:00', true, '/verify/SP-7MXV-3JYK'),
-  ('n7', 'e1', 'in_app', '3 matches for your job', 'Rewire two flats in a Lekki estate has 3 verified apprentices nearby.', '2026-09-28T09:01:00+01:00', false, '/employer/jobs'),
-  ('n8', 'ad1', 'in_app', 'Trainer awaiting approval', 'Kunle Bakare (Auto Mechanics, Surulere) registered as a trainer.', '2026-09-29T10:00:00+01:00', false, '/admin/users'),
+  ('n7', 'e1', 'in_app', '3 matches for your job', 'Rewire two flats in a Lekki estate has 3 verified artisans nearby.', '2026-09-28T09:01:00+01:00', false, '/employer/jobs'),
+  ('n8', 'ad1', 'in_app', 'Assessor awaiting approval', 'Kunle Bakare (Auto Mechanics, Surulere) registered as an assessor.', '2026-09-29T10:00:00+01:00', false, '/admin/users'),
   ('n9', 'ad1', 'in_app', 'New flag', 'SP-3WLA-9KDS was flagged by an employer.', '2026-09-27T17:06:00+01:00', false, '/admin/review');
 
 INSERT INTO sus_responses (id, user_id, role, score, at) VALUES
@@ -304,7 +373,7 @@ INSERT INTO audit_log (id, at, actor_id, actor_name, action, target, detail) VAL
   ('al4', '2026-09-10T14:40:00+01:00', NULL, 'Babatunde Adeyemi', 'credential.issued', 'SP-9TRD-5HWA', 'Tobi Ogunleye · Install a single-gang switch and socket outlet'),
   ('al5', '2026-09-21T14:16:00+01:00', NULL, 'System', 'credential.held', 'SP-3PZN-1VKR', 'Daily issuing limit (5) exceeded by Ibrahim Musa'),
   ('al6', '2026-09-22T11:05:00+01:00', NULL, 'Babatunde Adeyemi', 'credential.issued', 'SP-2BNC-8QPE', 'Tobi Ogunleye · Wire a consumer unit (distribution board)'),
-  ('al7', '2026-09-25T10:00:00+01:00', NULL, 'Fejiro Obiku', 'credential.revoked', 'SP-2DVS-8LQJ', 'Audit re-check disagreed with trainer assessment'),
+  ('al7', '2026-09-25T10:00:00+01:00', NULL, 'Fejiro Obiku', 'credential.revoked', 'SP-2DVS-8LQJ', 'Audit re-check disagreed with the assessor''s assessment'),
   ('al8', '2026-09-25T18:00:00+01:00', NULL, 'Folake Hassan', 'feedback.added', 'Tobi Ogunleye', 'Rated 5/5'),
   ('al9', '2026-09-26T16:20:00+01:00', NULL, 'Chinedu Okafor', 'credential.cosigned', 'SP-7MXV-3JYK', 'Co-signed advanced skill for Tobi Ogunleye'),
   ('al10', '2026-09-27T17:05:00+01:00', NULL, 'Folake Hassan', 'credential.flagged', 'SP-3WLA-9KDS', 'Conduit run had to be redone'),

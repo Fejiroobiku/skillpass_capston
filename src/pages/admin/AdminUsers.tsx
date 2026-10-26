@@ -25,7 +25,7 @@ export function AdminUsers() {
     const profile = t ?? ap ?? e;
     const approved = t ? t.approved : e ? e.approved : true;
     const assoc = associations.find((x) => x.id === t?.associationId);
-    const detail = t ? `${t.workshop} · ${assoc?.name.split(' — ')[0] ?? 'No association'} ${t.membershipNo}${t.membershipVerified ? ' ✓' : ''}` : ap ? `Trainer: ${nameOf(ap.trainerId)}` : e ? e.company : '';
+    const detail = t ? `${t.workshop} · ${assoc?.name.split(' — ')[0] ?? 'No association'} ${t.membershipNo}${t.membershipVerified ? ' ✓' : ''}` : ap ? `Assessor: ${nameOf(ap.trainerId)}` : e ? e.company : '';
     return { account: a, name: nameOf(a.id), trade: trades.find((x) => x.id === profile?.trade)?.name ?? '—', location: profile?.location.name ?? '—', detail, approved, needsMembership: !!t && !t.membershipVerified };
   });
   const visible = rows.filter((r) => filter === 'all' ? true : filter === 'pending' ? !r.approved : r.account.role === filter);
@@ -33,14 +33,14 @@ export function AdminUsers() {
   const filters: {id: Filter;label: string;}[] = [
   { id: 'all', label: 'All' },
   { id: 'pending', label: 'Awaiting approval' },
-  { id: 'trainer', label: 'Trainers' },
-  { id: 'apprentice', label: 'Apprentices' },
+  { id: 'trainer', label: 'Assessors' },
+  { id: 'apprentice', label: 'Artisans' },
   { id: 'employer', label: 'Employers' }];
 
 
   return (
     <>
-      <PageHeader title="Users" subtitle="Approve trainers and employers, and suspend accounts that break pilot rules." />
+      <PageHeader title="Users" subtitle="Approve assessors and employers, and suspend accounts that break pilot rules." />
       <div role="tablist" aria-label="Filter users" className="mb-4 flex gap-1 overflow-x-auto">
         {filters.map((f) => {
           const count = f.id === 'all' ? rows.length : f.id === 'pending' ? rows.filter((r) => !r.approved).length : rows.filter((r) => r.account.role === f.id).length;

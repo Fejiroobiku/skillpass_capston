@@ -146,3 +146,27 @@ describe('languages', () => {
     expect(document.documentElement.lang).toBe('pcm');
   });
 });
+
+describe('jobs, escrow and the Terms of Service', () => {
+  it('shows the Terms of Service to anyone, with the short summary first', async () => {
+    open('/terms');
+    render(<App />);
+    expect(await screen.findByRole('heading', { name: 'Terms of Service' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'The terms in short' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: '6. Payments and escrow' })).toBeTruthy();
+  });
+
+  it('shows an employer the quotes waiting and the money held for each job', async () => {
+    await openAs('folake@skillpass.ng', '/employer/hires');
+    expect(await screen.findByRole('heading', { name: 'Hires & Payments' })).toBeTruthy();
+    expect(await screen.findByText(/I will buy a 5 kVA inverter/)).toBeTruthy();
+    expect(screen.getAllByText('₦105,000').length).toBeGreaterThan(0);
+  });
+
+  it('shows an artisan their payout account, masked, and the job they are doing', async () => {
+    await openAs('tobi@skillpass.ng', '/apprentice/work');
+    expect(await screen.findByText(/····6789/)).toBeTruthy();
+    expect(await screen.findByText('Security lights for the estate gate')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Take “after” photo' })).toBeTruthy();
+  });
+});

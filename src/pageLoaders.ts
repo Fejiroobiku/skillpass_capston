@@ -20,11 +20,14 @@ export const loaders = {
     SkillsPassport: () => import('./pages/apprentice/SkillsPassport'),
     ConfirmSkills: () => import('./pages/apprentice/ConfirmSkills'),
     JobReferrals: () => import('./pages/apprentice/JobReferrals'),
+    ArtisanWork: () => import('./pages/apprentice/ArtisanWork'),
   },
   employer: {
     EmployerDashboard: () => import('./pages/employer/EmployerDashboard'),
     EmployerJobs: () => import('./pages/employer/EmployerJobs'),
     EmployerFeedback: () => import('./pages/employer/EmployerFeedback'),
+    EmployerHires: () => import('./pages/employer/EmployerHires'),
+    PayCheckout: () => import('./pages/employer/PayCheckout'),
   },
   admin: {
     AdminMetrics: () => import('./pages/admin/AdminMetrics'),

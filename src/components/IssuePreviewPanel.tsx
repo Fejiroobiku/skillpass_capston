@@ -9,10 +9,10 @@ import { formatDateTime } from '../utils/credentials';
 type Form = ReturnType<typeof useIssueCredential>;
 
 const issuedCopy = {
-  pending_apprentice: ['Sent to the apprentice to confirm', 'It becomes valid once they confirm they did the task.'],
+  pending_apprentice: ['Sent to the artisan to confirm', 'It becomes valid once they confirm they did the task.'],
   pending_cosign: ['Sent for co-signature', 'It becomes valid once your co-signer approves it.'],
   held_review: ['Held for administrator review', 'You passed today’s issuing limit. An administrator will check it.'],
-  valid: ['Credential signed and issued', 'The apprentice has been notified by SMS.']
+  valid: ['Credential signed and issued', 'The artisan has been notified by SMS.']
 } as const;
 
 export function IssuePreviewPanel({ form }: {form: Form;}) {
@@ -62,7 +62,7 @@ export function IssuePreviewPanel({ form }: {form: Form;}) {
               <dl className="divide-y divide-line text-sm">
                 {[
               ['Skill', skill ? `${skill.name} (${skill.level})` : '—'],
-              ['Apprentice', apprentice?.name ?? '—'],
+              ['Artisan', apprentice?.name ?? '—'],
               ['Verified by', `${me.name} · trust ${form.trust.score}/100`],
               ['Rubric', skill ? `${form.criteria.length}/${form.rubric.length} criteria` : '—'],
               ['Evidence', form.evidence.length ? `${form.evidence.length} live file${form.evidence.length > 1 ? 's' : ''}` : 'None yet'],
@@ -92,8 +92,8 @@ export function IssuePreviewPanel({ form }: {form: Form;}) {
           <div>
                 <label htmlFor="cosigner" className="mb-1.5 block text-sm font-semibold text-ink">Co-signer</label>
                 <select id="cosigner" value={form.cosignerId} onChange={(e) => form.setCosignerId(e.target.value)} className="w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30">
-                  <option value="">Choose an approved trainer or employer</option>
-                  <optgroup label="Approved trainers">
+                  <option value="">Choose an approved assessor or employer</option>
+                  <optgroup label="Approved assessors">
                     {form.cosignTrainers.map((t) => <option key={t.id} value={t.id}>{t.name} · {t.workshop}</option>)}
                   </optgroup>
                   {form.cosignEmployers.length > 0 &&
@@ -135,7 +135,7 @@ export function IssuePreviewPanel({ form }: {form: Form;}) {
               <button type="button" disabled={!ready || form.busy} onClick={form.submit} className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-brand-600 px-5 py-4 text-base font-semibold text-night transition-colors duration-150 hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-brand-200">
                 <CircleCheckBigIcon className="h-5 w-5" /> Sign & Issue <ArrowRightIcon className="h-5 w-5" />
               </button>
-              <p className="mt-2 text-center text-xs text-ink-muted">The apprentice must confirm before it becomes valid. Apprentices cannot create or edit credentials.</p>
+              <p className="mt-2 text-center text-xs text-ink-muted">The artisan must confirm before it becomes valid. Artisans cannot create or edit credentials.</p>
             </div>
           </motion.div>
         }

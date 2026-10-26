@@ -16,7 +16,7 @@ router.use(authenticate);
 const STATUSES = ['pending_apprentice', 'pending_cosign', 'held_review', 'valid', 'flagged', 'under_review', 'revoked'];
 
 const issueSchema = z.object({
-  apprenticeId: z.string().min(1, 'Choose an apprentice.'),
+  apprenticeId: z.string().min(1, 'Choose an artisan.'),
   skillId: z.string().min(1, 'Choose a skill.'),
   evidenceIds: z.array(z.string().min(1)).min(1, 'Add your evidence first.').max(10),
   criteriaMet: z.array(z.string()).max(50),
@@ -62,7 +62,7 @@ router.post('/', requireRole('trainer'), async (req, res) => {
       [input.apprenticeId],
     )).rows[0];
     if (!apprentice || apprentice.trainer_id !== trainer.id || apprentice.status !== 'active') {
-      throw new HttpError(403, 'You can only issue credentials to your own apprentices.');
+      throw new HttpError(403, 'You can only issue credentials to your own artisans.');
     }
 
     const skill = (await db.query('SELECT id, name, trade_id, requires_cosign, status FROM skills WHERE id = $1', [input.skillId])).rows[0];
@@ -145,7 +145,7 @@ router.post('/:id/confirm', requireRole('apprentice'), requireVerifiedPhone, asy
     if (c.status === 'flagged' || c.status === 'under_review') throw new HttpError(409, 'This credential is under review.');
     if (c.apprenticeConfirmedAt) return; // already confirmed: nothing to do
     await transition(db, c, { apprenticeConfirmedAt: new Date() });
-    await logAudit(db, { actor: req.user, action: 'credential.confirmed', target: c.id, detail: 'Apprentice confirmed they performed the task' });
+    await logAudit(db, { actor: req.user, action: 'credential.confirmed', target: c.id, detail: 'Artisan confirmed they performed the task' });
   });
   await respond(res, req.params.id);
 });
@@ -158,10 +158,10 @@ router.post('/:id/dispute', requireRole('apprentice'), async (req, res) => {
     if (!c || c.apprenticeId !== req.user.id) throw new HttpError(404, 'Credential not found.');
     if (c.status === 'revoked') throw new HttpError(409, 'This credential was already revoked.');
     if (c.status === 'flagged' || c.status === 'under_review') throw new HttpError(409, 'This credential is already under review.');
-    await db.query('INSERT INTO flags (id, credential_id, raised_by, reason) VALUES ($1, $2, $3, $4)', [uid('fl'), c.id, req.user.id, `Apprentice dispute: ${reason}`]);
+    await db.query('INSERT INTO flags (id, credential_id, raised_by, reason) VALUES ($1, $2, $3, $4)', [uid('fl'), c.id, req.user.id, `Artisan dispute: ${reason}`]);
     await transition(db, c, { status: 'flagged' });
-    await logAudit(db, { actor: req.user, action: 'credential.disputed', target: c.id, detail: 'Apprentice says they did not perform this task' });
-    await notifyAdmins(db, 'Apprentice disputed a credential', `${req.user.name} says they did not do “${await skillNameOf(db, c.skillId)}”.`, '/admin/review');
+    await logAudit(db, { actor: req.user, action: 'credential.disputed', target: c.id, detail: 'Artisan says they did not perform this task' });
+    await notifyAdmins(db, 'Artisan disputed a credential', `${req.user.name} says they did not do “${await skillNameOf(db, c.skillId)}”.`, '/admin/review');
   });
   await respond(res, req.params.id);
 });

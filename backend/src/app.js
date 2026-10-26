@@ -7,6 +7,7 @@ import { pool } from './db.js';
 import { ensureDirs, evidenceStore } from './lib/storage.js';
 import { errorHandler, notFound } from './middleware/errors.js';
 import adminRoutes from './routes/admin.js';
+import agreementRoutes from './routes/agreements.js';
 import attemptRoutes from './routes/attempts.js';
 import bootstrapRoutes from './routes/bootstrap.js';
 import feedbackRoutes from './routes/feedback.js';
@@ -35,7 +36,8 @@ export async function createApp() {
   // The frontend lives on another origin, so uploaded evidence must be embeddable cross-origin.
   app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
   app.use(cors({ origin: config.corsOrigins }));
-  app.use(express.json({ limit: '100kb' }));
+  // The raw bytes are kept so payment webhooks can check the provider's signature over exactly what was sent.
+  app.use(express.json({ limit: '100kb', verify: (req, res, buf) => { req.rawBody = buf; } }));
 
   app.get('/api/health', async (req, res) => {
     await pool.query('SELECT 1');
@@ -66,6 +68,7 @@ export async function createApp() {
   app.use('/api/skills', skillRoutes);
   app.use('/api/sus', susRoutes);
   app.use('/api', jobRoutes);
+  app.use('/api', agreementRoutes);
   app.use('/api/evidence', evidenceRoutes);
   app.use('/api/credentials', credentialRoutes);
   app.use('/api/attempts', attemptRoutes);
