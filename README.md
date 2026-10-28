@@ -5,6 +5,7 @@ An assessor-verified digital skills passport for informal artisans in Nigeria, w
 | | |
 |---|---|
 | **Walkthrough video** | [paste your video link here] |
+| **Code repository** | https://github.com/Fejiroobiku/skillpass_capston |
 | **Technical report (PDF)** | [docs/SkillPass_Technical_Report.pdf](docs/SkillPass_Technical_Report.pdf) |
 | **Live demo** | [paste the deployed link here, if deployed] |
 | **Author** | Fejiro Obiku, BSc Software Engineering, African Leadership University. Supervisor: Tunde Isiaq Gbadamosi |
